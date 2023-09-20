@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
 	import { setContext } from 'svelte';
 	import Wall from './Wall.svelte';
 	import LinksDrawer from './LinksDrawer.svelte';
@@ -6,7 +7,10 @@
 	import { writable } from 'svelte/store';
 
 	let holeElements = writable<{ [key: string]: HTMLElement }>({});
-	setContext('holeElements', holeElements);
+	setContext(HOLE_ELEMENTS, holeElements);
+
+	let focusedHole = writable<string>('');
+	setContext(FOCUSED_HOLE, focusedHole);
 
 	let wallsPositions = [
 		WallPosition.TOP,

@@ -13,6 +13,8 @@
 	import type { Writable } from 'svelte/store';
 	import LeaderLine from 'leader-line-new';
 	import type { SocketType } from 'leader-line-new';
+	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
+	import chroma from 'chroma-js';
 
 	interface Lines {
 		[key: string]: LeaderLine;
@@ -22,7 +24,8 @@
 		[key: string]: HTMLElement;
 	}
 
-	let holeElements: Writable<HoleElements> = getContext('holeElements');
+	let holeElements: Writable<HoleElements> = getContext(HOLE_ELEMENTS);
+	let focusedHole: Writable<string> = getContext(FOCUSED_HOLE);
 	let previewLine: LeaderLine | null = null;
 	let lines: Lines = {};
 
@@ -104,11 +107,11 @@
 			holeConnectionsDone[link.idStart] = (holeConnectionsDone[link.idStart] || 0) + 1;
 			holeConnectionsDone[link.idFinish] = (holeConnectionsDone[link.idFinish] || 0) + 1;
 
-			let stepStart = 1 / (holeConnections[link.idStart] + 1);
-			let stepFinish = 1 / (holeConnections[link.idFinish] + 1);
+			const stepStart = 1 / (holeConnections[link.idStart] + 1);
+			const stepFinish = 1 / (holeConnections[link.idFinish] + 1);
 
-			let startOffset = holeConnectionsDone[link.idStart] * stepStart;
-			let finishOffset = holeConnectionsDone[link.idFinish] * stepFinish;
+			const startOffset = holeConnectionsDone[link.idStart] * stepStart;
+			const finishOffset = holeConnectionsDone[link.idFinish] * stepFinish;
 
 			lines[link.id] = new LeaderLine({
 				start: LeaderLine.pointAnchor(
@@ -130,6 +133,18 @@
 		});
 	}
 
+	function adjustLineOpacity(): void {
+		const focusedHoleId = $focusedHole;
+		for (const [key, line] of Object.entries(lines)) {
+			const link = $linksStore[key];
+			const isLineFocused = link.idStart === focusedHoleId || link.idFinish === focusedHoleId;
+			const opacity = focusedHoleId && !isLineFocused ? 0.1 : 1;
+			line.color = chroma(dashColorMap[link.dashes]).alpha(opacity).css();
+			line.outlineColor = chroma(difficultyColorMap[link.difficulty]).alpha(opacity).css();
+		}
+	}
+
 	$: $selectedHoleStart, $selectedHoleFinish, drawPreviewLine();
 	$: $holesStore, $holeElements, $linksStore, drawLines();
+	$: $focusedHole, $linksStore, adjustLineOpacity();
 </script>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
 	import { getContext, onMount, onDestroy } from 'svelte';
 	import { holesStore, selectedHoleStart, selectedHoleFinish, type HoleData } from './HolesStore';
 	import type { Writable } from 'svelte/store';
@@ -7,7 +8,8 @@
 
 	let holeElement: HTMLElement;
 
-	let holeElements: Writable<{ [key: string]: HTMLElement }> = getContext('holeElements');
+	let holeElements: Writable<{ [key: string]: HTMLElement }> = getContext(HOLE_ELEMENTS);
+	let focusedHole: Writable<string> = getContext(FOCUSED_HOLE);
 
 	function removeHole() {
 		holesStore.removeHole(hole.id);
@@ -42,9 +44,23 @@
 			return currentHoles;
 		});
 	});
+
+	function onMouseEnter() {
+		focusedHole.set(hole.id);
+	}
+
+	function onMouseLeave() {
+		focusedHole.set('');
+	}
 </script>
 
-<div class="hole" bind:this={holeElement}>
+<div
+	class="hole"
+	bind:this={holeElement}
+	on:mouseenter={onMouseEnter}
+	on:mouseleave={onMouseLeave}
+	role="none"
+>
 	<p>{hole.position} {holeNumber}</p>
 	<input type="text" bind:value={hole.name} on:input={updateName} />
 	<button on:click={removeHole}>-</button>
