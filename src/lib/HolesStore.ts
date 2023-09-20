@@ -70,11 +70,11 @@ const createLinksStore = () => {
 
 	return {
 		subscribe,
-		addLink: (link: Pick<LinkData, 'idStart' | 'idFinish'>) => {
+		addLink: (link: Omit<LinkData, 'id'>) => {
 			const id = uuidv4();
 			update((links) => ({
 				...links,
-				[id]: { ...link, id, dashes: Dashes.ZERO, difficulty: Difficulty.EASY }
+				[id]: { ...link, id }
 			}));
 		},
 		removeLink: (id: string) => {

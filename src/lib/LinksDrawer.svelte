@@ -125,7 +125,7 @@
 				size: 12,
 				outline: true,
 				outlineColor: difficultyColorMap[link.difficulty],
-				outlineSize: 0.3
+				outlineSize: 0.2
 			});
 		});
 	}
