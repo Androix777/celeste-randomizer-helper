@@ -134,15 +134,21 @@
 			let finishOffset = holeConnectionsDone[link.idFinish] * stepFinish;
 
 			lines[link.id] = new LeaderLine({
-				start: LeaderLine.pointAnchor($holeElements[link.idStart] , getSocketCoordinates($holesStore[link.idStart].position, startOffset)),
-				end: LeaderLine.pointAnchor($holeElements[link.idFinish] , getSocketCoordinates($holesStore[link.idFinish].position, finishOffset)),
+				start: LeaderLine.pointAnchor(
+					$holeElements[link.idStart],
+					getSocketCoordinates($holesStore[link.idStart].position, startOffset)
+				),
+				end: LeaderLine.pointAnchor(
+					$holeElements[link.idFinish],
+					getSocketCoordinates($holesStore[link.idFinish].position, finishOffset)
+				),
 				startSocket: getSocket($holesStore[link.idStart].position),
 				endSocket: getSocket($holesStore[link.idFinish].position),
 				color: getDashesColor(link.dashes),
 				size: 12,
 				outline: true,
 				outlineColor: getDifficultyColor(link.difficulty),
-				outlineSize: 0.3,
+				outlineSize: 0.3
 			});
 		});
 	}

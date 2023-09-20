@@ -6,7 +6,7 @@
 	$: holeFinish = $holesStore[$selectedHoleFinish];
 
 	function createLink(event: Event) {
-		if(holeStart && holeFinish){
+		if (holeStart && holeFinish) {
 			linksStore.addLink({ idStart: $selectedHoleStart, idFinish: $selectedHoleFinish });
 		}
 	}
