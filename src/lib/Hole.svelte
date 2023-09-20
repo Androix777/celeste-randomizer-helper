@@ -37,7 +37,10 @@
 	});
 
 	onDestroy(() => {
-		delete $holeElements[hole.id];
+		holeElements.update((currentHoles) => {
+			delete currentHoles[hole.id];
+			return currentHoles;
+		});
 	});
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, getContext } from 'svelte';
+	import { getContext } from 'svelte';
 	import {
 		selectedHoleStart,
 		selectedHoleFinish,
@@ -7,31 +7,46 @@
 		linksStore,
 		type LinkData,
 		Difficulty,
-		Dashes
+		Dashes,
+		WallPosition
 	} from '$lib/HolesStore';
-	import type { default as ImportedLeaderLine } from 'leader-line-new';
-	import { WallPosition } from '$lib/HolesStore';
 	import type { Writable } from 'svelte/store';
+	import LeaderLine from 'leader-line-new';
+	import type { SocketType } from 'leader-line-new';
 
-	let holeElements: Writable<{ [key: string]: HTMLElement }> = getContext('holeElements');
-	let previewLine: ImportedLeaderLine | null = null;
-	let LeaderLine: typeof ImportedLeaderLine | null = null;
-	let lines: { [key: string]: ImportedLeaderLine } = {};
-
-	function getSocket(position: WallPosition): 'top' | 'bottom' | 'left' | 'right' {
-		switch (position) {
-			case WallPosition.BOTTOM:
-				return 'top';
-			case WallPosition.TOP:
-				return 'bottom';
-			case WallPosition.LEFT:
-				return 'right';
-			case WallPosition.RIGHT:
-				return 'left';
-			default:
-				throw new Error('Unknown wall position: ${position}');
-		}
+	interface Lines {
+		[key: string]: LeaderLine;
 	}
+
+	interface HoleElements {
+		[key: string]: HTMLElement;
+	}
+
+	let holeElements: Writable<HoleElements> = getContext('holeElements');
+	let previewLine: LeaderLine | null = null;
+	let lines: Lines = {};
+
+	const socketMap = {
+		[WallPosition.BOTTOM]: 'top' as SocketType,
+		[WallPosition.TOP]: 'bottom' as SocketType,
+		[WallPosition.LEFT]: 'right' as SocketType,
+		[WallPosition.RIGHT]: 'left' as SocketType
+	};
+
+	const difficultyColorMap = {
+		[Difficulty.EASY]: 'green',
+		[Difficulty.NORMAL]: 'yellow',
+		[Difficulty.HARD]: 'orange',
+		[Difficulty.EXPERT]: 'red',
+		[Difficulty.MASTER]: 'purple',
+		[Difficulty.PERFECT]: 'black'
+	};
+
+	const dashColorMap = {
+		[Dashes.ZERO]: 'blue',
+		[Dashes.ONE]: 'red',
+		[Dashes.TWO]: 'pink'
+	};
 
 	function getSocketCoordinates(position: WallPosition, offset: number): { x: string; y: string } {
 		switch (position) {
@@ -48,67 +63,29 @@
 		}
 	}
 
-	function getDifficultyColor(difficulty: Difficulty): string {
-		switch (difficulty) {
-			case Difficulty.EASY:
-				return 'green';
-			case Difficulty.NORMAL:
-				return 'yellow';
-			case Difficulty.HARD:
-				return 'orange';
-			case Difficulty.EXPERT:
-				return 'red';
-			case Difficulty.MASTER:
-				return 'purple';
-			case Difficulty.PERFECT:
-				return 'black';
-			default:
-				throw new Error(`Unknown difficulty level: ${difficulty}`);
-		}
-	}
-
-	function getDashesColor(dashes: Dashes): string {
-		switch (dashes) {
-			case Dashes.ZERO:
-				return 'blue';
-			case Dashes.ONE:
-				return 'red';
-			case Dashes.TWO:
-				return 'pink';
-			default:
-				throw new Error(`Unknown dashes number: ${dashes}`);
-		}
-	}
-
-	onMount(async () => {
-		const { default: ImportedLeaderLine } = await import('leader-line-new');
-		LeaderLine = ImportedLeaderLine;
-	});
-
-	$: {
+	function drawPreviewLine(): void {
 		if (previewLine) {
 			previewLine.remove();
 			previewLine = null;
 		}
-		if (
-			!LeaderLine ||
-			!$selectedHoleStart ||
-			!$selectedHoleFinish ||
-			$selectedHoleStart == $selectedHoleFinish
-		)
-			break $;
 
-		previewLine = new LeaderLine({
-			start: $holeElements[$selectedHoleStart],
-			end: $holeElements[$selectedHoleFinish],
-			startSocket: getSocket($holesStore[$selectedHoleStart].position),
-			endSocket: getSocket($holesStore[$selectedHoleFinish].position),
-			color: 'rgba(255, 255, 255, 0.2)',
-			size: 20
-		});
+		if ($selectedHoleStart && $selectedHoleFinish && $selectedHoleStart !== $selectedHoleFinish) {
+			previewLine = new LeaderLine({
+				start: $holeElements[$selectedHoleStart],
+				end: $holeElements[$selectedHoleFinish],
+				startSocket: socketMap[$holesStore[$selectedHoleStart].position],
+				endSocket: socketMap[$holesStore[$selectedHoleFinish].position],
+				color: 'rgba(255, 255, 255, 0.2)',
+				size: 20
+			});
+		}
 	}
 
-	$: {
+	function drawLines(): void {
+		if (Object.keys($holesStore).length !== Object.keys($holeElements).length) {
+			return;
+		}
+
 		Object.values(lines).forEach((line) => line.remove());
 		lines = {};
 
@@ -122,7 +99,7 @@
 		});
 
 		Object.values($linksStore).forEach((link: LinkData) => {
-			if (!LeaderLine || link.idStart == link.idFinish) return;
+			if (link.idStart === link.idFinish) return;
 
 			holeConnectionsDone[link.idStart] = (holeConnectionsDone[link.idStart] || 0) + 1;
 			holeConnectionsDone[link.idFinish] = (holeConnectionsDone[link.idFinish] || 0) + 1;
@@ -142,14 +119,17 @@
 					$holeElements[link.idFinish],
 					getSocketCoordinates($holesStore[link.idFinish].position, finishOffset)
 				),
-				startSocket: getSocket($holesStore[link.idStart].position),
-				endSocket: getSocket($holesStore[link.idFinish].position),
-				color: getDashesColor(link.dashes),
+				startSocket: socketMap[$holesStore[link.idStart].position],
+				endSocket: socketMap[$holesStore[link.idFinish].position],
+				color: dashColorMap[link.dashes],
 				size: 12,
 				outline: true,
-				outlineColor: getDifficultyColor(link.difficulty),
+				outlineColor: difficultyColorMap[link.difficulty],
 				outlineSize: 0.3
 			});
 		});
 	}
+
+	$: $selectedHoleStart, $selectedHoleFinish, drawPreviewLine();
+	$: $holesStore, $holeElements, $linksStore, drawLines();
 </script>
