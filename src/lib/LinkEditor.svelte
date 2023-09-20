@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { selectedHoleStart, selectedHoleFinish, holesStore, linksStore, Dashes, Difficulty } from '$lib/HolesStore';
+	import {
+		selectedHoleStart,
+		selectedHoleFinish,
+		holesStore,
+		linksStore,
+		Dashes,
+		Difficulty
+	} from '$lib/HolesStore';
 	import HoleInfo from './HoleInfo.svelte';
 
 	$: holeStart = $holesStore[$selectedHoleStart];
@@ -10,8 +17,8 @@
 
 	function createLink(event: Event) {
 		if (holeStart && holeFinish) {
-			linksStore.addLink({ 
-				idStart: $selectedHoleStart, 
+			linksStore.addLink({
+				idStart: $selectedHoleStart,
 				idFinish: $selectedHoleFinish,
 				dashes: selectedDashes,
 				difficulty: selectedDifficulty
