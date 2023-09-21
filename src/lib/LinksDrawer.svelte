@@ -144,7 +144,7 @@
 		}
 	}
 
-	$: $selectedHoleStart, $selectedHoleFinish, drawPreviewLine();
+	$: $selectedHoleStart, $selectedHoleFinish, $holesStore, $holeElements, drawPreviewLine();
 	$: $holesStore, $holeElements, $linksStore, drawLines();
-	$: $focusedHole, $linksStore, adjustLineOpacity();
+	$: $focusedHole, adjustLineOpacity();
 </script>
