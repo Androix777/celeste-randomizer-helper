@@ -137,8 +137,8 @@
 		const focusedHoleId = $focusedHole;
 		for (const [key, line] of Object.entries(lines)) {
 			const link = $linksStore[key];
-			const isLineFocused = link.idStart === focusedHoleId || link.idFinish === focusedHoleId;
-			const opacity = focusedHoleId && !isLineFocused ? 0.1 : 1;
+			const isLineFocused = link.idStart === focusedHoleId;
+			const opacity = focusedHoleId && !isLineFocused ? 0.2 : 1;
 			line.color = chroma(dashColorMap[link.dashes]).alpha(opacity).css();
 			line.outlineColor = chroma(difficultyColorMap[link.difficulty]).alpha(opacity).css();
 		}
