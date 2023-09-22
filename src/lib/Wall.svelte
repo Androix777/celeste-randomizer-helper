@@ -27,8 +27,8 @@
 		align-items: stretch;
 	}
 
-	.wall.top,
-	.wall.bottom {
+	.wall.up,
+	.wall.down {
 		flex-direction: row;
 	}
 
@@ -37,11 +37,11 @@
 		flex-direction: column;
 	}
 
-	.wall.top {
+	.wall.up {
 		grid-area: 1 / 2 / 2 / 3;
 	}
 
-	.wall.bottom {
+	.wall.down {
 		grid-area: 3 / 2 / 4 / 3;
 	}
 

@@ -2,25 +2,25 @@ import { v4 as uuidv4 } from 'uuid';
 import { writable } from 'svelte/store';
 
 export enum WallPosition {
-	TOP = 'top',
-	BOTTOM = 'bottom',
+	UP = 'up',
+	DOWN = 'down',
 	LEFT = 'left',
 	RIGHT = 'right'
 }
 
 export enum Dashes {
-	ZERO,
-	ONE,
-	TWO
+	ZERO = 'zero',
+	ONE = 'one',
+	TWO = 'two'
 }
 
 export enum Difficulty {
-	EASY,
-	NORMAL,
-	HARD,
-	EXPERT,
-	MASTER,
-	PERFECT
+	EASY = 'easy',
+	NORMAL = 'normal',
+	HARD = 'hard',
+	EXPERT = 'expert',
+	MASTER = 'master',
+	PERFECT = 'perfect'
 }
 
 export type HoleData = {
@@ -37,68 +37,77 @@ export type LinkData = {
 	difficulty: Difficulty;
 };
 
-type HolesStoreType = { [id: string]: HoleData };
-type LinksStoreType = { [id: string]: LinkData };
+type HolesStoreType = HoleData[];
+type LinksStoreType = LinkData[];
 
 const createHolesStore = () => {
-	const { subscribe, update } = writable<HolesStoreType>({});
+	const { subscribe, update } = writable<HolesStoreType>([]);
 
 	return {
 		subscribe,
 		addHole: (hole: Omit<HoleData, 'id'>) => {
 			const id = uuidv4();
-			update((holes) => ({ ...holes, [id]: { ...hole, id } }));
+			update((holes) => [...holes, { id, ...hole }]);
 		},
 		removeHole: (id: string) => {
-			update((holes) => {
-				const { [id]: _, ...rest } = holes;
-				return rest;
-			});
+			update((holes) => holes.filter((hole) => hole.id !== id));
 
 			selectedHoleStart.update((startId) => (startId === id ? '' : startId));
 			selectedHoleFinish.update((finishId) => (finishId === id ? '' : finishId));
 			linksStore.removeLinksByHoleId(id);
 		},
 		updateHole: (updatedHole: HoleData) => {
-			update((holes) => ({ ...holes, [updatedHole.id]: updatedHole }));
+			update((holes) => holes.map((hole) => (hole.id === updatedHole.id ? updatedHole : hole)));
+		},
+		getHole: (id: string, holesStore: HolesStoreType | null = null): HoleData => {
+			let hole: HoleData | undefined;
+			subscribe((holes) => {
+				hole = holes.find((h) => h.id === id);
+			})();
+
+			if (hole === undefined) {
+				throw new Error(`Hole is undefined`);
+			}
+
+			return hole;
 		}
 	};
 };
 
 const createLinksStore = () => {
-	const { subscribe, update } = writable<LinksStoreType>({});
+	const { subscribe, update } = writable<LinksStoreType>([]);
 
 	return {
 		subscribe,
 		addLink: (link: Omit<LinkData, 'id'>) => {
 			const id = uuidv4();
-			update((links) => ({
-				...links,
-				[id]: { ...link, id }
-			}));
+			update((links) => [...links, { id, ...link }]);
 		},
 		removeLink: (id: string) => {
-			update((links) => {
-				const { [id]: _, ...rest } = links;
-				return rest;
-			});
+			update((links) => links.filter((link) => link.id !== id));
 		},
-
 		removeLinksByHoleId: (holeId: string) => {
-			update((links) => {
-				return Object.values(links).reduce((result, link) => {
-					if (link.idStart !== holeId && link.idFinish !== holeId) {
-						result[link.id] = link;
-					}
-					return result;
-				}, {} as LinksStoreType);
-			});
+			update((links) =>
+				links.filter((link) => link.idStart !== holeId && link.idFinish !== holeId)
+			);
+		},
+		getLink: (id: string, linksStore: LinksStoreType | null = null): LinkData => {
+			let link: LinkData | undefined;
+			subscribe((links) => {
+				link = links.find((l) => l.id === id);
+			})();
+
+			if (link === undefined) {
+				throw new Error(`Link is undefined`);
+			}
+
+			return link;
 		}
 	};
 };
 
-export const selectedHoleStart = writable<string>();
-export const selectedHoleFinish = writable<string>();
+export const selectedHoleStart = writable<string>('');
+export const selectedHoleFinish = writable<string>('');
 
 export const linksStore = createLinksStore();
 export const holesStore = createHolesStore();

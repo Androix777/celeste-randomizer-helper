@@ -9,8 +9,10 @@
 		Difficulty
 	} from '$lib/HolesStore';
 
-	$: holeStart = $holesStore[$selectedHoleStart];
-	$: holeFinish = $holesStore[$selectedHoleFinish];
+	$: holeStart =
+		$selectedHoleStart != '' ? holesStore.getHole($selectedHoleStart, $holesStore) : undefined;
+	$: holeFinish =
+		$selectedHoleFinish != '' ? holesStore.getHole($selectedHoleFinish, $holesStore) : undefined;
 
 	let selectedDashes = Dashes.ZERO;
 	let selectedDifficulty = Difficulty.EASY;

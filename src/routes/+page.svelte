@@ -2,6 +2,7 @@
 	import { DarkMode } from 'flowbite-svelte';
 	import Room from '../lib/Room.svelte';
 	import LinkEditor from '$lib/LinkEditor.svelte';
+	import ConfigurationCreatorPanel from '$lib/ConfigurationCreatorPanel.svelte';
 </script>
 
 <div class="grid grid-cols-2 w-screen h-screen">
@@ -15,5 +16,6 @@
 	</div>
 	<div class="col-span-1">
 		<LinkEditor />
+		<ConfigurationCreatorPanel />
 	</div>
 </div>

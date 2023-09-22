@@ -12,12 +12,7 @@
 	let focusedHole = writable<string>('');
 	setContext(FOCUSED_HOLE, focusedHole);
 
-	let wallsPositions = [
-		WallPosition.TOP,
-		WallPosition.BOTTOM,
-		WallPosition.LEFT,
-		WallPosition.RIGHT
-	];
+	let wallsPositions = [WallPosition.UP, WallPosition.DOWN, WallPosition.LEFT, WallPosition.RIGHT];
 </script>
 
 <div class="room">
