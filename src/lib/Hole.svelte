@@ -1,4 +1,10 @@
 <script lang="ts">
+	import { SpeedDial, ListgroupItem, Listgroup } from 'flowbite-svelte';
+	import {
+		ArrowDownToBracketOutline,
+		ArrowUpFromBracketOutline,
+		TrashBinOutline
+	} from 'flowbite-svelte-icons';
 	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
 	import { getContext, onMount, onDestroy } from 'svelte';
 	import { holesStore, selectedHoleStart, selectedHoleFinish, type HoleData } from './HolesStore';
@@ -10,6 +16,7 @@
 
 	let holeElements: Writable<{ [key: string]: HTMLElement }> = getContext(HOLE_ELEMENTS);
 	let focusedHole: Writable<string> = getContext(FOCUSED_HOLE);
+	let holeNumber: number;
 
 	function removeHole() {
 		holesStore.removeHole(hole.id);
@@ -27,7 +34,6 @@
 		hole.name = (event.target as HTMLInputElement).value;
 		holesStore.updateHole(hole);
 	}
-	let holeNumber: number;
 
 	$: {
 		const holesOnThisWall = Object.values($holesStore).filter((h) => h.position === hole.position);
@@ -55,28 +61,27 @@
 </script>
 
 <div
-	class="hole"
+	class="flex flex-1 border bg-gray-700 dark:bg-gray-400 items-center justify-center"
 	bind:this={holeElement}
 	on:mouseenter={onMouseEnter}
 	on:mouseleave={onMouseLeave}
 	role="none"
 >
-	<p>{hole.position} {holeNumber}</p>
-	<input type="text" bind:value={hole.name} on:input={updateName} />
-	<button on:click={removeHole}>-</button>
-	<button on:click={addStart}>Start</button>
-	<button on:click={addFinish}>Finish</button>
+	<SpeedDial defaultClass="flex rounded-full">
+		<div slot="icon" class="w-5 h-5">{holeNumber}</div>
+		<Listgroup class="divide-none" active>
+			<ListgroupItem class="flex gap-2 md:px-5" on:click={addStart}>
+				<ArrowUpFromBracketOutline class="w-3.5 h-3.5" />
+				From
+			</ListgroupItem>
+			<ListgroupItem class="flex gap-2 md:px-5" on:click={addFinish}>
+				<ArrowDownToBracketOutline class="w-3.5 h-3.5" />
+				To
+			</ListgroupItem>
+			<ListgroupItem class="flex gap-2 md:px-5" on:click={removeHole}>
+				<TrashBinOutline class="w-3.5 h-3.5" />
+				Delete
+			</ListgroupItem>
+		</Listgroup>
+	</SpeedDial>
 </div>
-
-<style>
-	.hole {
-		background-color: #555;
-		color: white;
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		border: 1px solid #444;
-	}
-</style>

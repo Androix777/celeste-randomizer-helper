@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Button, Select, P } from 'flowbite-svelte';
 	import {
 		selectedHoleStart,
 		selectedHoleFinish,
@@ -7,13 +8,27 @@
 		Dashes,
 		Difficulty
 	} from '$lib/HolesStore';
-	import HoleInfo from './HoleInfo.svelte';
 
 	$: holeStart = $holesStore[$selectedHoleStart];
 	$: holeFinish = $holesStore[$selectedHoleFinish];
 
 	let selectedDashes = Dashes.ZERO;
 	let selectedDifficulty = Difficulty.EASY;
+
+	let dashes = [
+		{ value: Dashes.ZERO, name: 'Zero' },
+		{ value: Dashes.ONE, name: 'One' },
+		{ value: Dashes.TWO, name: 'Two' }
+	];
+
+	let difficulties = [
+		{ value: Difficulty.EASY, name: 'Easy' },
+		{ value: Difficulty.NORMAL, name: 'Normal' },
+		{ value: Difficulty.HARD, name: 'Hard' },
+		{ value: Difficulty.EXPERT, name: 'Expert' },
+		{ value: Difficulty.MASTER, name: 'Master' },
+		{ value: Difficulty.PERFECT, name: 'Perfect' }
+	];
 
 	function createLink(event: Event) {
 		if (holeStart && holeFinish) {
@@ -28,20 +43,23 @@
 </script>
 
 <div class="link-editor">
-	<HoleInfo hole={holeStart} />
-	<HoleInfo hole={holeFinish} />
-	<select bind:value={selectedDashes}>
-		<option value={Dashes.ZERO}>Zero</option>
-		<option value={Dashes.ONE}>One</option>
-		<option value={Dashes.TWO}>Two</option>
-	</select>
-	<select bind:value={selectedDifficulty}>
-		<option value={Difficulty.EASY}>Easy</option>
-		<option value={Difficulty.NORMAL}>Normal</option>
-		<option value={Difficulty.HARD}>Hard</option>
-		<option value={Difficulty.EXPERT}>Expert</option>
-		<option value={Difficulty.MASTER}>Master</option>
-		<option value={Difficulty.PERFECT}>Perfect</option>
-	</select>
-	<button on:click={createLink}>Add link</button>
+	<P>Dashes</P>
+	<Select
+		id="dashes-select"
+		class="mt-2"
+		placeholder=""
+		items={dashes}
+		bind:value={selectedDashes}
+	/>
+
+	<P>Difficulty</P>
+	<Select
+		id="difficulty-select"
+		class="mt-2"
+		placeholder=""
+		items={difficulties}
+		bind:value={selectedDifficulty}
+	/>
+
+	<Button class="mt-2" on:click={createLink}>Add link</Button>
 </div>

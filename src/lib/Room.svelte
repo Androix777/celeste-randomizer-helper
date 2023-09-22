@@ -27,15 +27,12 @@
 	{/each}
 </div>
 
-<style>
+<style lang="postcss">
 	.room {
-		display: grid;
-		grid-template-columns: 200px auto 200px;
-		grid-template-rows: 200px auto 200px;
-		position: relative;
-		width: 1000px;
-		height: 1000px;
-		margin: 50px;
-		background-color: #333;
+		@apply grid relative;
+		grid-template-columns: 100px auto 100px;
+		grid-template-rows: 100px auto 100px;
+		width: 900px;
+		height: 900px;
 	}
 </style>

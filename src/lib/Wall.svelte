@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { holesStore, WallPosition } from './HolesStore';
 	import Hole from './Hole.svelte';
+	import { Button } from 'flowbite-svelte';
 
 	export let wallPosition: WallPosition;
 
@@ -13,7 +14,7 @@
 </script>
 
 <div class={`wall ${wallPosition}`}>
-	<button on:click={addHole}>+</button>
+	<Button on:click={addHole}>+</Button>
 	{#each Object.values($holesStore).filter((hole) => hole.position === wallPosition) as hole (hole.id)}
 		<Hole {hole} />
 	{/each}
