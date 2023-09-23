@@ -108,6 +108,7 @@ const createLinksStore = () => {
 
 export const selectedHoleStart = writable<string>('');
 export const selectedHoleFinish = writable<string>('');
+export const roomName = writable<string>('');
 
 export const linksStore = createLinksStore();
 export const holesStore = createHolesStore();

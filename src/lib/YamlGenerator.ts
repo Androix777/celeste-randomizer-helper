@@ -1,4 +1,4 @@
-import { holesStore, linksStore, WallPosition, Dashes } from './HolesStore';
+import { holesStore, linksStore, WallPosition, roomName } from './HolesStore';
 import type { HoleData, LinkData } from './HolesStore';
 import { get } from 'svelte/store';
 import { stringify } from 'yaml';
@@ -99,7 +99,7 @@ export function getYaml() {
 	const roomData = {
 		ASide: [
 			{
-				Room: '"someName"',
+				Room: `"${get(roomName)}"`,
 				Subrooms: subroomsData
 			}
 		]

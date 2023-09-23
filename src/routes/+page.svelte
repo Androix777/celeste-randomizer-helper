@@ -15,7 +15,11 @@
 		</div>
 	</div>
 	<div class="col-span-1">
-		<LinkEditor />
-		<ConfigurationCreatorPanel />
+		<div class="">
+			<LinkEditor />
+		</div>
+		<div class="mt-10">
+			<ConfigurationCreatorPanel />
+		</div>
 	</div>
 </div>

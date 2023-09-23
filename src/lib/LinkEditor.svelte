@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Select, P } from 'flowbite-svelte';
+	import { Button, Select, Label } from 'flowbite-svelte';
 	import {
 		selectedHoleStart,
 		selectedHoleFinish,
@@ -45,23 +45,25 @@
 </script>
 
 <div class="link-editor">
-	<P>Dashes</P>
-	<Select
-		id="dashes-select"
-		class="mt-2"
-		placeholder=""
-		items={dashes}
-		bind:value={selectedDashes}
-	/>
+	<div class="mb-4">
+		<Label for="dashes-select" class="block mb-2">Dashes</Label>
+		<Select
+			id="dashes-select"
+			placeholder=""
+			items={dashes}
+			bind:value={selectedDashes}
+		/>
+	</div>
 
-	<P>Difficulty</P>
-	<Select
-		id="difficulty-select"
-		class="mt-2"
-		placeholder=""
-		items={difficulties}
-		bind:value={selectedDifficulty}
-	/>
-
-	<Button class="mt-2" on:click={createLink}>Add link</Button>
+	<div class="mb-4">
+		<Label for="difficulty-select" class="block mb-2">Difficulty</Label>
+		<Select
+			id="difficulty-select"
+			placeholder=""
+			items={difficulties}
+			bind:value={selectedDifficulty}
+		/>
+	</div>
+	
+	<Button on:click={createLink}>Add link</Button>
 </div>
