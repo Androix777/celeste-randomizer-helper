@@ -3,8 +3,7 @@
 	import {
 		selectedHoleStart,
 		selectedHoleFinish,
-		holesStore,
-		linksStore,
+		mapStore,
 		type LinkData,
 		Difficulty,
 		Dashes,
@@ -76,8 +75,8 @@
 			previewLine = new LeaderLine({
 				start: $holeElements[$selectedHoleStart],
 				end: $holeElements[$selectedHoleFinish],
-				startSocket: socketMap[holesStore.getHole($selectedHoleStart).position],
-				endSocket: socketMap[holesStore.getHole($selectedHoleFinish).position],
+				startSocket: socketMap[mapStore.getHole($selectedHoleStart).position],
+				endSocket: socketMap[mapStore.getHole($selectedHoleFinish).position],
 				color: 'rgba(255, 255, 255, 0.2)',
 				size: 20
 			});
@@ -85,7 +84,7 @@
 	}
 
 	function drawLines(): void {
-		if (Object.keys($holesStore).length !== Object.keys($holeElements).length) {
+		if (Object.keys(mapStore.getRoom().holes).length !== Object.keys($holeElements).length) {
 			return;
 		}
 
@@ -95,13 +94,13 @@
 		let holeConnections: { [id: string]: number } = {};
 		let holeConnectionsDone: { [id: string]: number } = {};
 
-		Object.values($linksStore).forEach((link: LinkData) => {
+		Object.values(mapStore.getRoom().links).forEach((link: LinkData) => {
 			if (link.idStart === link.idFinish) return;
 			holeConnections[link.idStart] = (holeConnections[link.idStart] || 0) + 1;
 			holeConnections[link.idFinish] = (holeConnections[link.idFinish] || 0) + 1;
 		});
 
-		Object.values($linksStore).forEach((link: LinkData) => {
+		Object.values(mapStore.getRoom().links).forEach((link: LinkData) => {
 			if (link.idStart === link.idFinish) return;
 
 			holeConnectionsDone[link.idStart] = (holeConnectionsDone[link.idStart] || 0) + 1;
@@ -116,14 +115,14 @@
 			lines[link.id] = new LeaderLine({
 				start: LeaderLine.pointAnchor(
 					$holeElements[link.idStart],
-					getSocketCoordinates(holesStore.getHole(link.idStart).position, startOffset)
+					getSocketCoordinates(mapStore.getHole(link.idStart).position, startOffset)
 				),
 				end: LeaderLine.pointAnchor(
 					$holeElements[link.idFinish],
-					getSocketCoordinates(holesStore.getHole(link.idFinish).position, finishOffset)
+					getSocketCoordinates(mapStore.getHole(link.idFinish).position, finishOffset)
 				),
-				startSocket: socketMap[holesStore.getHole(link.idStart).position],
-				endSocket: socketMap[holesStore.getHole(link.idFinish).position],
+				startSocket: socketMap[mapStore.getHole(link.idStart).position],
+				endSocket: socketMap[mapStore.getHole(link.idFinish).position],
 				color: dashColorMap[link.dashes],
 				size: 12,
 				outline: true,
@@ -136,7 +135,7 @@
 	function adjustLineOpacity(): void {
 		const focusedHoleId = $focusedHole;
 		for (const [key, line] of Object.entries(lines)) {
-			const link = linksStore.getLink(key);
+			const link = mapStore.getLink(key);
 			const isLineFocused = link.idStart === focusedHoleId;
 			const opacity = focusedHoleId && !isLineFocused ? 0.2 : 1;
 			line.color = chroma(dashColorMap[link.dashes]).alpha(opacity).css();
@@ -144,7 +143,7 @@
 		}
 	}
 
-	$: $selectedHoleStart, $selectedHoleFinish, $holesStore, $holeElements, drawPreviewLine();
-	$: $holesStore, $holeElements, $linksStore, drawLines();
+	$: $selectedHoleStart, $selectedHoleFinish, $mapStore, $holeElements, drawPreviewLine();
+	$: $mapStore, $holeElements, drawLines();
 	$: $focusedHole, adjustLineOpacity();
 </script>

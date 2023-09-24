@@ -1,12 +1,16 @@
 <script lang="ts">
-	import { holesStore, WallPosition } from '../stores/MapStore';
+	import { mapStore, WallPosition } from '../stores/MapStore';
 	import Hole from './Hole.svelte';
 	import { Button } from 'flowbite-svelte';
 
 	export let wallPosition: WallPosition;
 
+	$: holes = mapStore
+		.getRoom(undefined, $mapStore)
+		.holes.filter((hole) => hole.position === wallPosition);
+
 	function addHole() {
-		holesStore.addHole({
+		mapStore.addHole({
 			position: wallPosition,
 			name: 'new'
 		});
@@ -15,7 +19,7 @@
 
 <div class={`wall ${wallPosition}`}>
 	<Button on:click={addHole}>+</Button>
-	{#each Object.values($holesStore).filter((hole) => hole.position === wallPosition) as hole (hole.id)}
+	{#each Object.values(holes) as hole (hole.id)}
 		<Hole {hole} />
 	{/each}
 </div>

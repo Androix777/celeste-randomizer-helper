@@ -1,15 +1,17 @@
 <script lang="ts">
-	import { holesStore, type HoleData } from '../stores/MapStore';
+	import { mapStore, type HoleData } from '../stores/MapStore';
 
-	export let hole: HoleData | null;
+	export let hole: HoleData | undefined;
 
-	let holeNumber: number | null;
+	let holeNumber: number | undefined;
 
 	$: if (hole) {
-		const holesOnThisWall = Object.values($holesStore).filter((h) => h.position === hole?.position);
-		holeNumber = holesOnThisWall.indexOf(hole);
+		const holesOnThisWall = mapStore
+			.getRoom(undefined, $mapStore)
+			.holes.filter((h) => h.position === hole?.position);
+		holeNumber = holesOnThisWall!.indexOf(hole); //!
 	} else {
-		holeNumber = null;
+		holeNumber = undefined;
 	}
 </script>
 

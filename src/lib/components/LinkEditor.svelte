@@ -3,16 +3,19 @@
 	import {
 		selectedHoleStart,
 		selectedHoleFinish,
-		holesStore,
-		linksStore,
+		mapStore,
 		Dashes,
 		Difficulty
 	} from '$lib/stores/MapStore';
 
 	$: holeStart =
-		$selectedHoleStart != '' ? holesStore.getHole($selectedHoleStart, $holesStore) : undefined;
+		$selectedHoleStart != ''
+			? mapStore.getHole($selectedHoleStart, undefined, $mapStore)
+			: undefined;
 	$: holeFinish =
-		$selectedHoleFinish != '' ? holesStore.getHole($selectedHoleFinish, $holesStore) : undefined;
+		$selectedHoleFinish != ''
+			? mapStore.getHole($selectedHoleFinish, undefined, $mapStore)
+			: undefined;
 
 	let selectedDashes = Dashes.ZERO;
 	let selectedDifficulty = Difficulty.EASY;
@@ -34,7 +37,7 @@
 
 	function createLink(event: Event) {
 		if (holeStart && holeFinish) {
-			linksStore.addLink({
+			mapStore.addLink({
 				idStart: $selectedHoleStart,
 				idFinish: $selectedHoleFinish,
 				dashes: selectedDashes,

@@ -1,4 +1,4 @@
-import { holesStore, linksStore, WallPosition, roomName } from './stores/MapStore';
+import { mapStore, WallPosition, roomName } from './stores/MapStore';
 import type { HoleData, LinkData } from './stores/MapStore';
 import { get } from 'svelte/store';
 import { stringify } from 'yaml';
@@ -7,7 +7,7 @@ let holes = getHoles();
 let links = getLinks();
 
 function getHoles() {
-	const holes = get(holesStore);
+	const holes = mapStore.getRoom().holes;
 
 	const wallIndices: Record<WallPosition, number> = {
 		[WallPosition.UP]: 0,
@@ -31,7 +31,7 @@ function getHoles() {
 }
 
 function getLinks() {
-	return get(linksStore);
+	return mapStore.getRoom().links;
 }
 
 function getKind(links: LinkData[], holeId: string) {

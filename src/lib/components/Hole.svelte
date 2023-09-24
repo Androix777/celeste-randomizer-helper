@@ -8,7 +8,7 @@
 	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import { getContext, onMount, onDestroy } from 'svelte';
 	import {
-		holesStore,
+		mapStore,
 		selectedHoleStart,
 		selectedHoleFinish,
 		type HoleData
@@ -24,7 +24,7 @@
 	let holeNumber: number;
 
 	function removeHole() {
-		holesStore.removeHole(hole.id);
+		mapStore.removeHole(hole.id);
 	}
 
 	function addStart() {
@@ -35,14 +35,11 @@
 		selectedHoleFinish.set(hole.id);
 	}
 
-	function updateName(event: Event) {
-		hole.name = (event.target as HTMLInputElement).value;
-		holesStore.updateHole(hole);
-	}
-
 	$: {
-		const holesOnThisWall = Object.values($holesStore).filter((h) => h.position === hole.position);
-		holeNumber = holesOnThisWall.indexOf(hole);
+		const holesOnThisWall = mapStore
+			.getRoom(undefined, $mapStore)
+			.holes.filter((h) => h.position === hole.position);
+		holeNumber = holesOnThisWall!.indexOf(hole); //!
 	}
 
 	onMount(() => {

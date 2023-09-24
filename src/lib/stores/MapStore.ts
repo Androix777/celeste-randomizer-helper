@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { writable } from 'svelte/store';
+import { writable, get, type Writable } from 'svelte/store';
 
 export enum WallPosition {
 	UP = 'up',
@@ -37,32 +37,88 @@ export type LinkData = {
 	difficulty: Difficulty;
 };
 
-type HolesStoreType = HoleData[];
-type LinksStoreType = LinkData[];
+export type RoomData = {
+	id: string;
+	holes: HoleData[];
+	links: LinkData[];
+};
 
-const createHolesStore = () => {
-	const { subscribe, set, update } = writable<HolesStoreType>([]);
+export type MapData = {
+	id: string;
+	rooms: RoomData[];
+};
+
+function createMapStore(defaultRoomIdStore: Writable<string>) {
+	const { subscribe, set, update } = writable<MapData>({
+		id: uuidv4(),
+		rooms: [{ id: uuidv4(), holes: [], links: [] }]
+	});
 
 	return {
 		subscribe,
-		addHole: (hole: Omit<HoleData, 'id'>) => {
-			const id = uuidv4();
-			update((holes) => [...holes, { id, ...hole }]);
-		},
-		removeHole: (id: string) => {
-			update((holes) => holes.filter((hole) => hole.id !== id));
+		set,
+		update,
 
-			selectedHoleStart.update((startId) => (startId === id ? '' : startId));
-			selectedHoleFinish.update((finishId) => (finishId === id ? '' : finishId));
-			linksStore.removeLinksByHoleId(id);
+		addRoom: (room: Omit<RoomData, 'id'>) => {
+			const id = uuidv4();
+			update((map) => {
+				map.rooms.push({ id, ...room });
+				return map;
+			});
 		},
-		updateHole: (updatedHole: HoleData) => {
-			update((holes) => holes.map((hole) => (hole.id === updatedHole.id ? updatedHole : hole)));
+		removeRoom: (id: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				map.rooms = map.rooms.filter((room) => room.id !== id);
+				return map;
+			});
 		},
-		getHole: (id: string, holesStore: HolesStoreType | null = null): HoleData => {
+		getRoom: (
+			roomId: string = get(defaultRoomIdStore),
+			mapData: MapData | null = null
+		): RoomData => {
+			let room: RoomData | undefined;
+			subscribe((map) => {
+				room = map.rooms.find((r) => r.id === roomId);
+			})();
+
+			if (room === undefined) {
+				throw new Error(`Room is undefined`);
+			}
+
+			return room;
+		},
+		updateRoom: (updatedRoom: RoomData) => {
+			update((map) => {
+				map.rooms = map.rooms.map((room) => (room.id === updatedRoom.id ? updatedRoom : room));
+				return map;
+			});
+		},
+		clearMap: () => {
+			update(() => {
+				return { id: uuidv4(), rooms: [] };
+			});
+		},
+		addHole: (hole: Omit<HoleData, 'id'>, roomId: string = get(defaultRoomIdStore)) => {
+			const id = uuidv4();
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.holes.push({ id, ...hole });
+				}
+				return map;
+			});
+		},
+		getHole: (
+			holeId: string,
+			roomId: string = get(defaultRoomIdStore),
+			mapData: MapData | null = null
+		): HoleData => {
 			let hole: HoleData | undefined;
-			subscribe((holes) => {
-				hole = holes.find((h) => h.id === id);
+			subscribe((map) => {
+				const room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					hole = room.holes.find((h) => h.id === holeId);
+				}
 			})();
 
 			if (hole === undefined) {
@@ -71,36 +127,60 @@ const createHolesStore = () => {
 
 			return hole;
 		},
-		clear: () => {
-			set([]);
-			selectedHoleStart.set('');
-			selectedHoleFinish.set('');
-			linksStore.clear();
-		}
-	};
-};
-
-const createLinksStore = () => {
-	const { subscribe, set, update } = writable<LinksStoreType>([]);
-
-	return {
-		subscribe,
-		addLink: (link: Omit<LinkData, 'id'>) => {
+		updateHole: (updatedHole: HoleData, roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.holes = room.holes.map((hole) => (hole.id === updatedHole.id ? updatedHole : hole));
+				}
+				return map;
+			});
+		},
+		removeHole: (holeId: string, roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.holes = room.holes.filter((h) => h.id !== holeId);
+					room.links = room.links.filter((l) => l.idStart !== holeId && l.idFinish !== holeId);
+				}
+				return map;
+			});
+		},
+		addLink: (link: Omit<LinkData, 'id'>, roomId: string = get(defaultRoomIdStore)) => {
 			const id = uuidv4();
-			update((links) => [...links, { id, ...link }]);
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.links.push({ id, ...link });
+				}
+				return map;
+			});
 		},
-		removeLink: (id: string) => {
-			update((links) => links.filter((link) => link.id !== id));
+		updateLink: (updatedLink: LinkData, roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.links = room.links.map((link) => (link.id === updatedLink.id ? updatedLink : link));
+				}
+				return map;
+			});
 		},
-		removeLinksByHoleId: (holeId: string) => {
-			update((links) =>
-				links.filter((link) => link.idStart !== holeId && link.idFinish !== holeId)
-			);
+		removeLink: (linkId: string, roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.links = room.links.filter((l) => l.id !== linkId);
+				}
+				return map;
+			});
 		},
-		getLink: (id: string, linksStore: LinksStoreType | null = null): LinkData => {
+		getLink: (linkId: string, roomId: string = get(defaultRoomIdStore)): LinkData => {
 			let link: LinkData | undefined;
-			subscribe((links) => {
-				link = links.find((l) => l.id === id);
+			subscribe((map) => {
+				const room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					link = room.links.find((l) => l.id === linkId);
+				}
 			})();
 
 			if (link === undefined) {
@@ -109,15 +189,53 @@ const createLinksStore = () => {
 
 			return link;
 		},
-		clear: () => {
-			set([]);
+		clearRoom: (roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.holes = [];
+					room.links = [];
+				}
+				return map;
+			});
 		}
 	};
-};
+}
+
+export const roomName = writable<string>('');
+
+export const selectedRoom = writable<string>('');
+export const mapStore = createMapStore(selectedRoom);
+selectedRoom.set(get(mapStore).rooms[0].id);
 
 export const selectedHoleStart = writable<string>('');
 export const selectedHoleFinish = writable<string>('');
-export const roomName = writable<string>('');
 
-export const linksStore = createLinksStore();
-export const holesStore = createHolesStore();
+const updateHandler = () => updateStores();
+
+mapStore.subscribe(updateStores);
+selectedHoleStart.subscribe(updateStores);
+selectedHoleFinish.subscribe(updateStores);
+selectedRoom.subscribe(updateHandler);
+
+function updateStores() {
+	const map = get(mapStore);
+	const currentRoomId = get(selectedRoom);
+	const currentHoleStartId = get(selectedHoleStart);
+	const currentHoleFinishId = get(selectedHoleFinish);
+
+	const currentRoom = map.rooms.find((room) => room.id === currentRoomId);
+
+	if (!currentRoom) {
+		selectedRoom.set('');
+		selectedHoleStart.set('');
+		selectedHoleFinish.set('');
+	} else {
+		if (!currentRoom.holes.some((hole) => hole.id === currentHoleStartId)) {
+			selectedHoleStart.set('');
+		}
+		if (!currentRoom.holes.some((hole) => hole.id === currentHoleFinishId)) {
+			selectedHoleFinish.set('');
+		}
+	}
+}

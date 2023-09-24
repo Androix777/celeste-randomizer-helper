@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, Textarea, Label } from 'flowbite-svelte';
 	import { getYaml } from '../YamlGenerator';
-	import { holesStore } from '../stores/MapStore';
+	import { mapStore } from '../stores/MapStore';
 
 	let generatedYaml: string = '';
 
@@ -10,7 +10,7 @@
 	}
 
 	function clearAll(event: Event) {
-		holesStore.clear();
+		mapStore.clearRoom();
 	}
 </script>
 
