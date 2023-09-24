@@ -1,21 +1,22 @@
 <script>
-	import { Accordion, AccordionItem } from 'flowbite-svelte';
+	import { Tabs, TabItem } from 'flowbite-svelte';
 	import LinkEditor from './LinkEditor.svelte';
 	import ConfigurationCreatorPanel from './ConfigurationCreatorPanel.svelte';
 	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
+	import MapLoennDataLoaderPanel from './MapLoennDataLoaderPanel.svelte';
 </script>
 
-<Accordion>
-	<AccordionItem>
-		<span slot="header">Adding links</span>
+<Tabs>
+	<TabItem open title="Links">
 		<LinkEditor />
-	</AccordionItem>
-	<AccordionItem>
-		<span slot="header">Room settings</span>
+	</TabItem>
+	<TabItem title="Settings">
 		<RoomSettingsPanel />
-	</AccordionItem>
-	<AccordionItem>
-		<span slot="header">Creating yaml configuration</span>
+	</TabItem>
+	<TabItem title="Yaml">
 		<ConfigurationCreatorPanel />
-	</AccordionItem>
-</Accordion>
+	</TabItem>
+	<TabItem title="Loenn data">
+		<MapLoennDataLoaderPanel />
+	</TabItem>
+</Tabs>

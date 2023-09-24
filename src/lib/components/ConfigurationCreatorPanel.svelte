@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button, Textarea, Label, Input } from 'flowbite-svelte';
+	import { Button, Textarea, Label } from 'flowbite-svelte';
 	import { getYaml } from '../YamlGenerator';
 	import { holesStore } from '../stores/HolesStore';
 
