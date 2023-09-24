@@ -4,6 +4,7 @@
 	import ConfigurationCreatorPanel from './ConfigurationCreatorPanel.svelte';
 	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
 	import MapLoennDataLoaderPanel from './MapLoennDataLoaderPanel.svelte';
+	import RoomsList from './RoomsList.svelte';
 </script>
 
 <Tabs>
@@ -18,5 +19,8 @@
 	</TabItem>
 	<TabItem title="Import Loenn data">
 		<MapLoennDataLoaderPanel />
+	</TabItem>
+	<TabItem title="Rooms">
+		<RoomsList />
 	</TabItem>
 </Tabs>

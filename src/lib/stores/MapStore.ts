@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { writable, get, type Writable } from 'svelte/store';
+import type { MapLoennData } from '$lib/LoennDataParser';
 
 export enum WallPosition {
 	UP = 'up',
@@ -39,6 +40,7 @@ export type LinkData = {
 
 export type RoomData = {
 	id: string;
+	name: string;
 	holes: HoleData[];
 	links: LinkData[];
 };
@@ -51,7 +53,7 @@ export type MapData = {
 function createMapStore(defaultRoomIdStore: Writable<string>) {
 	const { subscribe, set, update } = writable<MapData>({
 		id: uuidv4(),
-		rooms: [{ id: uuidv4(), holes: [], links: [] }]
+		rooms: [{ id: uuidv4(), name: 'name', holes: [], links: [] }]
 	});
 
 	return {
@@ -79,13 +81,17 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 			let room: RoomData | undefined;
 			subscribe((map) => {
 				room = map.rooms.find((r) => r.id === roomId);
+				if (room === undefined) {
+					if (map.rooms.length == 0) {
+						throw new Error(`Room is undefined`);
+					} else {
+						defaultRoomIdStore.set(map.rooms[0].id);
+						room = map.rooms[0];
+					}
+				}
 			})();
 
-			if (room === undefined) {
-				throw new Error(`Room is undefined`);
-			}
-
-			return room;
+			return room!;
 		},
 		updateRoom: (updatedRoom: RoomData) => {
 			update((map) => {
@@ -93,10 +99,16 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				return map;
 			});
 		},
-		clearMap: () => {
-			update(() => {
-				return { id: uuidv4(), rooms: [] };
-			});
+		clearMap: (isFullClear: boolean = false) => {
+			if (isFullClear) {
+				update(() => {
+					return { id: uuidv4(), rooms: [] };
+				});
+			} else {
+				update(() => {
+					return { id: uuidv4(), rooms: [{ id: uuidv4(), name: 'name', holes: [], links: [] }] };
+				});
+			}
 		},
 		addHole: (hole: Omit<HoleData, 'id'>, roomId: string = get(defaultRoomIdStore)) => {
 			const id = uuidv4();
@@ -202,7 +214,40 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 	};
 }
 
-export const roomName = writable<string>('');
+export function ImportLoennData(loennData: MapLoennData) {
+	const tempRooms: RoomData[] = [];
+
+	loennData.rooms.forEach((roomLoennData, index) => {
+		const roomId = uuidv4(); // Generate a unique id for the room
+
+		// Create the room
+		const roomData: RoomData = {
+			id: roomId,
+			name: roomLoennData.name,
+			holes: [],
+			links: []
+		};
+
+		Object.entries(roomLoennData.wallHoles).forEach(([holePosition, holeCount], holeIndex) => {
+			// Add holes to the room
+			for (let i = 0; i < holeCount; i++) {
+				roomData.holes.push({
+					id: uuidv4(), // Generate a unique id for the hole
+					position: holePosition as WallPosition,
+					name: `hole${holeIndex + 1}`
+				});
+			}
+		});
+
+		tempRooms.push(roomData);
+	});
+
+	// Now trigger the store update
+	mapStore.update((mapData) => {
+		mapData.rooms = tempRooms;
+		return mapData;
+	});
+}
 
 export const selectedRoom = writable<string>('');
 export const mapStore = createMapStore(selectedRoom);

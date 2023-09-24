@@ -1,5 +1,5 @@
 import { parse } from 'lua-json';
-import { WallPosition } from './stores/MapStore';
+import { ImportLoennData, WallPosition } from './stores/MapStore';
 
 export type MapLoennData = {
 	rooms: RoomLoennData[];
@@ -11,7 +11,8 @@ export type RoomLoennData = {
 	bg: string[][];
 	height: number;
 	width: number;
-
+	height2: number;
+	width2: number;
 	wallHoles: Record<WallPosition, number>;
 };
 
@@ -20,6 +21,8 @@ export function parseData(data: string) {
 	let newData: MapLoennData = getMapLoennData(parsedData);
 	calculateHoles(newData);
 	console.log(newData);
+
+	ImportLoennData(newData);
 }
 
 function getMapLoennData(rawData: any): MapLoennData {
@@ -52,8 +55,10 @@ function getMapLoennData(rawData: any): MapLoennData {
 				name: level.name,
 				solids: solids,
 				bg: bg,
-				height: height,
-				width: width,
+				height: level.height,
+				width: level.width,
+				height2: height,
+				width2: width,
 				wallHoles: {}
 			};
 		});
@@ -73,7 +78,7 @@ function calculateHoles(loennData: MapLoennData) {
 		};
 
 		// Check top and bottom walls
-		[room.solids[0], room.solids[room.height - 1]].forEach((wall, index) => {
+		[room.solids[0], room.solids[room.height2 - 1]].forEach((wall, index) => {
 			let isHole = false;
 			wall.forEach((cell) => {
 				if (cell === '0') {

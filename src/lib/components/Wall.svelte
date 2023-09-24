@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { mapStore, WallPosition } from '../stores/MapStore';
+	import { mapStore, WallPosition, selectedRoom } from '../stores/MapStore';
 	import Hole from './Hole.svelte';
 	import { Button } from 'flowbite-svelte';
 
 	export let wallPosition: WallPosition;
 
 	$: holes = mapStore
-		.getRoom(undefined, $mapStore)
+		.getRoom($selectedRoom, $mapStore)
 		.holes.filter((hole) => hole.position === wallPosition);
 
 	function addHole() {
