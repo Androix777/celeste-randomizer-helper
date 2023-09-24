@@ -1,12 +1,16 @@
 <script lang="ts">
 	import { Button, Textarea, Label, Input } from 'flowbite-svelte';
 	import { getYaml } from './YamlGenerator';
-	import { roomName } from './HolesStore';
+	import { roomName, holesStore } from './HolesStore';
 
 	let generatedYaml: string = '';
 
 	function generate(event: Event) {
 		generatedYaml = getYaml();
+	}
+
+	function clearAll(event: Event) {
+		holesStore.clear();
 	}
 </script>
 
@@ -20,4 +24,6 @@
 	<Textarea id="yaml-textarea" class="mb-6" rows="20" placeholder="yaml" bind:value={generatedYaml} />
 </div>
 
-<Button on:click={generate}>Generate</Button>
+<Button class="mb-6" on:click={generate}>Generate</Button>
+<br>
+<Button on:click={clearAll}>Reset all</Button>

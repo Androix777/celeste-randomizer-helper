@@ -41,7 +41,7 @@ type HolesStoreType = HoleData[];
 type LinksStoreType = LinkData[];
 
 const createHolesStore = () => {
-	const { subscribe, update } = writable<HolesStoreType>([]);
+	const { subscribe, set, update } = writable<HolesStoreType>([]);
 
 	return {
 		subscribe,
@@ -70,12 +70,18 @@ const createHolesStore = () => {
 			}
 
 			return hole;
-		}
+		},
+		clear: () => {
+			set([]);
+			selectedHoleStart.set('');
+			selectedHoleFinish.set('');
+			linksStore.clear();
+		},
 	};
 };
 
 const createLinksStore = () => {
-	const { subscribe, update } = writable<LinksStoreType>([]);
+	const { subscribe, set, update } = writable<LinksStoreType>([]);
 
 	return {
 		subscribe,
@@ -102,7 +108,10 @@ const createLinksStore = () => {
 			}
 
 			return link;
-		}
+		},
+		clear: () => {
+			set([]);
+		},
 	};
 };
 

@@ -105,5 +105,9 @@ export function getYaml() {
 		]
 	};
 
-	return stringify(roomData).replace(/'/g, '');
+	let yamlData = stringify(roomData);
+	yamlData = yamlData.replace(/'/g, '');
+	yamlData = yamlData.substring(yamlData.indexOf("\n") + 1)
+
+	return yamlData;
 }
