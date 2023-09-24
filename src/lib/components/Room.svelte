@@ -4,7 +4,8 @@
 	import { writable } from 'svelte/store';
 	import Wall from './Wall.svelte';
 	import LinksDrawer from './LinksDrawer.svelte';
-	import { WallPosition } from '$lib/stores/HolesStore';
+	import { WallPosition } from '$lib/stores/MapStore';
+	import RoomCanvas from './RoomCanvas.svelte';
 
 	let holeElements = writable<{ [key: string]: HTMLElement }>({});
 	setContext(HOLE_ELEMENTS, holeElements);

@@ -12,7 +12,7 @@
 		selectedHoleStart,
 		selectedHoleFinish,
 		type HoleData
-	} from '../stores/HolesStore';
+	} from '../stores/MapStore';
 	import type { Writable } from 'svelte/store';
 
 	export let hole: HoleData;

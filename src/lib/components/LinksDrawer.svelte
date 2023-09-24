@@ -9,7 +9,7 @@
 		Difficulty,
 		Dashes,
 		WallPosition
-	} from '$lib/stores/HolesStore';
+	} from '$lib/stores/MapStore';
 	import type { Writable } from 'svelte/store';
 	import LeaderLine from 'leader-line-new';
 	import type { SocketType } from 'leader-line-new';

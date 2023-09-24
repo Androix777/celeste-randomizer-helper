@@ -13,10 +13,10 @@
 	<TabItem title="Settings">
 		<RoomSettingsPanel />
 	</TabItem>
-	<TabItem title="Yaml">
+	<TabItem title="Export Yaml">
 		<ConfigurationCreatorPanel />
 	</TabItem>
-	<TabItem title="Loenn data">
+	<TabItem title="Import Loenn data">
 		<MapLoennDataLoaderPanel />
 	</TabItem>
 </Tabs>

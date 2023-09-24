@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { roomName } from '../stores/HolesStore';
+	import { roomName } from '../stores/MapStore';
 	import { Label, Input } from 'flowbite-svelte';
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { holesStore, WallPosition } from '../stores/HolesStore';
+	import { holesStore, WallPosition } from '../stores/MapStore';
 	import Hole from './Hole.svelte';
 	import { Button } from 'flowbite-svelte';
 
