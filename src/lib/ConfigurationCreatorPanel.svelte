@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, Textarea, Label, Input } from 'flowbite-svelte';
 	import { getYaml } from './YamlGenerator';
-	import { roomName, holesStore } from './HolesStore';
+	import { holesStore } from './HolesStore';
 
 	let generatedYaml: string = '';
 
@@ -15,15 +15,16 @@
 </script>
 
 <div class="mb-6">
-	<Label for="room-input" class="block mb-2">Room name</Label>
-	<Input id="room-input" placeholder="" bind:value={$roomName} />
-</div>
-
-<div class="mb-6">
 	<Label for="yaml-textarea" class="block mb-2">Generated yaml</Label>
-	<Textarea id="yaml-textarea" class="mb-6" rows="20" placeholder="yaml" bind:value={generatedYaml} />
+	<Textarea
+		id="yaml-textarea"
+		class="mb-6"
+		rows="20"
+		placeholder="yaml"
+		bind:value={generatedYaml}
+	/>
 </div>
 
 <Button class="mb-6" on:click={generate}>Generate</Button>
-<br>
+<br />
 <Button on:click={clearAll}>Reset all</Button>

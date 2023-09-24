@@ -47,12 +47,7 @@
 <div class="link-editor">
 	<div class="mb-4">
 		<Label for="dashes-select" class="block mb-2">Dashes</Label>
-		<Select
-			id="dashes-select"
-			placeholder=""
-			items={dashes}
-			bind:value={selectedDashes}
-		/>
+		<Select id="dashes-select" placeholder="" items={dashes} bind:value={selectedDashes} />
 	</div>
 
 	<div class="mb-4">
@@ -64,6 +59,6 @@
 			bind:value={selectedDifficulty}
 		/>
 	</div>
-	
+
 	<Button on:click={createLink}>Add link</Button>
 </div>

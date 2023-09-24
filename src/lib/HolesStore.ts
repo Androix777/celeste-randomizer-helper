@@ -76,7 +76,7 @@ const createHolesStore = () => {
 			selectedHoleStart.set('');
 			selectedHoleFinish.set('');
 			linksStore.clear();
-		},
+		}
 	};
 };
 
@@ -111,7 +111,7 @@ const createLinksStore = () => {
 		},
 		clear: () => {
 			set([]);
-		},
+		}
 	};
 };
 
