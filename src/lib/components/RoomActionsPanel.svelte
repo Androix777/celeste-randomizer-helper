@@ -1,8 +1,8 @@
 <script>
 	import { Accordion, AccordionItem } from 'flowbite-svelte';
 	import LinkEditor from './LinkEditor.svelte';
-	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
 	import ConfigurationCreatorPanel from './ConfigurationCreatorPanel.svelte';
+	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
 </script>
 
 <Accordion>

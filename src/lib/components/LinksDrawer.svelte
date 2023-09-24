@@ -9,11 +9,11 @@
 		Difficulty,
 		Dashes,
 		WallPosition
-	} from '$lib/HolesStore';
+	} from '$lib/stores/HolesStore';
 	import type { Writable } from 'svelte/store';
 	import LeaderLine from 'leader-line-new';
 	import type { SocketType } from 'leader-line-new';
-	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
+	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import chroma from 'chroma-js';
 
 	interface Lines {

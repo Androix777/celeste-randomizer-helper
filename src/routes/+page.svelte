@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DarkMode } from 'flowbite-svelte';
-	import Room from '../lib/Room.svelte';
-	import RoomActionsPanel from '$lib/RoomActionsPanel.svelte';
+	import Room from '../lib/components/Room.svelte';
+	import RoomActionsPanel from '$lib/components/RoomActionsPanel.svelte';
 </script>
 
 <div class="grid grid-cols-2 w-screen h-screen">

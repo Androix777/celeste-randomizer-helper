@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
+	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import { setContext } from 'svelte';
+	import { writable } from 'svelte/store';
 	import Wall from './Wall.svelte';
 	import LinksDrawer from './LinksDrawer.svelte';
-	import { WallPosition } from './HolesStore';
-	import { writable } from 'svelte/store';
+	import { WallPosition } from '$lib/stores/HolesStore';
 
 	let holeElements = writable<{ [key: string]: HTMLElement }>({});
 	setContext(HOLE_ELEMENTS, holeElements);

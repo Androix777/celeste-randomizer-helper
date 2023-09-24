@@ -1,5 +1,5 @@
-import { holesStore, linksStore, WallPosition, roomName } from './HolesStore';
-import type { HoleData, LinkData } from './HolesStore';
+import { holesStore, linksStore, WallPosition, roomName } from './stores/HolesStore';
+import type { HoleData, LinkData } from './stores/HolesStore';
 import { get } from 'svelte/store';
 import { stringify } from 'yaml';
 

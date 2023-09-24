@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button, Textarea, Label, Input } from 'flowbite-svelte';
-	import { getYaml } from './YamlGenerator';
-	import { holesStore } from './HolesStore';
+	import { getYaml } from '../YamlGenerator';
+	import { holesStore } from '../stores/HolesStore';
 
 	let generatedYaml: string = '';
 

@@ -7,7 +7,7 @@
 		linksStore,
 		Dashes,
 		Difficulty
-	} from '$lib/HolesStore';
+	} from '$lib/stores/HolesStore';
 
 	$: holeStart =
 		$selectedHoleStart != '' ? holesStore.getHole($selectedHoleStart, $holesStore) : undefined;

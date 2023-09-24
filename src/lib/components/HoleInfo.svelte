@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { holesStore, type HoleData } from './HolesStore';
+	import { holesStore, type HoleData } from '../stores/HolesStore';
 
 	export let hole: HoleData | null;
 

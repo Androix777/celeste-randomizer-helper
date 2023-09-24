@@ -5,9 +5,9 @@
 		ArrowUpFromBracketOutline,
 		TrashBinOutline
 	} from 'flowbite-svelte-icons';
-	import { HOLE_ELEMENTS, FOCUSED_HOLE } from './ContextConstants';
+	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import { getContext, onMount, onDestroy } from 'svelte';
-	import { holesStore, selectedHoleStart, selectedHoleFinish, type HoleData } from './HolesStore';
+	import { holesStore, selectedHoleStart, selectedHoleFinish, type HoleData } from '../stores/HolesStore';
 	import type { Writable } from 'svelte/store';
 
 	export let hole: HoleData;
