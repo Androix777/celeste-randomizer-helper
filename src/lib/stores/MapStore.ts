@@ -138,6 +138,52 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 
 			return hole;
 		},
+		getHoleID: (
+			holeId: string,
+			roomId: string = get(defaultRoomIdStore),
+			mapData: MapData | null = null
+		): number => {
+			let holeIndex: number | undefined;
+			subscribe((map) => {
+				const room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					const holesOnTheWall = room.holes.filter(
+						(h) => h.position === room.holes.find((h) => h.id === holeId)?.position
+					);
+					holeIndex = holesOnTheWall.findIndex((h) => h.id === holeId);
+				}
+			})();
+
+			if (holeIndex === undefined || holeIndex === -1) {
+				throw new Error(`Hole is undefined`);
+			}
+
+			return holeIndex;
+		},
+		getHoleName: (
+			holeId: string,
+			roomId: string = get(defaultRoomIdStore),
+			mapData: MapData | null = null
+		): string => {
+			let holeName: string | undefined;
+			subscribe((map) => {
+				const room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					const selectedHole = room.holes.find((h) => h.id === holeId);
+					if (selectedHole) {
+						const holesOnTheWall = room.holes.filter((h) => h.position === selectedHole.position);
+						const holeIndex = holesOnTheWall.findIndex((h) => h.id === holeId);
+						holeName = `${selectedHole.position} ${holeIndex}`;
+					}
+				}
+			})();
+
+			if (!holeName) {
+				throw new Error(`Hole is undefined`);
+			}
+
+			return holeName;
+		},
 		updateHole: (updatedHole: HoleData, roomId: string = get(defaultRoomIdStore)) => {
 			update((map) => {
 				let room = map.rooms.find((r) => r.id === roomId);

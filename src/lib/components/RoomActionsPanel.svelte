@@ -5,11 +5,13 @@
 	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
 	import MapLoennDataLoaderPanel from './MapLoennDataLoaderPanel.svelte';
 	import RoomsList from './RoomsList.svelte';
+	import LinksList from './LinksList.svelte';
 </script>
 
 <Tabs>
 	<TabItem open title="Links">
 		<LinkEditor />
+		<LinksList />
 	</TabItem>
 	<TabItem title="Settings">
 		<RoomSettingsPanel />

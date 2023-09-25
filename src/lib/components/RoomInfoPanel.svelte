@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { RoomData } from '../stores/MapStore';
+	import { mapStore, type RoomData } from '../stores/MapStore';
 	import { P, Button, Card } from 'flowbite-svelte';
 	import { selectedRoom } from '../stores/MapStore';
 
@@ -7,6 +7,10 @@
 
 	function openRoom() {
 		selectedRoom.set(room.id);
+	}
+
+	function deleteRoom() {
+		mapStore.removeRoom(room.id);
 	}
 </script>
 
@@ -18,6 +22,6 @@
 	</div>
 	<div class="mb-4 flex space-x-4">
 		<Button on:click={openRoom}>Open</Button>
-		<Button color="red" on:click={openRoom}>Delete</Button>
+		<Button color="red" on:click={deleteRoom}>Delete</Button>
 	</div>
 </Card>
