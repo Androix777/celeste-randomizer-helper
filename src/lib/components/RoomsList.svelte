@@ -5,8 +5,10 @@
 	$: rooms = $mapStore.rooms;
 </script>
 
-<div>
+<div class="overflow-scroll" style="max-height: 800px">
 	{#each Object.values(rooms) as room (room.id)}
-		<RoomInfoPanel {room} />
+		<div class="mb-4">
+			<RoomInfoPanel {room} />
+		</div>
 	{/each}
 </div>

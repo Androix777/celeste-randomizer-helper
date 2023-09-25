@@ -41,6 +41,8 @@ export type LinkData = {
 export type RoomData = {
 	id: string;
 	name: string;
+	isEnabled: boolean;
+	solids?: string[][];
 	holes: HoleData[];
 	links: LinkData[];
 };
@@ -53,7 +55,7 @@ export type MapData = {
 function createMapStore(defaultRoomIdStore: Writable<string>) {
 	const { subscribe, set, update } = writable<MapData>({
 		id: uuidv4(),
-		rooms: [{ id: uuidv4(), name: 'name', holes: [], links: [] }]
+		rooms: [{ id: uuidv4(), name: 'name', isEnabled: true, holes: [], links: [] }]
 	});
 
 	return {
@@ -99,16 +101,13 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				return map;
 			});
 		},
-		clearMap: (isFullClear: boolean = false) => {
-			if (isFullClear) {
-				update(() => {
-					return { id: uuidv4(), rooms: [] };
-				});
-			} else {
-				update(() => {
-					return { id: uuidv4(), rooms: [{ id: uuidv4(), name: 'name', holes: [], links: [] }] };
-				});
-			}
+		clearMap: () => {
+			update(() => {
+				return {
+					id: uuidv4(),
+					rooms: [{ id: uuidv4(), name: 'name', isEnabled: true, holes: [], links: [] }]
+				};
+			});
 		},
 		addHole: (hole: Omit<HoleData, 'id'>, roomId: string = get(defaultRoomIdStore)) => {
 			const id = uuidv4();
@@ -218,21 +217,21 @@ export function ImportLoennData(loennData: MapLoennData) {
 	const tempRooms: RoomData[] = [];
 
 	loennData.rooms.forEach((roomLoennData, index) => {
-		const roomId = uuidv4(); // Generate a unique id for the room
+		const roomId = uuidv4();
 
-		// Create the room
 		const roomData: RoomData = {
 			id: roomId,
 			name: roomLoennData.name,
+			isEnabled: true,
+			solids: roomLoennData.solids,
 			holes: [],
 			links: []
 		};
 
 		Object.entries(roomLoennData.wallHoles).forEach(([holePosition, holeCount], holeIndex) => {
-			// Add holes to the room
 			for (let i = 0; i < holeCount; i++) {
 				roomData.holes.push({
-					id: uuidv4(), // Generate a unique id for the hole
+					id: uuidv4(),
 					position: holePosition as WallPosition,
 					name: `hole${holeIndex + 1}`
 				});
@@ -242,7 +241,6 @@ export function ImportLoennData(loennData: MapLoennData) {
 		tempRooms.push(roomData);
 	});
 
-	// Now trigger the store update
 	mapStore.update((mapData) => {
 		mapData.rooms = tempRooms;
 		return mapData;

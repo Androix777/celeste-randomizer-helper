@@ -5,6 +5,9 @@
 	import Wall from './Wall.svelte';
 	import LinksDrawer from './LinksDrawer.svelte';
 	import { WallPosition } from '$lib/stores/MapStore';
+	import RoomCanvas from './RoomCanvas.svelte';
+
+	import { mapStore, selectedRoom } from '$lib/stores/MapStore';
 
 	let holeElements = writable<{ [key: string]: HTMLElement }>({});
 	setContext(HOLE_ELEMENTS, holeElements);
@@ -13,7 +16,13 @@
 	setContext(FOCUSED_HOLE, focusedHole);
 
 	let wallsPositions = [WallPosition.UP, WallPosition.DOWN, WallPosition.LEFT, WallPosition.RIGHT];
+
+	$: currentRoom = mapStore.getRoom($selectedRoom);
 </script>
+
+<div class="absolute" style="height: 700px; width: 700px;">
+	<RoomCanvas room={currentRoom} />
+</div>
 
 <div class="room">
 	<LinksDrawer />

@@ -1,89 +1,57 @@
 <script lang="ts">
+	import type { RoomData } from '$lib/stores/MapStore';
 	import { onMount, afterUpdate } from 'svelte';
+
+	export let room: RoomData;
+	export let color: string = '#000000';
+	export let backgroundColor: string = '#FFFFFF';
+
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
-	let width = 70;
-	let height = 23;
-	let data =
-		'00000000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n00000000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n00000000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n000000000AAAAAAAAA000000000AAAAAAAAA00000AAAAA0AAAAAAAAAAAAAAAAAAAAAAA\n0000000000AAAAAAA00000000000AAAAAAA0000000000000AAAAAAAAAAAAAAAAAAAAAA\n00000000000AAAAAA000000000000AAAAA000000000000000AAA000AAAAAAAAAAAAAAA\n000000000000AA0AA0000000000000AAAA00000000000000000000000AAAAAAAAAA\n000000000000000000000000000000AAAA0000000000000000000000000AAAAAA\n000000000000000000000000000000AAAA00000000000000000000000000AAAA\n000000000000000000000000000000AAAA00000000000000000000000000AAAA\n000000000000000000000000000000AAAA00000000000000000000000000AAAA\nAAA000000000000000000000000000000000000000000000000000000000AAAAA\nAAAAAA000000000000000CCC0000000000000000CCC00000000000000000AAAAA\nAAAAAA000000000000000CCC0000000000000000CCC0000000000000000AAAAAAA\nAAAAAAA0000000000000CCCC000000000000000CCCC00000000AAAAAAAAAAAAAAAAAAA\nAAAAAAAA000000000000CCCCC00000000000000CCCC00000000AAAAAAAAAAAAAAAAAAA\nAAAAAAAA000000000000CCCCC00000000000000CCCAAA0000AAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAA0000AAAAACCC00000000000000CCCAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAA000000000000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAA0000000AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+	let cellSize: number;
 
-	function drawMatrix() {
+	onMount(() => {
 		ctx = canvas.getContext('2d');
-		if (ctx === null) {
-			console.error('Failed to get 2d context');
-			return;
-		}
-		let rows = data.split('\n');
-		let matrix = rows.map((row) => row.split(''));
+		drawRoom();
+	});
 
-		// Добавляем нулевые строки в конце
-		while (matrix.length < height) {
-			matrix.push(new Array(width).fill('0'));
-		}
+	afterUpdate(drawRoom);
 
-		matrix = matrix.map((row) => {
-			// Добавляем нулевые столбцы справа
-			while (row.length < width) {
-				row.push('0');
-			}
-			return row;
-		});
+	function fitToContainer() {
+		canvas.style.width = '100%';
+		canvas.style.height = '100%';
+		canvas.width = canvas.offsetWidth;
+		canvas.height = canvas.offsetHeight;
+	}
 
-		let cellWidth = Math.floor(canvas.width / width);
-		let cellHeight = Math.floor(canvas.height / height);
+	function drawRoom() {
+		if (!room.solids || !ctx) return;
+
+		fitToContainer();
+
+		const roomWidth = room.solids[0]?.length || 0;
+		const roomHeight = room.solids.length;
+
+		cellSize = Math.round(Math.min(canvas.width / roomWidth, canvas.height / roomHeight));
+
+		const offsetX = Math.round((canvas.width - cellSize * roomWidth) / 2);
+		const offsetY = Math.round((canvas.height - cellSize * roomHeight) / 2);
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		matrix.forEach((row, rowIndex) => {
-			row.forEach((cell, colIndex) => {
-				ctx!.fillStyle = cell === '0' ? 'white' : 'black';
-				ctx!.fillRect(
-					Math.floor(colIndex * cellWidth),
-					Math.floor(rowIndex * cellHeight),
-					cellWidth,
-					cellHeight
-				);
-			});
-		});
-	}
+		ctx.fillStyle = backgroundColor;
+		ctx.fillRect(offsetX, offsetY, cellSize * roomWidth, cellSize * roomHeight);
 
-	onMount(() => {
-		drawMatrix();
-	});
+		ctx.fillStyle = color;
 
-	afterUpdate(() => {
-		drawMatrix();
-	});
-
-	$: {
-		if (canvas) {
-			let canvasRatio = width / height;
-			let containerRatio = 1;
-			let scale = canvasRatio > containerRatio ? 700 / width : 700 / height;
-			canvas.width = scale * width;
-			canvas.height = scale * height;
-			drawMatrix();
+		for (let y = 0; y < room.solids.length; y++) {
+			for (let x = 0; x < room.solids[y].length; x++) {
+				if (room.solids[y][x] !== '0') {
+					ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+				}
+			}
 		}
 	}
 </script>
 
-<div class="room-canvas">
-	<canvas bind:this={canvas} />
-</div>
-
-<style>
-	.room-canvas {
-		grid-area: 2 / 2 / 3 / 3;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 700px;
-		height: 700px;
-		overflow: hidden;
-	}
-
-	canvas {
-		max-width: 100%;
-		max-height: 100%;
-	}
-</style>
+<canvas bind:this={canvas} />
