@@ -8,10 +8,6 @@
 	function generate(event: Event) {
 		generatedYaml = getYaml();
 	}
-
-	function clearAll(event: Event) {
-		mapStore.clearRoom();
-	}
 </script>
 
 <div class="mb-6">
@@ -20,5 +16,3 @@
 </div>
 
 <Button class="mb-6" on:click={generate}>Generate</Button>
-<br />
-<Button on:click={clearAll}>Reset all</Button>

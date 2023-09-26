@@ -77,8 +77,8 @@
 				end: $holeElements[$selectedHoleFinish],
 				startSocket: socketMap[mapStore.getHole($selectedHoleStart).position],
 				endSocket: socketMap[mapStore.getHole($selectedHoleFinish).position],
-				color: 'rgba(255, 255, 255, 0.2)',
-				size: 20
+				color: 'rgba(0, 255, 0, 0.3)',
+				size: 25
 			});
 		}
 	}
