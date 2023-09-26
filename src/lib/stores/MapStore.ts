@@ -73,6 +73,9 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 		removeRoom: (id: string = get(defaultRoomIdStore)) => {
 			update((map) => {
 				map.rooms = map.rooms.filter((room) => room.id !== id);
+				if (map.rooms.length == 0) {
+					map.rooms = [{ id: uuidv4(), name: 'name', isEnabled: true, holes: [], links: [] }];
+				}
 				return map;
 			});
 		},
@@ -316,7 +319,7 @@ function updateStores() {
 	const currentRoom = map.rooms.find((room) => room.id === currentRoomId);
 
 	if (!currentRoom) {
-		selectedRoom.set('');
+		selectedRoom.set(map.rooms[0].id);
 		selectedHoleStart.set('');
 		selectedHoleFinish.set('');
 	} else {

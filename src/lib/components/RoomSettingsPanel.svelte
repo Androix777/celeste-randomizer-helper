@@ -4,7 +4,7 @@
 
 	$: roomName = mapStore.getRoom(undefined, $mapStore).name;
 
-	$: {
+	function updateRoomName() {
 		let newRoom = { ...mapStore.getRoom(undefined, $mapStore), name: roomName };
 		mapStore.updateRoom(newRoom);
 	}
@@ -12,5 +12,5 @@
 
 <div class="mb-6">
 	<Label for="room-input" class="block mb-2">Room name</Label>
-	<Input id="room-input" placeholder="" bind:value={roomName} />
+	<Input id="room-input" placeholder="" bind:value={roomName} on:input={updateRoomName} />
 </div>
