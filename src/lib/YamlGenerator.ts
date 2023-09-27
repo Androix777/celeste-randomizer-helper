@@ -1,13 +1,9 @@
-import { mapStore, WallPosition } from './stores/MapStore';
-import type { HoleData, LinkData } from './stores/MapStore';
-import { get } from 'svelte/store';
+import { WallPosition } from './stores/MapStore';
+import type { HoleData, LinkData, MapData, RoomData } from './stores/MapStore';
 import { stringify } from 'yaml';
 
-let holes = getHoles();
-let links = getLinks();
-
-function getHoles() {
-	const holes = mapStore.getRoom().holes;
+function getHoles(room: RoomData) {
+	const holes = room.holes;
 
 	const wallIndices: Record<WallPosition, number> = {
 		[WallPosition.UP]: 0,
@@ -30,8 +26,8 @@ function getHoles() {
 	return holeDict;
 }
 
-function getLinks() {
-	return mapStore.getRoom().links;
+function getLinks(room: RoomData) {
+	return room.links;
 }
 
 function getKind(links: LinkData[], holeId: string) {
@@ -49,7 +45,11 @@ function getRoomId(hole: HoleData & { index: number }) {
 	return `"${hole.position}_${hole.index}"`;
 }
 
-function getInternalEdges(links: LinkData[], hole: HoleData & { index: number }) {
+function getInternalEdges(
+	links: LinkData[],
+	hole: HoleData & { index: number },
+	holes: Record<string, HoleData & { index: number }>
+) {
 	const linksForHole = links.filter((link) => link.idStart === hole.id);
 
 	if (linksForHole.length === 0) return null;
@@ -77,12 +77,12 @@ function getInternalEdges(links: LinkData[], hole: HoleData & { index: number })
 	});
 }
 
-export function getYaml() {
-	holes = getHoles();
-	links = getLinks();
+export function GetRoomData(room: RoomData) {
+	let holes = getHoles(room);
+	let links = getLinks(room);
 
 	const subroomsData = Object.values(holes).map((hole) => {
-		const internalEdges = getInternalEdges(links, hole);
+		const internalEdges = getInternalEdges(links, hole, holes);
 		return {
 			Room: getRoomId(hole),
 			Holes: [
@@ -97,17 +97,32 @@ export function getYaml() {
 	});
 
 	const roomData = {
-		ASide: [
-			{
-				Room: `"${mapStore.getRoom().name}"`,
-				Subrooms: subroomsData
-			}
-		]
+		Room: `"${room.name}"`,
+		Subrooms: subroomsData
 	};
 
-	let yamlData = stringify(roomData);
+	return roomData;
+}
+
+export function convertRoomToYaml(room: RoomData) {
+	const allRoomsData = {
+		ASide: [GetRoomData(room)]
+	};
+
+	let yamlData = stringify(allRoomsData);
 	yamlData = yamlData.replace(/'/g, '');
-	yamlData = yamlData.substring(yamlData.indexOf('\n') + 1);
+
+	return yamlData;
+}
+
+export function convertAllRoomsToYaml(mapData: MapData) {
+	const allRoomsYaml = mapData.rooms.map((room) => GetRoomData(room));
+	const allRoomsData = {
+		ASide: allRoomsYaml
+	};
+
+	let yamlData = stringify(allRoomsData);
+	yamlData = yamlData.replace(/'/g, '');
 
 	return yamlData;
 }
