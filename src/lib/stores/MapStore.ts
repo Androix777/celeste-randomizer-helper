@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { writable, get, type Writable } from 'svelte/store';
-import type { MapLoennData } from '$lib/LoennDataParser';
+import type { MapLoennData } from '$lib/LoennImport';
 
 export enum WallPosition {
 	UP = 'up',

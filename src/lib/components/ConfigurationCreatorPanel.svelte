@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Textarea, Label } from 'flowbite-svelte';
-	import { convertRoomToYaml, convertAllRoomsToYaml } from '../YamlGenerator';
+	import { convertRoomToYaml, convertAllRoomsToYaml } from '../YamlExport';
 	import { mapStore } from '../stores/MapStore';
 
 	let generatedYaml: string = '';

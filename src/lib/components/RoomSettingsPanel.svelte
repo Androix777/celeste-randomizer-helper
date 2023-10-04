@@ -2,7 +2,7 @@
 	import { mapStore, setWallHoles } from '../stores/MapStore';
 	import { Label, Input, Button } from 'flowbite-svelte';
 
-	$: roomName = mapStore.getRoom(undefined, $mapStore).name;
+	let roomName = mapStore.getRoom(undefined, $mapStore).name;
 
 	function updateRoomName() {
 		let newRoom = { ...mapStore.getRoom(undefined, $mapStore), name: roomName };

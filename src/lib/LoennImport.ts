@@ -16,7 +16,8 @@ export type RoomLoennData = {
 	wallHoles: Record<WallPosition, number>;
 };
 
-export function parseData(data: string) {
+export function importLoenn(data: string) {
+	if(data == "") return;
 	let parsedData: any = parse('return ' + data);
 	let newData: MapLoennData = getMapLoennData(parsedData);
 	calculateHoles(newData);
