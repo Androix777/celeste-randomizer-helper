@@ -6,9 +6,7 @@
 
 <div class="grid grid-cols-2 w-screen h-screen">
 	<div class="col-span-1">
-		<div class="flex items-start justify-start">
-			<DarkMode />
-		</div>
+		<div class="flex items-start justify-start" />
 		<div class="flex items-center justify-center">
 			<Room />
 		</div>

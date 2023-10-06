@@ -59,7 +59,11 @@ function getInternalEdges(
 		const otherRoomId = getRoomId(otherHole);
 
 		if (!acc[otherRoomId]) {
-			acc[otherRoomId] = { To: otherRoomId, ReqOut: { Difficulty: "easy", Or: [] }, ReqIn: { Difficulty: "easy", Or: [] } };
+			acc[otherRoomId] = {
+				To: otherRoomId,
+				ReqOut: { Difficulty: 'easy', Or: [] },
+				ReqIn: { Difficulty: 'easy', Or: [] }
+			};
 		}
 
 		acc[otherRoomId].ReqOut.Or.push({
@@ -120,7 +124,9 @@ export function convertRoomToYaml(room: RoomData) {
 }
 
 export function convertAllRoomsToYaml(mapData: MapData) {
-	const allRoomsYaml = mapData.rooms.map((room) => GetRoomData(room)).filter(room => room !== null);;
+	const allRoomsYaml = mapData.rooms
+		.map((room) => GetRoomData(room))
+		.filter((room) => room !== null);
 	const allRoomsData = {
 		ASide: allRoomsYaml
 	};

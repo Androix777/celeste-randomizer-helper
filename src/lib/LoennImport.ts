@@ -17,11 +17,10 @@ export type RoomLoennData = {
 };
 
 export function importLoenn(data: string) {
-	if(data == "") return;
+	if (data == '') return;
 	let parsedData: any = parse('return ' + data);
 	let newData: MapLoennData = getMapLoennData(parsedData);
 	calculateHoles(newData);
-	console.log(newData);
 
 	ImportLoennData(newData);
 }

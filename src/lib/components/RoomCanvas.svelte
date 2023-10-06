@@ -25,7 +25,10 @@
 	}
 
 	function drawRoom() {
-		if (!room.solids || !ctx) return;
+		if (!room.solids || !ctx) {
+			clearCanvas();
+			return;
+		}
 
 		fitToContainer();
 
@@ -66,6 +69,12 @@
 					);
 				}
 			}
+		}
+	}
+
+	function clearCanvas() {
+		if (ctx) {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}
 	}
 </script>
