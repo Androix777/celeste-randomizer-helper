@@ -7,11 +7,11 @@
 <div class="grid grid-cols-2 w-screen h-screen">
 	<div class="col-span-1">
 		<div class="flex items-start justify-start" />
-		<div class="flex items-center justify-center">
+		<div class="flex items-center justify-center mt-5">
 			<Room />
 		</div>
 	</div>
-	<div class="col-span-1">
+	<div class="col-span-1 mt-5">
 		<RoomActionsPanel />
 	</div>
 </div>

@@ -9,7 +9,7 @@
 </script>
 
 <Tabs>
-	<TabItem title="Import">
+	<TabItem open title="Import">
 		<ImportPanel />
 	</TabItem>
 	<TabItem title="Rooms">
@@ -18,7 +18,7 @@
 	<TabItem title="Room settings">
 		<RoomSettingsPanel />
 	</TabItem>
-	<TabItem open title="Links">
+	<TabItem title="Links">
 		<LinkEditor />
 		<LinksList />
 	</TabItem>
