@@ -10,10 +10,10 @@ export type RoomLoennData = {
 	solids: string[][];
 	bg: string[][];
 	collectables: CollectableLoennData[];
+	realHeight: number;
+	realWidth: number;
 	height: number;
 	width: number;
-	height2: number;
-	width2: number;
 	wallHoles: Record<WallPosition, number>;
 };
 
@@ -83,10 +83,10 @@ function getMapLoennData(rawData: any): MapLoennData {
 				solids: solids,
 				bg: bg,
 				collectables: collectables,
-				height: level.height,
-				width: level.width,
-				height2: height,
-				width2: width,
+				realHeight: level.height,
+				realWidth: level.width,
+				height: height,
+				width: width,
 				wallHoles: {
 					[WallPosition.UP]: 0,
 					[WallPosition.DOWN]: 0,
@@ -113,7 +113,7 @@ function calculateHoles(loennData: MapLoennData) {
 		};
 
 		// Check top and bottom walls
-		[room.solids[0], room.solids[room.height2 - 1]].forEach((wall, index) => {
+		[room.solids[0], room.solids[room.height - 1]].forEach((wall, index) => {
 			let isHole = false;
 			wall.forEach((cell) => {
 				if (cell === '0') {

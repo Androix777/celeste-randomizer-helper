@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { RoomData } from '$lib/stores/MapStore';
+	import { CollectableType, type RoomData } from '$lib/stores/MapStore';
 	import { onMount, afterUpdate } from 'svelte';
 
 	export let room: RoomData;
@@ -69,6 +69,19 @@
 					);
 				}
 			}
+		}
+
+		for (const collectable of room.loennData.collectables) {
+			const x = collectable.x / 8;
+			const y = collectable.y / 8;
+
+			if (collectable.collectableType === CollectableType.STRAWBERRY) {
+				ctx.fillStyle = 'red';
+			} else if (collectable.collectableType === CollectableType.KEY) {
+				ctx.fillStyle = 'yellow';
+			}
+
+			ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
 		}
 	}
 
