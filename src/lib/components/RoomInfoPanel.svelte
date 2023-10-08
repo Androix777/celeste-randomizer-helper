@@ -26,7 +26,7 @@
 		<Button color="red" on:click={deleteRoom}>Delete</Button>
 	</div>
 	<div
-		class="absolute left-96 top-1/2 transform -translate-y-1/2"
+		class="absolute left-56 top-1/2 transform -translate-y-1/2"
 		style="height: 128px; width: 750px;"
 	>
 		<RoomCanvas {room} backgroundColor="#6B7280" color="black" />
