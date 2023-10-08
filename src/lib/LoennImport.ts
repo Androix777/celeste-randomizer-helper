@@ -1,5 +1,5 @@
 import { parse } from 'lua-json';
-import { ImportLoennData, WallPosition } from './stores/MapStore';
+import { ImportLoennData, WallPosition, CollectableType } from './stores/MapStore';
 
 export type MapLoennData = {
 	rooms: RoomLoennData[];
@@ -9,6 +9,7 @@ export type RoomLoennData = {
 	name: string;
 	solids: string[][];
 	bg: string[][];
+	collectables: CollectableLoennData[];
 	height: number;
 	width: number;
 	height2: number;
@@ -16,12 +17,19 @@ export type RoomLoennData = {
 	wallHoles: Record<WallPosition, number>;
 };
 
+export type CollectableLoennData = {
+	loennID: number;
+	collectableType: CollectableType;
+	x: number;
+	y: number;
+};
+
 export function importLoenn(data: string) {
 	if (data == '') return;
 	let parsedData: any = parse('return ' + data);
 	let newData: MapLoennData = getMapLoennData(parsedData);
 	calculateHoles(newData);
-
+	console.log(newData);
 	ImportLoennData(newData);
 }
 
@@ -31,10 +39,13 @@ function getMapLoennData(rawData: any): MapLoennData {
 		.__children.map((level: any) => {
 			const rawSolids = level.__children.find((child: any) => child.__name === 'solids').innerText;
 			const rawBg = level.__children.find((child: any) => child.__name === 'bg').innerText;
+			const rawEntities =
+				level.__children.find((child: any) => child.__name === 'entities').__children || {};
 
 			const width = Math.floor(level.width / 8);
 			const height = Math.floor(level.height / 8);
 
+			//solids
 			let solids: string[][] = rawSolids.split('\n').map((row: string) => {
 				return row.padEnd(width, '0').split('');
 			});
@@ -43,6 +54,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 				solids.push(Array(width).fill('0'));
 			}
 
+			//bg
 			let bg: string[][] = rawBg.split('\n').map((row: string) => {
 				return row.padEnd(width, '0').split('');
 			});
@@ -51,16 +63,39 @@ function getMapLoennData(rawData: any): MapLoennData {
 				bg.push(Array(width).fill('0'));
 			}
 
-			return {
+			//entities
+			let collectables: CollectableLoennData[] = [];
+			rawEntities.forEach((entity: any) => {
+				if (['key', 'strawberry'].includes(entity.__name)) {
+					const newCollectable: CollectableLoennData = {
+						loennID: entity.id,
+						collectableType:
+							entity.__name == 'key' ? CollectableType.KEY : CollectableType.STRAWBERRY,
+						x: entity.x,
+						y: entity.y
+					};
+					collectables.push(newCollectable);
+				}
+			});
+
+			const newRoomLoennData: RoomLoennData = {
 				name: level.name,
 				solids: solids,
 				bg: bg,
+				collectables: collectables,
 				height: level.height,
 				width: level.width,
 				height2: height,
 				width2: width,
-				wallHoles: {}
+				wallHoles: {
+					[WallPosition.UP]: 0,
+					[WallPosition.DOWN]: 0,
+					[WallPosition.LEFT]: 0,
+					[WallPosition.RIGHT]: 0
+				}
 			};
+
+			return newRoomLoennData;
 		});
 
 	return {

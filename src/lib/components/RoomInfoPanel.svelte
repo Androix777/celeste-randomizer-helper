@@ -20,6 +20,7 @@
 		<P>{room.name}</P>
 		<P>Holes: {room.holes.length}</P>
 		<P>Links: {room.links.length}</P>
+		<P>Collectables: {room.loennData?.collectables.length}</P>
 	</div>
 	<div class="mb-4 flex space-x-4">
 		<Button on:click={openRoom}>Open</Button>

@@ -9,6 +9,11 @@ export enum WallPosition {
 	RIGHT = 'right'
 }
 
+export enum CollectableType {
+	STRAWBERRY,
+	KEY
+}
+
 export enum Dashes {
 	ZERO = 'zero',
 	ONE = 'one',
