@@ -29,11 +29,8 @@ export function importYaml(rawData: string) {
 
 				let newRoom: RoomData = {
 					id: roomData ? roomData.id : uuidv4(),
-					solids: roomData ? roomData.solids : undefined,
-					calculatedWallHoles: roomData ? roomData.calculatedWallHoles : undefined,
 					name: room.Room,
 					isEnabled: true,
-					isImported: true,
 					holes: [],
 					links: []
 				};

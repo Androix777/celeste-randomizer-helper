@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { writable, get, type Writable } from 'svelte/store';
-import type { MapLoennData } from '$lib/LoennImport';
+import type { MapLoennData, RoomLoennData } from '$lib/LoennImport';
 
 export enum WallPosition {
 	UP = 'up',
@@ -42,11 +42,9 @@ export type RoomData = {
 	id: string;
 	name: string;
 	isEnabled: boolean;
-	solids?: string[][];
-	calculatedWallHoles?: Record<WallPosition, number>;
-	isImported: boolean;
 	holes: HoleData[];
 	links: LinkData[];
+	loennData?: RoomLoennData;
 };
 
 export type MapData = {
@@ -57,9 +55,7 @@ export type MapData = {
 function createMapStore(defaultRoomIdStore: Writable<string>) {
 	const { subscribe, set, update } = writable<MapData>({
 		id: uuidv4(),
-		rooms: [
-			{ id: uuidv4(), name: 'name', isEnabled: true, isImported: false, holes: [], links: [] }
-		]
+		rooms: [{ id: uuidv4(), name: 'new-room', isEnabled: true, holes: [], links: [] }]
 	});
 
 	return {
@@ -78,9 +74,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 			update((map) => {
 				map.rooms = map.rooms.filter((room) => room.id !== id);
 				if (map.rooms.length == 0) {
-					map.rooms = [
-						{ id: uuidv4(), name: 'name', isEnabled: true, isImported: false, holes: [], links: [] }
-					];
+					map.rooms = [{ id: uuidv4(), name: 'new-room', isEnabled: true, holes: [], links: [] }];
 				}
 				return map;
 			});
@@ -280,11 +274,9 @@ export function ImportLoennData(loennData: MapLoennData) {
 			id: roomId,
 			name: roomLoennData.name,
 			isEnabled: true,
-			isImported: true,
-			calculatedWallHoles: roomLoennData.wallHoles,
-			solids: roomLoennData.solids,
 			holes: [],
-			links: []
+			links: [],
+			loennData: roomLoennData
 		};
 
 		setWallHoles(roomData);
@@ -299,9 +291,9 @@ export function ImportLoennData(loennData: MapLoennData) {
 }
 
 export function setWallHoles(roomData: RoomData) {
-	if (!roomData.calculatedWallHoles) return;
+	if (!roomData.loennData) return;
 
-	Object.entries(roomData.calculatedWallHoles).forEach(([holePosition, holeCount], holeIndex) => {
+	Object.entries(roomData.loennData.wallHoles).forEach(([holePosition, holeCount], holeIndex) => {
 		for (let i = 0; i < holeCount; i++) {
 			roomData.holes.push({
 				id: uuidv4(),

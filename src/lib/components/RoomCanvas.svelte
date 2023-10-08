@@ -25,15 +25,15 @@
 	}
 
 	function drawRoom() {
-		if (!room.solids || !ctx) {
+		if (!room.loennData || !ctx) {
 			clearCanvas();
 			return;
 		}
 
 		fitToContainer();
 
-		const roomWidth = room.solids[0]?.length || 0;
-		const roomHeight = room.solids.length;
+		const roomWidth = room.loennData.solids[0]?.length || 0;
+		const roomHeight = room.loennData.solids.length;
 
 		cellSize = Math.round(Math.min(canvas.width / roomWidth, canvas.height / roomHeight));
 		let detailLevel = 1;
@@ -58,9 +58,9 @@
 
 		ctx.fillStyle = color;
 
-		for (let y = 0; y < room.solids.length; y++) {
-			for (let x = 0; x < room.solids[y].length; x++) {
-				if (room.solids[y][x] !== '0' && x % detailLevel == 0 && y % detailLevel == 0) {
+		for (let y = 0; y < room.loennData.solids.length; y++) {
+			for (let x = 0; x < room.loennData.solids[y].length; x++) {
+				if (room.loennData.solids[y][x] !== '0' && x % detailLevel == 0 && y % detailLevel == 0) {
 					ctx.fillRect(
 						offsetX + (x / detailLevel) * cellSize,
 						offsetY + (y / detailLevel) * cellSize,

@@ -6,7 +6,8 @@ Application for fast creation of yaml configurations for [Celeste Randomizer](ht
 
 # Creating and editing configurations
 
-Loenn map data and an existing yaml configuration can be loaded to create the configuration. 
+Loenn map data and an existing yaml configuration can be loaded to create the configuration.
+
 - To load Loenn map data, you need to use [Loenn script](Loenn/copyMap.lua). This will allow the application to automatically place holes in rooms and read other information.
 - Currently the application supports only loading yaml configurations made in Celeste randomizer helper.
 

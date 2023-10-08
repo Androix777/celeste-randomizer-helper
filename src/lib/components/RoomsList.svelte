@@ -9,7 +9,6 @@
 		mapStore.addRoom({
 			name: 'NewRoom',
 			isEnabled: true,
-			isImported: false,
 			holes: [],
 			links: []
 		});
