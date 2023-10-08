@@ -30,6 +30,6 @@
 		class="absolute left-56 top-1/2 transform -translate-y-1/2"
 		style="height: 128px; width: 750px;"
 	>
-		<RoomCanvas {room} backgroundColor="#6B7280" color="black" />
+		<RoomCanvas {room} startColor="#6B7280" solidColor="black" bgColor="#585e6a" />
 	</div>
 </Card>

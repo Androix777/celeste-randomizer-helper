@@ -39,8 +39,9 @@ function getMapLoennData(rawData: any): MapLoennData {
 		.__children.map((level: any) => {
 			const rawSolids = level.__children.find((child: any) => child.__name === 'solids').innerText;
 			const rawBg = level.__children.find((child: any) => child.__name === 'bg').innerText;
-			const rawEntities =
-				level.__children.find((child: any) => child.__name === 'entities').__children || {};
+			const rawEntities = level.__children.find(
+				(child: any) => child.__name === 'entities'
+			)?.__children;
 
 			const width = Math.floor(level.width / 8);
 			const height = Math.floor(level.height / 8);
@@ -65,18 +66,20 @@ function getMapLoennData(rawData: any): MapLoennData {
 
 			//entities
 			let collectables: CollectableLoennData[] = [];
-			rawEntities.forEach((entity: any) => {
-				if (['key', 'strawberry'].includes(entity.__name)) {
-					const newCollectable: CollectableLoennData = {
-						loennID: entity.id,
-						collectableType:
-							entity.__name == 'key' ? CollectableType.KEY : CollectableType.STRAWBERRY,
-						x: entity.x,
-						y: entity.y
-					};
-					collectables.push(newCollectable);
-				}
-			});
+			if (rawEntities != undefined) {
+				rawEntities.forEach((entity: any) => {
+					if (['key', 'strawberry'].includes(entity.__name)) {
+						const newCollectable: CollectableLoennData = {
+							loennID: entity.id,
+							collectableType:
+								entity.__name == 'key' ? CollectableType.KEY : CollectableType.STRAWBERRY,
+							x: entity.x,
+							y: entity.y
+						};
+						collectables.push(newCollectable);
+					}
+				});
+			}
 
 			const newRoomLoennData: RoomLoennData = {
 				name: level.name,

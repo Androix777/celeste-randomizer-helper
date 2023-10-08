@@ -3,8 +3,9 @@
 	import { onMount, afterUpdate } from 'svelte';
 
 	export let room: RoomData;
-	export let color: string = '#cd523d';
-	export let backgroundColor: string = '#FFFFFF';
+	export let solidColor: string = '#cd523d';
+	export let startColor: string = '#FFFFFF';
+	export let bgColor: string = '#18202a';
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null;
@@ -40,7 +41,6 @@
 		if (cellSize === 0) {
 			detailLevel = Math.ceil(Math.max(roomWidth / canvas.width, roomHeight / canvas.height));
 			cellSize = 1;
-			console.log(detailLevel);
 		}
 
 		const offsetX = Math.round((canvas.width - (cellSize * roomWidth) / detailLevel) / 2);
@@ -48,7 +48,8 @@
 
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		ctx.fillStyle = backgroundColor;
+		// start
+		ctx.fillStyle = startColor;
 		ctx.fillRect(
 			offsetX,
 			offsetY,
@@ -56,8 +57,23 @@
 			(cellSize * roomHeight) / detailLevel
 		);
 
-		ctx.fillStyle = color;
+		// bg
+		ctx.fillStyle = bgColor;
+		for (let y = 0; y < room.loennData.bg.length; y++) {
+			for (let x = 0; x < room.loennData.bg[y].length; x++) {
+				if (room.loennData.bg[y][x] !== '0' && x % detailLevel == 0 && y % detailLevel == 0) {
+					ctx.fillRect(
+						offsetX + (x / detailLevel) * cellSize,
+						offsetY + (y / detailLevel) * cellSize,
+						cellSize,
+						cellSize
+					);
+				}
+			}
+		}
 
+		// solids
+		ctx.fillStyle = solidColor;
 		for (let y = 0; y < room.loennData.solids.length; y++) {
 			for (let x = 0; x < room.loennData.solids[y].length; x++) {
 				if (room.loennData.solids[y][x] !== '0' && x % detailLevel == 0 && y % detailLevel == 0) {
@@ -71,6 +87,7 @@
 			}
 		}
 
+		// collectables
 		for (const collectable of room.loennData.collectables) {
 			const x = collectable.x / 8;
 			const y = collectable.y / 8;

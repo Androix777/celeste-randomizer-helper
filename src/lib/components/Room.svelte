@@ -21,7 +21,7 @@
 </script>
 
 <div class="absolute" style="height: 700px; width: 700px;">
-	<RoomCanvas room={currentRoom} backgroundColor="#1F2937" color="#030712" />
+	<RoomCanvas room={currentRoom} startColor="#1F2937" solidColor="#030712" />
 </div>
 
 <div class="room">
