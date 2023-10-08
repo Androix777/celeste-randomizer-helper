@@ -36,6 +36,21 @@ export type HoleData = {
 	name: string;
 };
 
+export type CollectableData = {
+	id: string;
+	collectableType: CollectableType;
+	links: CollectableLinkData[];
+};
+
+export type CollectableLinkData = {
+	holeID: string;
+	dashesIn: Dashes;
+	difficultyIn: Difficulty;
+	isOnlyIn: boolean;
+	dashesOut: Dashes;
+	difficultyOut: Difficulty;
+};
+
 export type LinkData = {
 	id: string;
 	idStart: string;
@@ -50,6 +65,7 @@ export type RoomData = {
 	isEnabled: boolean;
 	holes: HoleData[];
 	links: LinkData[];
+	collectables: CollectableData[];
 	loennData?: RoomLoennData;
 };
 
@@ -61,7 +77,9 @@ export type MapData = {
 function createMapStore(defaultRoomIdStore: Writable<string>) {
 	const { subscribe, set, update } = writable<MapData>({
 		id: uuidv4(),
-		rooms: [{ id: uuidv4(), name: 'new-room', isEnabled: true, holes: [], links: [] }]
+		rooms: [
+			{ id: uuidv4(), name: 'new-room', isEnabled: true, holes: [], links: [], collectables: [] }
+		]
 	});
 
 	return {
@@ -88,7 +106,16 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 			update((map) => {
 				map.rooms = map.rooms.filter((room) => room.id !== id);
 				if (map.rooms.length == 0) {
-					map.rooms = [{ id: uuidv4(), name: 'new-room', isEnabled: true, holes: [], links: [] }];
+					map.rooms = [
+						{
+							id: uuidv4(),
+							name: 'new-room',
+							isEnabled: true,
+							holes: [],
+							links: [],
+							collectables: []
+						}
+					];
 				}
 				return map;
 			});
@@ -123,7 +150,15 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				return {
 					id: uuidv4(),
 					rooms: [
-						{ id: uuidv4(), name: 'name', isEnabled: true, isImported: false, holes: [], links: [] }
+						{
+							id: uuidv4(),
+							name: 'name',
+							isEnabled: true,
+							isImported: false,
+							holes: [],
+							links: [],
+							collectables: []
+						}
 					]
 				};
 			});
@@ -234,48 +269,6 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 	};
 }
 
-export function ImportLoennData(loennData: MapLoennData) {
-	const tempRooms: RoomData[] = [];
-
-	loennData.rooms.forEach((roomLoennData, index) => {
-		const roomId = uuidv4();
-
-		const roomData: RoomData = {
-			id: roomId,
-			name: roomLoennData.name,
-			isEnabled: true,
-			holes: [],
-			links: [],
-			loennData: roomLoennData
-		};
-
-		setWallHoles(roomData);
-		recalculateHolesIndexesForRoom(roomData);
-
-		tempRooms.push(roomData);
-	});
-
-	mapStore.update((mapData) => {
-		mapData.rooms = tempRooms;
-		return mapData;
-	});
-}
-
-export function setWallHoles(roomData: RoomData) {
-	if (!roomData.loennData) return;
-
-	Object.entries(roomData.loennData.wallHoles).forEach(([holePosition, holeCount], holeIndex) => {
-		for (let i = 0; i < holeCount; i++) {
-			roomData.holes.push({
-				id: uuidv4(),
-				index: 0,
-				position: holePosition as WallPosition,
-				name: `hole${holeIndex + 1}`
-			});
-		}
-	});
-}
-
 export function recalculateHolesIndexesForRoom(roomData: RoomData): void {
 	const wallIndexCounters: Record<WallPosition, number> = {
 		[WallPosition.UP]: -1,
@@ -329,4 +322,63 @@ function updateStores() {
 			selectedHoleFinish.set('');
 		}
 	}
+}
+
+//Import
+
+export function ImportLoennData(loennData: MapLoennData) {
+	const tempRooms: RoomData[] = [];
+
+	loennData.rooms.forEach((roomLoennData, index) => {
+		const roomId = uuidv4();
+
+		const roomData: RoomData = {
+			id: roomId,
+			name: roomLoennData.name,
+			isEnabled: true,
+			holes: [],
+			links: [],
+			collectables: [],
+			loennData: roomLoennData
+		};
+
+		setWallHolesFromLoennData(roomData);
+		setCollectablesFromLoennData(roomData);
+
+		recalculateHolesIndexesForRoom(roomData);
+
+		tempRooms.push(roomData);
+	});
+
+	mapStore.update((mapData) => {
+		mapData.rooms = tempRooms;
+		return mapData;
+	});
+}
+
+export function setWallHolesFromLoennData(roomData: RoomData) {
+	if (!roomData.loennData) return;
+
+	Object.entries(roomData.loennData.wallHoles).forEach(([holePosition, holeCount], holeIndex) => {
+		for (let i = 0; i < holeCount; i++) {
+			roomData.holes.push({
+				id: uuidv4(),
+				index: 0,
+				position: holePosition as WallPosition,
+				name: `hole${holeIndex + 1}`
+			});
+		}
+	});
+}
+
+export function setCollectablesFromLoennData(roomData: RoomData) {
+	if (!roomData.loennData) return;
+
+	roomData.loennData.collectables.forEach((collectable) => {
+		roomData.collectables.push({
+			id: uuidv4(),
+			collectableType: collectable.collectableType,
+			links: []
+		});
+	});
 }

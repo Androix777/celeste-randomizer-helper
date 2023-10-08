@@ -1,5 +1,9 @@
 <script lang="ts">
-	import { mapStore, setWallHoles } from '../stores/MapStore';
+	import {
+		mapStore,
+		setWallHolesFromLoennData,
+		setCollectablesFromLoennData
+	} from '../stores/MapStore';
 	import { Label, Input, Button } from 'flowbite-svelte';
 
 	let roomName = mapStore.getRoom(undefined, $mapStore).name;
@@ -16,7 +20,8 @@
 	function autoSetHoles(event?: Event) {
 		clearAll();
 		let room = mapStore.getRoom();
-		setWallHoles(room);
+		setWallHolesFromLoennData(room);
+		setCollectablesFromLoennData(room);
 		mapStore.updateRoom(room);
 	}
 </script>
@@ -30,6 +35,6 @@
 		bind:value={roomName}
 		on:input={updateRoomName}
 	/>
-	<Button on:click={autoSetHoles}>Auto set holes</Button>
+	<Button on:click={autoSetHoles}>Auto set loenn data</Button>
 	<Button color="red" on:click={clearAll}>Reset all</Button>
 </div>
