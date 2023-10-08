@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import { writable, get, type Writable } from 'svelte/store';
+import { writable, get, type Writable, type Updater } from 'svelte/store';
 import type { MapLoennData, RoomLoennData } from '$lib/LoennImport';
 
 export enum WallPosition {
@@ -27,6 +27,7 @@ export enum Difficulty {
 export type HoleData = {
 	id: string;
 	position: WallPosition;
+	index: number;
 	name: string;
 };
 
@@ -61,7 +62,15 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 	return {
 		subscribe,
 		set,
-		update,
+		update: (updater: Updater<MapData>) => {
+			return update((state) => {
+				const newState = typeof updater === 'function' ? updater(state) : updater;
+
+				recalculateHolesIndexesForMap(newState);
+
+				return newState;
+			});
+		},
 
 		addRoom: (room: Omit<RoomData, 'id'>) => {
 			const id = uuidv4();
@@ -114,12 +123,13 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				};
 			});
 		},
-		addHole: (hole: Omit<HoleData, 'id'>, roomId: string = get(defaultRoomIdStore)) => {
+		addHole: (hole: Omit<HoleData, 'id' | 'index'>, roomId: string = get(defaultRoomIdStore)) => {
 			const id = uuidv4();
 			update((map) => {
 				let room = map.rooms.find((r) => r.id === roomId);
 				if (room) {
-					room.holes.push({ id, ...hole });
+					room.holes.push({ id, index: 0, ...hole });
+					recalculateHolesIndexesForRoom(room);
 				}
 				return map;
 			});
@@ -143,52 +153,6 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 
 			return hole;
 		},
-		getHoleID: (
-			holeId: string,
-			roomId: string = get(defaultRoomIdStore),
-			mapData: MapData | null = null
-		): number => {
-			let holeIndex: number | undefined;
-			subscribe((map) => {
-				const room = map.rooms.find((r) => r.id === roomId);
-				if (room) {
-					const holesOnTheWall = room.holes.filter(
-						(h) => h.position === room.holes.find((h) => h.id === holeId)?.position
-					);
-					holeIndex = holesOnTheWall.findIndex((h) => h.id === holeId);
-				}
-			})();
-
-			if (holeIndex === undefined || holeIndex === -1) {
-				throw new Error(`Hole is undefined`);
-			}
-
-			return holeIndex;
-		},
-		getHoleName: (
-			holeId: string,
-			roomId: string = get(defaultRoomIdStore),
-			mapData: MapData | null = null
-		): string => {
-			let holeName: string | undefined;
-			subscribe((map) => {
-				const room = map.rooms.find((r) => r.id === roomId);
-				if (room) {
-					const selectedHole = room.holes.find((h) => h.id === holeId);
-					if (selectedHole) {
-						const holesOnTheWall = room.holes.filter((h) => h.position === selectedHole.position);
-						const holeIndex = holesOnTheWall.findIndex((h) => h.id === holeId);
-						holeName = `${selectedHole.position} ${holeIndex}`;
-					}
-				}
-			})();
-
-			if (!holeName) {
-				throw new Error(`Hole is undefined`);
-			}
-
-			return holeName;
-		},
 		updateHole: (updatedHole: HoleData, roomId: string = get(defaultRoomIdStore)) => {
 			update((map) => {
 				let room = map.rooms.find((r) => r.id === roomId);
@@ -204,6 +168,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				if (room) {
 					room.holes = room.holes.filter((h) => h.id !== holeId);
 					room.links = room.links.filter((l) => l.idStart !== holeId && l.idFinish !== holeId);
+					recalculateHolesIndexesForRoom(room);
 				}
 				return map;
 			});
@@ -280,6 +245,7 @@ export function ImportLoennData(loennData: MapLoennData) {
 		};
 
 		setWallHoles(roomData);
+		recalculateHolesIndexesForRoom(roomData);
 
 		tempRooms.push(roomData);
 	});
@@ -297,10 +263,30 @@ export function setWallHoles(roomData: RoomData) {
 		for (let i = 0; i < holeCount; i++) {
 			roomData.holes.push({
 				id: uuidv4(),
+				index: 0,
 				position: holePosition as WallPosition,
 				name: `hole${holeIndex + 1}`
 			});
 		}
+	});
+}
+
+export function recalculateHolesIndexesForRoom(roomData: RoomData): void {
+	const wallIndexCounters: Record<WallPosition, number> = {
+		[WallPosition.UP]: -1,
+		[WallPosition.DOWN]: -1,
+		[WallPosition.LEFT]: -1,
+		[WallPosition.RIGHT]: -1
+	};
+
+	roomData.holes.forEach((hole) => {
+		hole.index = ++wallIndexCounters[hole.position];
+	});
+}
+
+export function recalculateHolesIndexesForMap(mapData: MapData): void {
+	mapData.rooms.forEach((room) => {
+		recalculateHolesIndexesForRoom(room);
 	});
 }
 

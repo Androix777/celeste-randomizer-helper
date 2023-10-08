@@ -12,7 +12,11 @@
 
 <Card class="max-w-none">
 	<div class="mb-4 flex space-x-4">
-		<P>{mapStore.getHoleName(link.idStart)} - {mapStore.getHoleName(link.idFinish)}</P>
+		<P
+			>{mapStore.getHole(link.idStart).position}
+			{mapStore.getHole(link.idStart).index} - {mapStore.getHole(link.idFinish).position}
+			{mapStore.getHole(link.idFinish).index}</P
+		>
 	</div>
 	<div class="mb-4 flex space-x-4">
 		<Button color="red" on:click={deleteLink}>Delete</Button>

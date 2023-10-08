@@ -40,6 +40,7 @@ export function importYaml(rawData: string) {
 						for (const hole of subroom.Holes) {
 							const holeData: HoleData = {
 								id: uuidv4(),
+								index: 0,
 								position: hole.Side as WallPosition,
 								name: subroom.Room
 							};
