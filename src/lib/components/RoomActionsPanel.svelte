@@ -6,6 +6,7 @@
 	import ImportPanel from './ImportPanel.svelte';
 	import RoomsList from './RoomsList.svelte';
 	import LinksList from './LinksList.svelte';
+	import CollectablesList from './CollectablesList.svelte';
 </script>
 
 <Tabs>
@@ -21,6 +22,9 @@
 	<TabItem title="Links">
 		<LinkEditor />
 		<LinksList />
+	</TabItem>
+	<TabItem title="Collectables">
+		<CollectablesList />
 	</TabItem>
 	<TabItem title="Export">
 		<ExportPanel />

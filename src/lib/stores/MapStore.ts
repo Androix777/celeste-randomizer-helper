@@ -10,8 +10,8 @@ export enum WallPosition {
 }
 
 export enum CollectableType {
-	STRAWBERRY,
-	KEY
+	STRAWBERRY = 'strawberry',
+	KEY = 'key'
 }
 
 export enum Dashes {
@@ -38,6 +38,7 @@ export type HoleData = {
 
 export type CollectableData = {
 	id: string;
+	loennID: number;
 	collectableType: CollectableType;
 	links: CollectableLinkData[];
 };
@@ -208,6 +209,11 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				if (room) {
 					room.holes = room.holes.filter((h) => h.id !== holeId);
 					room.links = room.links.filter((l) => l.idStart !== holeId && l.idFinish !== holeId);
+
+					room.collectables.forEach((collectable) => {
+						collectable.links = collectable.links.filter((link) => link.holeID !== holeId);
+					});
+
 					recalculateHolesIndexesForRoom(room);
 				}
 				return map;
@@ -255,6 +261,53 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 			}
 
 			return link;
+		},
+		addCollectable: (
+			collectable: Omit<CollectableData, 'id'>,
+			roomId: string = get(defaultRoomIdStore)
+		) => {
+			const id = uuidv4();
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectables.push({ id, ...collectable });
+				}
+				return map;
+			});
+		},
+		updateCollectable: (
+			updatedCollectable: CollectableData,
+			roomId: string = get(defaultRoomIdStore)
+		) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectables = room.collectables.map((collectable) =>
+						collectable.id === updatedCollectable.id ? updatedCollectable : collectable
+					);
+				}
+				return map;
+			});
+		},
+		removeCollectable: (collectableId: string, roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectables = room.collectables.filter(
+						(collectable) => collectable.id !== collectableId
+					);
+				}
+				return map;
+			});
+		},
+		clearCollectables: (roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectables = [];
+				}
+				return map;
+			});
 		},
 		clearRoom: (roomId: string = get(defaultRoomIdStore)) => {
 			update((map) => {
@@ -377,6 +430,7 @@ export function setCollectablesFromLoennData(roomData: RoomData) {
 	roomData.loennData.collectables.forEach((collectable) => {
 		roomData.collectables.push({
 			id: uuidv4(),
+			loennID: collectable.loennID,
 			collectableType: collectable.collectableType,
 			links: []
 		});

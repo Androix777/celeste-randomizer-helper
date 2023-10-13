@@ -10,7 +10,8 @@
 			name: 'NewRoom',
 			isEnabled: true,
 			holes: [],
-			links: []
+			links: [],
+			collectables: []
 		});
 	}
 </script>
