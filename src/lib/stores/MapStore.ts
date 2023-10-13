@@ -315,6 +315,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				if (room) {
 					room.holes = [];
 					room.links = [];
+					room.collectables = [];
 				}
 				return map;
 			});
