@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { Card, Button, Select, Input, Toggle, Label } from 'flowbite-svelte';
+	import { Card, Button, Select, Toggle, Label } from 'flowbite-svelte';
 	import { Dashes, Difficulty, mapStore } from '../stores/MapStore';
 	import type { CollectableLinkData } from '../stores/MapStore';
 
 	export let link: CollectableLinkData;
 	export let index: number;
 
-	let holes = mapStore.getRoom().holes;
-	let formattedHoles = holes.map((hole) => ({
+	$: formattedHoles = mapStore.getRoom(undefined, $mapStore).holes.map((hole) => ({
 		value: hole.id,
 		name: `${hole.position} - ${hole.index}`
 	}));
@@ -41,7 +40,7 @@
 		/>
 	</div>
 	<div class="flex items-center space-x-2">
-		<Label for={`only-in`}>Only In (bubble):</Label>
+		<Label for={`only-in`}>Only enter (bubble):</Label>
 		<Toggle id={`only-in`} class="mb-2" bind:checked={link.isOnlyIn} />
 	</div>
 	<div class="flex items-center space-x-2">

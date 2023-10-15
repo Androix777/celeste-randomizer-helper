@@ -50,7 +50,10 @@
 		</div>
 		<div class="flex items-center space-x-2">
 			<label for="id-input">ID:</label>
-			<Input id="id-input" class="mb-2" placeholder="id" bind:value={collectable.loennID} />
+			<Input id="id-input" placeholder="id" bind:value={collectable.loennID} />
+		</div>
+		<div class="flex items-center space-x-2">
+			<Button color="red" on:click={deleteCollectable}>Delete Collectable</Button>
 		</div>
 	</div>
 	<div class="mb-4 flex-col space-y-4">
@@ -59,7 +62,5 @@
 			<CollectableLink {link} {index} {deleteLink} />
 		{/each}
 	</div>
-	<div class="mb-4 flex space-x-4">
-		<Button color="red" on:click={deleteCollectable}>Delete Collectable</Button>
-	</div>
+	<div class="mb-4 flex space-x-4" />
 </Card>
