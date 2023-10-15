@@ -1,22 +1,11 @@
-import { WallPosition } from './stores/MapStore';
-import type { HoleData, LinkData, MapData, RoomData } from './stores/MapStore';
+import type { CollectableData, HoleData, LinkData, MapData, RoomData } from './stores/MapStore';
 import { stringify } from 'yaml';
 
 function getHoles(room: RoomData) {
 	const holes = room.holes;
 
-	const wallIndices: Record<WallPosition, number> = {
-		[WallPosition.UP]: 0,
-		[WallPosition.DOWN]: 0,
-		[WallPosition.LEFT]: 0,
-		[WallPosition.RIGHT]: 0
-	};
-
 	const holeDict: Record<string, HoleData> = holes.reduce((acc: Record<string, HoleData>, hole) => {
-		acc[hole.id] = {
-			...hole,
-			index: wallIndices[hole.position]++
-		};
+		acc[hole.id] = hole;
 		return acc;
 	}, {});
 
@@ -40,6 +29,10 @@ function getKind(links: LinkData[], holeId: string) {
 
 function getRoomId(hole: HoleData) {
 	return `"${hole.position}_${hole.index}"`;
+}
+
+function getCollectableRoomId(collectable: CollectableData) {
+	return `"${collectable.collectableType}_${collectable.index}"`;
 }
 
 function getInternalEdges(links: LinkData[], hole: HoleData, holes: Record<string, HoleData>) {
@@ -74,11 +67,60 @@ function getInternalEdges(links: LinkData[], hole: HoleData, holes: Record<strin
 	});
 }
 
+function getCollectableInternalEdges(
+	collectable: CollectableData,
+	holes: Record<string, HoleData>
+) {
+	const collectableLinks = collectable.links;
+
+	if (!collectableLinks || collectableLinks.length === 0) {
+		return null;
+	}
+
+	const groupedLinks = collectableLinks.reduce((acc: any, link) => {
+		const hole = holes[link.holeID];
+		if (!hole) {
+			console.error(`Hole with id ${link.holeID} not found for collectable ${collectable.id}`);
+			return acc;
+		}
+		const roomId = getRoomId(hole);
+
+		if (!acc[roomId]) {
+			acc[roomId] = {
+				To: roomId,
+				ReqIn: { Difficulty: 'easy', Or: [] },
+				ReqOut: { Difficulty: 'easy', Or: [] }
+			};
+		}
+
+		if (!link.isOnlyIn) {
+			acc[roomId].ReqOut.Or.push({
+				Dashes: link.dashesOut,
+				Difficulty: link.difficultyOut
+			});
+		}
+
+		acc[roomId].ReqIn.Or.push({
+			Dashes: link.dashesIn,
+			Difficulty: link.difficultyIn
+		});
+
+		return acc;
+	}, {});
+
+	return Object.values(groupedLinks).map((edge: any) => {
+		if (edge.ReqOut.Or.length === 0) delete edge.ReqOut;
+		if (edge.ReqIn.Or.length === 0) delete edge.ReqIn;
+		return edge;
+	});
+}
+
 export function GetRoomData(room: RoomData) {
 	let holes = getHoles(room);
-	let links = getLinks(room);
+	let links = room.links;
+	let collectables = room.collectables;
 
-	if (!links || links.length === 0) {
+	if (!holes || Object.keys(holes).length === 0) {
 		return null;
 	}
 
@@ -97,11 +139,21 @@ export function GetRoomData(room: RoomData) {
 		};
 	});
 
+	const collectableSubroomsData = Object.values(collectables).map((collectable) => {
+		const internalEdges = getCollectableInternalEdges(collectable, holes);
+		return {
+			Room: getCollectableRoomId(collectable),
+			Collectables: [{ Idx: collectable.index }],
+			InternalEdges: internalEdges ? internalEdges : undefined
+		};
+	});
+
+	const combinedSubrooms = [...subroomsData, ...collectableSubroomsData];
+
 	const roomData = {
 		Room: `"${room.name}"`,
-		Subrooms: subroomsData
+		Subrooms: combinedSubrooms
 	};
-
 	return roomData;
 }
 
