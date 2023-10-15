@@ -19,6 +19,7 @@ export type RoomLoennData = {
 
 export type CollectableLoennData = {
 	loennID: number;
+	index: number;
 	collectableType: CollectableType;
 	x: number;
 	y: number;
@@ -71,6 +72,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 					if (['key', 'strawberry'].includes(entity.__name)) {
 						const newCollectable: CollectableLoennData = {
 							loennID: entity.id,
+							index: 0,
 							collectableType:
 								entity.__name == 'key' ? CollectableType.KEY : CollectableType.STRAWBERRY,
 							x: entity.x,
@@ -80,6 +82,18 @@ function getMapLoennData(rawData: any): MapLoennData {
 					}
 				});
 			}
+
+			collectables.sort((a, b) => {
+				if (a.y === b.y) {
+					return a.x - b.x;
+				} else {
+					return a.y - b.y;
+				}
+			});
+
+			collectables.forEach((collectable, index) => {
+				collectable.index = index;
+			});
 
 			const newRoomLoennData: RoomLoennData = {
 				name: level.name,

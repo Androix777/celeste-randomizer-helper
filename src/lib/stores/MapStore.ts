@@ -38,7 +38,7 @@ export type HoleData = {
 
 export type CollectableData = {
 	id: string;
-	loennID: number;
+	index: number;
 	collectableType: CollectableType;
 	links: CollectableLinkData[];
 };
@@ -431,7 +431,7 @@ export function setCollectablesFromLoennData(roomData: RoomData) {
 	roomData.loennData.collectables.forEach((collectable) => {
 		roomData.collectables.push({
 			id: uuidv4(),
-			loennID: collectable.loennID,
+			index: collectable.index,
 			collectableType: collectable.collectableType,
 			links: []
 		});

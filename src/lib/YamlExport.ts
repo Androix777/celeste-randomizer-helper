@@ -12,16 +12,13 @@ function getHoles(room: RoomData) {
 		[WallPosition.RIGHT]: 0
 	};
 
-	const holeDict: Record<string, HoleData & { index: number }> = holes.reduce(
-		(acc: Record<string, HoleData & { index: number }>, hole) => {
-			acc[hole.id] = {
-				...hole,
-				index: wallIndices[hole.position]++
-			};
-			return acc;
-		},
-		{}
-	);
+	const holeDict: Record<string, HoleData> = holes.reduce((acc: Record<string, HoleData>, hole) => {
+		acc[hole.id] = {
+			...hole,
+			index: wallIndices[hole.position]++
+		};
+		return acc;
+	}, {});
 
 	return holeDict;
 }
@@ -41,15 +38,11 @@ function getKind(links: LinkData[], holeId: string) {
 	return 'none';
 }
 
-function getRoomId(hole: HoleData & { index: number }) {
+function getRoomId(hole: HoleData) {
 	return `"${hole.position}_${hole.index}"`;
 }
 
-function getInternalEdges(
-	links: LinkData[],
-	hole: HoleData & { index: number },
-	holes: Record<string, HoleData & { index: number }>
-) {
+function getInternalEdges(links: LinkData[], hole: HoleData, holes: Record<string, HoleData>) {
 	const linksForHole = links.filter((link) => link.idStart === hole.id);
 
 	if (linksForHole.length === 0) return null;

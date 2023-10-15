@@ -18,10 +18,10 @@
 	function addLink() {
 		let newLink: CollectableLinkData = {
 			holeID: '',
-			dashesIn: Dashes.ONE,
+			dashesIn: Dashes.ZERO,
 			difficultyIn: Difficulty.EASY,
 			isOnlyIn: false,
-			dashesOut: Dashes.ONE,
+			dashesOut: Dashes.ZERO,
 			difficultyOut: Difficulty.EASY
 		};
 
@@ -49,8 +49,8 @@
 			/>
 		</div>
 		<div class="flex items-center space-x-2">
-			<label for="id-input">ID:</label>
-			<Input id="id-input" placeholder="id" bind:value={collectable.loennID} />
+			<label for="index-input">Index:</label>
+			<Input id="index-input" bind:value={collectable.index} />
 		</div>
 		<div class="flex items-center space-x-2">
 			<Button color="red" on:click={deleteCollectable}>Delete Collectable</Button>
