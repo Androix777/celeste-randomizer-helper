@@ -44,10 +44,11 @@ export type CollectableData = {
 };
 
 export type CollectableLinkData = {
-	holeID: string;
+	holeInID: string;
 	dashesIn: Dashes;
 	difficultyIn: Difficulty;
 	isOnlyIn: boolean;
+	holeOutID: string;
 	dashesOut: Dashes;
 	difficultyOut: Difficulty;
 };
@@ -211,7 +212,9 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 					room.links = room.links.filter((l) => l.idStart !== holeId && l.idFinish !== holeId);
 
 					room.collectables.forEach((collectable) => {
-						collectable.links = collectable.links.filter((link) => link.holeID !== holeId);
+						collectable.links = collectable.links.filter(
+							(link) => link.holeInID !== holeId && link.holeOutID !== holeId
+						);
 					});
 
 					recalculateHolesIndexesForRoom(room);

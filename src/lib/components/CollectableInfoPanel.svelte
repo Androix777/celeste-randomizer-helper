@@ -17,10 +17,11 @@
 
 	function addLink() {
 		let newLink: CollectableLinkData = {
-			holeID: '',
+			holeInID: '',
 			dashesIn: Dashes.ZERO,
 			difficultyIn: Difficulty.EASY,
 			isOnlyIn: false,
+			holeOutID: '',
 			dashesOut: Dashes.ZERO,
 			difficultyOut: Difficulty.EASY
 		};

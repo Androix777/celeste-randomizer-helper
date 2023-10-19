@@ -30,18 +30,19 @@
 
 <Card class="mb-2">
 	<div class="flex items-center space-x-2">
-		<Label for={`hole-id`}>Hole ID:</Label>
+		<Label for={`only-in`}>Only enter (bubble):</Label>
+		<Toggle id={`only-in`} class="mb-2" bind:checked={link.isOnlyIn} />
+	</div>
+	<div class="mb-6" />
+	<div class="flex items-center space-x-2">
+		<Label for={`hole-id`}>Hole IN:</Label>
 		<Select
 			id={`hole-id`}
 			class="mb-2"
 			placeholder="Select a hole"
 			items={formattedHoles}
-			bind:value={link.holeID}
+			bind:value={link.holeInID}
 		/>
-	</div>
-	<div class="flex items-center space-x-2">
-		<Label for={`only-in`}>Only enter (bubble):</Label>
-		<Toggle id={`only-in`} class="mb-2" bind:checked={link.isOnlyIn} />
 	</div>
 	<div class="flex items-center space-x-2">
 		<Label for={`dashes-in`}>Dashes In:</Label>
@@ -63,7 +64,18 @@
 			bind:value={link.difficultyIn}
 		/>
 	</div>
+	<div class="mb-6" />
 	{#if !link.isOnlyIn}
+		<div class="flex items-center space-x-2">
+			<Label for={`hole-id`}>Hole OUT:</Label>
+			<Select
+				id={`hole-id`}
+				class="mb-2"
+				placeholder="Select a hole"
+				items={formattedHoles}
+				bind:value={link.holeOutID}
+			/>
+		</div>
 		<div class="flex items-center space-x-2">
 			<Label for={`dashes-out`}>Dashes Out:</Label>
 			<Select
@@ -85,5 +97,6 @@
 			/>
 		</div>
 	{/if}
+	<div class="mb-6" />
 	<Button color="red" on:click={() => deleteLink(index)}>Delete Link</Button>
 </Card>

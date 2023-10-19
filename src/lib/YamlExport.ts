@@ -78,32 +78,60 @@ function getCollectableInternalEdges(
 	}
 
 	const groupedLinks = collectableLinks.reduce((acc: any, link) => {
-		const hole = holes[link.holeID];
-		if (!hole) {
-			console.error(`Hole with id ${link.holeID} not found for collectable ${collectable.id}`);
+		const holeIn = holes[link.holeInID];
+		const holeOut = holes[link.holeOutID];
+		if (!holeIn || !holeOut) {
+			console.error(`Hole not found for collectable ${collectable.id}`);
 			return acc;
 		}
-		const roomId = getRoomId(hole);
+		const roomInId = getRoomId(holeIn);
+		const roomOutId = getRoomId(holeOut);
 
-		if (!acc[roomId]) {
-			acc[roomId] = {
-				To: roomId,
-				ReqIn: { Difficulty: 'easy', Or: [] },
-				ReqOut: { Difficulty: 'easy', Or: [] }
-			};
-		}
+		if (roomInId === roomOutId) {
+			if (!acc[roomInId]) {
+				acc[roomInId] = {
+					To: roomInId,
+					ReqIn: { Difficulty: 'easy', Or: [] },
+					ReqOut: { Difficulty: 'easy', Or: [] }
+				};
+			}
 
-		if (!link.isOnlyIn) {
-			acc[roomId].ReqOut.Or.push({
+			if (!link.isOnlyIn) {
+				acc[roomInId].ReqOut.Or.push({
+					Dashes: link.dashesOut,
+					Difficulty: link.difficultyOut
+				});
+			}
+
+			acc[roomInId].ReqIn.Or.push({
+				Dashes: link.dashesIn,
+				Difficulty: link.difficultyIn
+			});
+		} else {
+			if (!acc[roomInId]) {
+				acc[roomInId] = {
+					To: roomOutId,
+					ReqIn: { Difficulty: 'easy', Or: [] }
+				};
+			}
+
+			if (!acc[roomOutId]) {
+				acc[roomOutId] = {
+					To: roomInId,
+					ReqOut: { Difficulty: 'easy', Or: [] }
+				};
+			}
+
+			acc[roomInId].ReqIn.Or.push({
+				Dashes: link.dashesIn,
+				Difficulty: link.difficultyIn
+			});
+
+			acc[roomOutId].ReqOut.Or.push({
 				Dashes: link.dashesOut,
 				Difficulty: link.difficultyOut
 			});
 		}
-
-		acc[roomId].ReqIn.Or.push({
-			Dashes: link.dashesIn,
-			Difficulty: link.difficultyIn
-		});
 
 		return acc;
 	}, {});
