@@ -47,21 +47,22 @@
 	}
 </script>
 
-<div class="link-editor">
-	<div class="mb-4">
-		<Label for="dashes-select" class="block mb-2">Dashes</Label>
-		<Select id="dashes-select" placeholder="" items={dashes} bind:value={selectedDashes} />
-	</div>
-
-	<div class="mb-4">
-		<Label for="difficulty-select" class="block mb-2">Difficulty</Label>
-		<Select
-			id="difficulty-select"
-			placeholder=""
-			items={difficulties}
-			bind:value={selectedDifficulty}
-		/>
-	</div>
-
-	<Button on:click={createLink}>Add link</Button>
+<div class="link-editor flex items-center mt-3">
+	<Label for="dashes-select" class="mr-2 block">Dashes</Label>
+	<Select
+		id="dashes-select"
+		placeholder=""
+		items={dashes}
+		bind:value={selectedDashes}
+		class="mr-2"
+	/>
+	<Label for="difficulty-select" class="mr-2 block">Difficulty</Label>
+	<Select
+		id="difficulty-select"
+		placeholder=""
+		items={difficulties}
+		bind:value={selectedDifficulty}
+		class="mr-2"
+	/>
+	<Button class="shrink-0" on:click={createLink}>Add link</Button>
 </div>

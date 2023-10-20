@@ -20,11 +20,10 @@
 	$: currentRoom = mapStore.getRoom($selectedRoom);
 </script>
 
-<div class="absolute" style="height: 700px; width: 700px;">
-	<RoomCanvas room={currentRoom} startColor="#1F2937" solidColor="#030712" />
-</div>
-
 <div class="room">
+	<div class="absolute w-full h-full" style="grid-area: 2 / 2 / 3 / 3;">
+		<RoomCanvas room={currentRoom} startColor="#1F2937" solidColor="#030712" />
+	</div>
 	<LinksDrawer />
 	{#each wallsPositions as wallPosition}
 		<Wall {wallPosition} />

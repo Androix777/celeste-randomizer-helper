@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { DarkMode } from 'flowbite-svelte';
 	import Room from '../lib/components/Room.svelte';
 	import RoomActionsPanel from '$lib/components/RoomActionsPanel.svelte';
+	import LinkEditor from '$lib/components/LinkEditor.svelte';
 </script>
 
 <div class="grid grid-cols-2 w-screen h-screen">
-	<div class="col-span-1">
-		<div class="flex items-start justify-start" />
-		<div class="flex items-center justify-center mt-5">
-			<Room />
+	<div class="col-span-1 flex flex-col items-center justify-start">
+		<div class="mb-5" style="width: 700px;">
+			<LinkEditor />
 		</div>
+		<Room />
 	</div>
 	<div class="col-span-1 mt-5">
 		<RoomActionsPanel />

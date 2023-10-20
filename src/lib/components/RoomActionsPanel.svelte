@@ -1,6 +1,5 @@
 <script>
 	import { Tabs, TabItem } from 'flowbite-svelte';
-	import LinkEditor from './LinkEditor.svelte';
 	import ExportPanel from './ExportPanel.svelte';
 	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
 	import ImportPanel from './ImportPanel.svelte';
@@ -20,7 +19,6 @@
 		<RoomSettingsPanel />
 	</TabItem>
 	<TabItem title="Links">
-		<LinkEditor />
 		<LinksList />
 	</TabItem>
 	<TabItem title="Collectables">
