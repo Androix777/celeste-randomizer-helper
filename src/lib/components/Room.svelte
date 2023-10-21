@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
+	import { HOLE_ELEMENTS, FOCUSED_HOLE, COLLECTABLE_ELEMENT } from '../ContextConstants';
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 	import Wall from './Wall.svelte';
@@ -8,9 +8,14 @@
 	import RoomCanvas from './RoomCanvas.svelte';
 
 	import { mapStore, selectedRoom } from '$lib/stores/MapStore';
+	import Collectable from './Collectable.svelte';
+	import LinksCollectablesDrawer from './LinksCollectablesDrawer.svelte';
 
 	let holeElements = writable<{ [key: string]: HTMLElement }>({});
 	setContext(HOLE_ELEMENTS, holeElements);
+
+	let collectableElement = writable<HTMLElement>();
+	setContext(COLLECTABLE_ELEMENT, collectableElement);
 
 	let focusedHole = writable<string>('');
 	setContext(FOCUSED_HOLE, focusedHole);
@@ -25,6 +30,13 @@
 		<RoomCanvas room={currentRoom} startColor="#1F2937" solidColor="#030712" />
 	</div>
 	<LinksDrawer />
+	<LinksCollectablesDrawer />
+	<div
+		class="h-36 w-36 grid place-items-center self-center justify-self-center"
+		style="grid-area: 2 / 2 / 3 / 3;"
+	>
+		<Collectable />
+	</div>
 	{#each wallsPositions as wallPosition}
 		<Wall {wallPosition} />
 	{/each}

@@ -292,6 +292,25 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				return map;
 			});
 		},
+		getCollectable: (
+			collectableID: string,
+			roomId: string = get(defaultRoomIdStore),
+			mapData: MapData | null = null
+		): CollectableData => {
+			let collectable: CollectableData | undefined;
+			subscribe((map) => {
+				const room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					collectable = room.collectables.find((c) => c.id === collectableID);
+				}
+			})();
+
+			if (collectable === undefined) {
+				throw new Error(`Collectable is undefined`);
+			}
+
+			return collectable;
+		},
 		clearCollectables: (roomId: string = get(defaultRoomIdStore)) => {
 			update((map) => {
 				let room = map.rooms.find((r) => r.id === roomId);
@@ -308,6 +327,77 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 					room.holes = [];
 					room.links = [];
 					room.collectables = [];
+				}
+				return map;
+			});
+		},
+		addCollectableLink: (
+			collectableLink: Omit<CollectableLinkData, 'id'>,
+			roomId: string = get(defaultRoomIdStore)
+		) => {
+			const id = uuidv4();
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectablesLinks.push({ id, ...collectableLink });
+				}
+				return map;
+			});
+		},
+		updateCollectableLink: (
+			updatedCollectableLink: CollectableLinkData,
+			roomId: string = get(defaultRoomIdStore)
+		) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectablesLinks = room.collectablesLinks.map((collectableLink) =>
+						collectableLink.id === updatedCollectableLink.id
+							? updatedCollectableLink
+							: collectableLink
+					);
+				}
+				return map;
+			});
+		},
+		removeCollectableLink: (
+			collectableLinkId: string,
+			roomId: string = get(defaultRoomIdStore)
+		) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectablesLinks = room.collectablesLinks.filter(
+						(collectableLink) => collectableLink.id !== collectableLinkId
+					);
+				}
+				return map;
+			});
+		},
+		getCollectableLink: (
+			collectableLinkID: string,
+			roomId: string = get(defaultRoomIdStore),
+			mapData: MapData | null = null
+		): CollectableLinkData => {
+			let collectableLink: CollectableLinkData | undefined;
+			subscribe((map) => {
+				const room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					collectableLink = room.collectablesLinks.find((c) => c.id === collectableLinkID);
+				}
+			})();
+
+			if (collectableLink === undefined) {
+				throw new Error(`Collectable Link is undefined`);
+			}
+
+			return collectableLink;
+		},
+		clearCollectableLinks: (roomId: string = get(defaultRoomIdStore)) => {
+			update((map) => {
+				let room = map.rooms.find((r) => r.id === roomId);
+				if (room) {
+					room.collectablesLinks = [];
 				}
 				return map;
 			});
@@ -335,11 +425,15 @@ export function recalculateHolesIndexesForMap(mapData: MapData): void {
 }
 
 export const selectedRoom = writable<string>('');
+export const selectedCollectable = writable<string>('');
 export const mapStore = createMapStore(selectedRoom);
 selectedRoom.set(get(mapStore).rooms[0].id);
 
 export const selectedHoleStart = writable<string>('');
 export const selectedHoleFinish = writable<string>('');
+export const isLastSelectedholeStart = writable<boolean>(true);
+
+export const collectablesMode = writable<boolean>(false);
 
 const updateHandler = () => updateStores();
 
@@ -351,6 +445,7 @@ selectedRoom.subscribe(updateHandler);
 function updateStores() {
 	const map = get(mapStore);
 	const currentRoomId = get(selectedRoom);
+	const currentCollectable = get(selectedCollectable);
 	const currentHoleStartId = get(selectedHoleStart);
 	const currentHoleFinishId = get(selectedHoleFinish);
 
@@ -366,6 +461,10 @@ function updateStores() {
 		}
 		if (!currentRoom.holes.some((hole) => hole.id === currentHoleFinishId)) {
 			selectedHoleFinish.set('');
+		}
+		if (!currentRoom.collectables.some((collectable) => collectable.id === currentCollectable)) {
+			selectedCollectable.set('');
+			collectablesMode.set(false);
 		}
 	}
 }

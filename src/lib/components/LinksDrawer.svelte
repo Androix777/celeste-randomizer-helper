@@ -13,6 +13,7 @@
 	import LeaderLine from 'leader-line-new';
 	import type { SocketType } from 'leader-line-new';
 	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
+	import { collectablesMode } from '$lib/stores/MapStore';
 	import chroma from 'chroma-js';
 
 	interface Lines {
@@ -71,6 +72,8 @@
 			previewLine = null;
 		}
 
+		if ($collectablesMode) return;
+
 		if ($selectedHoleStart && $selectedHoleFinish && $selectedHoleStart !== $selectedHoleFinish) {
 			previewLine = new LeaderLine({
 				start: $holeElements[$selectedHoleStart],
@@ -90,6 +93,8 @@
 
 		Object.values(lines).forEach((line) => line.remove());
 		lines = {};
+
+		if ($collectablesMode) return;
 
 		let holeConnections: { [id: string]: number } = {};
 		let holeConnectionsDone: { [id: string]: number } = {};
@@ -143,7 +148,12 @@
 		}
 	}
 
-	$: $selectedHoleStart, $selectedHoleFinish, $mapStore, $holeElements, drawPreviewLine();
-	$: $mapStore, $holeElements, drawLines();
+	$: $selectedHoleStart,
+		$selectedHoleFinish,
+		$mapStore,
+		$holeElements,
+		$collectablesMode,
+		drawPreviewLine();
+	$: $mapStore, $holeElements, $collectablesMode, drawLines();
 	$: $focusedHole, adjustLineOpacity();
 </script>

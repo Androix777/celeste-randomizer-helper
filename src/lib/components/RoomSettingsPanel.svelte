@@ -6,10 +6,10 @@
 	} from '../stores/MapStore';
 	import { Label, Input, Button } from 'flowbite-svelte';
 
-	let roomName = mapStore.getRoom(undefined, $mapStore).name;
+	let roomName = mapStore.getRoom().name;
 
 	function updateRoomName() {
-		let newRoom = { ...mapStore.getRoom(undefined, $mapStore), name: roomName };
+		let newRoom = { ...mapStore.getRoom(), name: roomName };
 		mapStore.updateRoom(newRoom);
 	}
 

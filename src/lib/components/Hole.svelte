@@ -11,7 +11,8 @@
 		mapStore,
 		selectedHoleStart,
 		selectedHoleFinish,
-		type HoleData
+		type HoleData,
+		isLastSelectedholeStart
 	} from '../stores/MapStore';
 	import type { Writable } from 'svelte/store';
 
@@ -29,10 +30,12 @@
 
 	function addStart() {
 		selectedHoleStart.set(hole.id);
+		isLastSelectedholeStart.set(true);
 	}
 
 	function addFinish() {
 		selectedHoleFinish.set(hole.id);
+		isLastSelectedholeStart.set(false);
 	}
 
 	$: {

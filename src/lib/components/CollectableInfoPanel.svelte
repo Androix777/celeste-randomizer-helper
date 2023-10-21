@@ -1,7 +1,12 @@
 <script lang="ts">
 	import type { CollectableData } from '../stores/MapStore';
 	import { Card, Button, Select, Input } from 'flowbite-svelte';
-	import { CollectableType, mapStore } from '../stores/MapStore';
+	import {
+		CollectableType,
+		collectablesMode,
+		mapStore,
+		selectedCollectable
+	} from '../stores/MapStore';
 	import CollectableLink from './CollectableLink.svelte';
 
 	export let collectable: CollectableData;
@@ -17,6 +22,16 @@
 
 	function deleteCollectable() {
 		mapStore.removeCollectable(collectable.id);
+	}
+
+	function editCollectableLinks() {
+		if ($selectedCollectable == collectable.id) {
+			collectablesMode.set(false);
+			selectedCollectable.set('');
+		} else {
+			collectablesMode.set(true);
+			selectedCollectable.set(collectable.id);
+		}
 	}
 </script>
 
@@ -37,6 +52,7 @@
 		</div>
 		<div class="flex items-center space-x-2">
 			<Button color="red" on:click={deleteCollectable}>Delete Collectable</Button>
+			<Button on:click={editCollectableLinks}>Edit Collectable links</Button>
 		</div>
 	</div>
 	<div class="mb-4 flex-col space-y-4">

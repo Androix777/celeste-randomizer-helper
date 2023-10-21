@@ -5,7 +5,10 @@
 		selectedHoleFinish,
 		mapStore,
 		Dashes,
-		Difficulty
+		Difficulty,
+		collectablesMode,
+		selectedCollectable,
+		isLastSelectedholeStart
 	} from '$lib/stores/MapStore';
 
 	$: holeStart =
@@ -36,13 +39,28 @@
 	];
 
 	function createLink(event: Event) {
-		if (holeStart && holeFinish) {
-			mapStore.addLink({
-				idStart: $selectedHoleStart,
-				idFinish: $selectedHoleFinish,
-				dashes: selectedDashes,
-				difficulty: selectedDifficulty
-			});
+		if ($collectablesMode) {
+			if (
+				($isLastSelectedholeStart && $selectedHoleStart != '') ||
+				(!$isLastSelectedholeStart && $selectedHoleFinish != '')
+			) {
+				mapStore.addCollectableLink({
+					collectableID: $selectedCollectable,
+					holeID: $isLastSelectedholeStart ? $selectedHoleStart : $selectedHoleFinish,
+					dashes: selectedDashes,
+					difficulty: selectedDifficulty,
+					isIn: $isLastSelectedholeStart
+				});
+			}
+		} else {
+			if (holeStart && holeFinish) {
+				mapStore.addLink({
+					idStart: $selectedHoleStart,
+					idFinish: $selectedHoleFinish,
+					dashes: selectedDashes,
+					difficulty: selectedDifficulty
+				});
+			}
 		}
 	}
 </script>
