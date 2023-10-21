@@ -1,10 +1,14 @@
 <script lang="ts">
-	import type { CollectableData, CollectableLinkData } from '../stores/MapStore';
-	import { P, Card, Button, Select, Input } from 'flowbite-svelte';
-	import { CollectableType, Dashes, Difficulty, mapStore } from '../stores/MapStore';
+	import type { CollectableData } from '../stores/MapStore';
+	import { Card, Button, Select, Input } from 'flowbite-svelte';
+	import { CollectableType, mapStore } from '../stores/MapStore';
 	import CollectableLink from './CollectableLink.svelte';
 
 	export let collectable: CollectableData;
+
+	$: collectableLinks = mapStore
+		.getRoom(undefined, $mapStore)
+		.collectablesLinks.filter((link) => link.collectableID === collectable.id);
 
 	let collectableTypes = [
 		{ value: CollectableType.STRAWBERRY, name: 'Strawberry' },
@@ -13,28 +17,6 @@
 
 	function deleteCollectable() {
 		mapStore.removeCollectable(collectable.id);
-	}
-
-	function addLink() {
-		let newLink: CollectableLinkData = {
-			holeInID: '',
-			dashesIn: Dashes.ZERO,
-			difficultyIn: Difficulty.EASY,
-			isOnlyIn: false,
-			holeOutID: '',
-			dashesOut: Dashes.ZERO,
-			difficultyOut: Difficulty.EASY
-		};
-
-		let updatedCollectable = { ...collectable };
-		updatedCollectable.links.push(newLink);
-		mapStore.updateCollectable(updatedCollectable);
-	}
-
-	function deleteLink(index: number) {
-		let updatedCollectable = { ...collectable };
-		updatedCollectable.links.splice(index, 1);
-		mapStore.updateCollectable(updatedCollectable);
 	}
 </script>
 
@@ -58,9 +40,8 @@
 		</div>
 	</div>
 	<div class="mb-4 flex-col space-y-4">
-		<Button color="green" on:click={addLink}>Add Link</Button>
-		{#each collectable.links as link, index}
-			<CollectableLink {link} {index} {deleteLink} />
+		{#each collectableLinks as link (link.id)}
+			<CollectableLink {link} />
 		{/each}
 	</div>
 	<div class="mb-4 flex space-x-4" />

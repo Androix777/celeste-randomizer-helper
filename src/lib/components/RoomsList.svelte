@@ -1,18 +1,12 @@
 <script lang="ts">
-	import { mapStore } from '../stores/MapStore';
+	import { mapStore, getDefaultRoom } from '../stores/MapStore';
 	import RoomInfoPanel from './RoomInfoPanel.svelte';
 	import { Button } from 'flowbite-svelte';
 
 	$: rooms = $mapStore.rooms;
 
 	function addRoom() {
-		mapStore.addRoom({
-			name: 'NewRoom',
-			isEnabled: true,
-			holes: [],
-			links: [],
-			collectables: []
-		});
+		mapStore.addRoom(getDefaultRoom());
 	}
 </script>
 

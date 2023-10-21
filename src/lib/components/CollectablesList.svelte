@@ -6,7 +6,7 @@
 	$: collectables = mapStore.getRoom(undefined, $mapStore).collectables;
 
 	function addCollectable() {
-		mapStore.addCollectable({ collectableType: CollectableType.STRAWBERRY, loennID: 0, links: [] });
+		mapStore.addCollectable({ collectableType: CollectableType.STRAWBERRY, index: 0 });
 	}
 </script>
 

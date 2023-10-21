@@ -1,7 +1,7 @@
 import { parse } from 'yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { get } from 'svelte/store';
-import { mapStore } from './stores/MapStore';
+import { mapStore, getDefaultRoom } from './stores/MapStore';
 import type {
 	MapData,
 	RoomData,
@@ -27,13 +27,11 @@ export function importYaml(rawData: string) {
 				let roomData: RoomData | undefined = map.rooms.find((r) => r.name === room.Room);
 				console.log(roomData ? 'Exist' : 'NEW');
 
-				let newRoom: RoomData = {
-					id: roomData ? roomData.id : uuidv4(),
-					name: room.Room,
-					isEnabled: true,
-					holes: [],
-					links: []
-				};
+				let newRoom: RoomData = getDefaultRoom();
+
+				if (roomData) {
+					newRoom.id = roomData.id;
+				}
 
 				if (room.Subrooms) {
 					for (const subroom of room.Subrooms) {

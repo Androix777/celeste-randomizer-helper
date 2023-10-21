@@ -67,82 +67,6 @@ function getInternalEdges(links: LinkData[], hole: HoleData, holes: Record<strin
 	});
 }
 
-function getCollectableInternalEdges(
-	collectable: CollectableData,
-	holes: Record<string, HoleData>
-) {
-	const collectableLinks = collectable.links;
-
-	if (!collectableLinks || collectableLinks.length === 0) {
-		return null;
-	}
-
-	const groupedLinks = collectableLinks.reduce((acc: any, link) => {
-		const holeIn = holes[link.holeInID];
-		const holeOut = holes[link.holeOutID];
-		if (!holeIn || !holeOut) {
-			console.error(`Hole not found for collectable ${collectable.id}`);
-			return acc;
-		}
-		const roomInId = getRoomId(holeIn);
-		const roomOutId = getRoomId(holeOut);
-
-		if (roomInId === roomOutId) {
-			if (!acc[roomInId]) {
-				acc[roomInId] = {
-					To: roomInId,
-					ReqIn: { Difficulty: 'easy', Or: [] },
-					ReqOut: { Difficulty: 'easy', Or: [] }
-				};
-			}
-
-			if (!link.isOnlyIn) {
-				acc[roomInId].ReqOut.Or.push({
-					Dashes: link.dashesOut,
-					Difficulty: link.difficultyOut
-				});
-			}
-
-			acc[roomInId].ReqIn.Or.push({
-				Dashes: link.dashesIn,
-				Difficulty: link.difficultyIn
-			});
-		} else {
-			if (!acc[roomInId]) {
-				acc[roomInId] = {
-					To: roomOutId,
-					ReqIn: { Difficulty: 'easy', Or: [] }
-				};
-			}
-
-			if (!acc[roomOutId]) {
-				acc[roomOutId] = {
-					To: roomInId,
-					ReqOut: { Difficulty: 'easy', Or: [] }
-				};
-			}
-
-			acc[roomInId].ReqIn.Or.push({
-				Dashes: link.dashesIn,
-				Difficulty: link.difficultyIn
-			});
-
-			acc[roomOutId].ReqOut.Or.push({
-				Dashes: link.dashesOut,
-				Difficulty: link.difficultyOut
-			});
-		}
-
-		return acc;
-	}, {});
-
-	return Object.values(groupedLinks).map((edge: any) => {
-		if (edge.ReqOut.Or.length === 0) delete edge.ReqOut;
-		if (edge.ReqIn.Or.length === 0) delete edge.ReqIn;
-		return edge;
-	});
-}
-
 export function GetRoomData(room: RoomData) {
 	let holes = getHoles(room);
 	let links = room.links;
@@ -167,14 +91,7 @@ export function GetRoomData(room: RoomData) {
 		};
 	});
 
-	const collectableSubroomsData = Object.values(collectables).map((collectable) => {
-		const internalEdges = getCollectableInternalEdges(collectable, holes);
-		return {
-			Room: getCollectableRoomId(collectable),
-			Collectables: [{ Idx: collectable.index }],
-			InternalEdges: internalEdges ? internalEdges : undefined
-		};
-	});
+	const collectableSubroomsData: any[] = []; // TODO
 
 	const combinedSubrooms = [...subroomsData, ...collectableSubroomsData];
 

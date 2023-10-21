@@ -40,17 +40,15 @@ export type CollectableData = {
 	id: string;
 	index: number;
 	collectableType: CollectableType;
-	links: CollectableLinkData[];
 };
 
 export type CollectableLinkData = {
-	holeInID: string;
-	dashesIn: Dashes;
-	difficultyIn: Difficulty;
-	isOnlyIn: boolean;
-	holeOutID: string;
-	dashesOut: Dashes;
-	difficultyOut: Difficulty;
+	id: string;
+	holeID: string;
+	collectableID: string;
+	isIn: boolean;
+	dashes: Dashes;
+	difficulty: Difficulty;
 };
 
 export type LinkData = {
@@ -68,6 +66,7 @@ export type RoomData = {
 	holes: HoleData[];
 	links: LinkData[];
 	collectables: CollectableData[];
+	collectablesLinks: CollectableLinkData[];
 	loennData?: RoomLoennData;
 };
 
@@ -76,12 +75,22 @@ export type MapData = {
 	rooms: RoomData[];
 };
 
+export function getDefaultRoom(): RoomData {
+	return {
+		id: uuidv4(),
+		name: 'new-room',
+		isEnabled: true,
+		holes: [],
+		links: [],
+		collectables: [],
+		collectablesLinks: []
+	};
+}
+
 function createMapStore(defaultRoomIdStore: Writable<string>) {
 	const { subscribe, set, update } = writable<MapData>({
 		id: uuidv4(),
-		rooms: [
-			{ id: uuidv4(), name: 'new-room', isEnabled: true, holes: [], links: [], collectables: [] }
-		]
+		rooms: [getDefaultRoom()]
 	});
 
 	return {
@@ -108,16 +117,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 			update((map) => {
 				map.rooms = map.rooms.filter((room) => room.id !== id);
 				if (map.rooms.length == 0) {
-					map.rooms = [
-						{
-							id: uuidv4(),
-							name: 'new-room',
-							isEnabled: true,
-							holes: [],
-							links: [],
-							collectables: []
-						}
-					];
+					map.rooms = [getDefaultRoom()];
 				}
 				return map;
 			});
@@ -151,17 +151,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 			update(() => {
 				return {
 					id: uuidv4(),
-					rooms: [
-						{
-							id: uuidv4(),
-							name: 'name',
-							isEnabled: true,
-							isImported: false,
-							holes: [],
-							links: [],
-							collectables: []
-						}
-					]
+					rooms: [getDefaultRoom()]
 				};
 			});
 		},
@@ -210,12 +200,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				if (room) {
 					room.holes = room.holes.filter((h) => h.id !== holeId);
 					room.links = room.links.filter((l) => l.idStart !== holeId && l.idFinish !== holeId);
-
-					room.collectables.forEach((collectable) => {
-						collectable.links = collectable.links.filter(
-							(link) => link.holeInID !== holeId && link.holeOutID !== holeId
-						);
-					});
+					room.collectablesLinks = room.collectablesLinks.filter((l) => l.holeID !== holeId);
 
 					recalculateHolesIndexesForRoom(room);
 				}
@@ -298,6 +283,10 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 				if (room) {
 					room.collectables = room.collectables.filter(
 						(collectable) => collectable.id !== collectableId
+					);
+
+					room.collectablesLinks = room.collectablesLinks.filter(
+						(l) => l.collectableID !== collectableId
 					);
 				}
 				return map;
@@ -396,6 +385,7 @@ export function ImportLoennData(loennData: MapLoennData) {
 			holes: [],
 			links: [],
 			collectables: [],
+			collectablesLinks: [],
 			loennData: roomLoennData
 		};
 
@@ -435,8 +425,7 @@ export function setCollectablesFromLoennData(roomData: RoomData) {
 		roomData.collectables.push({
 			id: uuidv4(),
 			index: collectable.index,
-			collectableType: collectable.collectableType,
-			links: []
+			collectableType: collectable.collectableType
 		});
 	});
 }
