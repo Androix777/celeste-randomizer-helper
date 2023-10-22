@@ -2,6 +2,7 @@
 	import { mapStore, WallPosition, selectedRoom } from '../stores/MapStore';
 	import Hole from './Hole.svelte';
 	import { Button } from 'flowbite-svelte';
+	import { PlusSolid } from 'flowbite-svelte-icons';
 
 	export let wallPosition: WallPosition;
 
@@ -18,7 +19,7 @@
 </script>
 
 <div class={`wall ${wallPosition}`}>
-	<Button on:click={addHole}>+</Button>
+	<Button on:click={addHole}><PlusSolid class="w-3.5 h-3.5" /></Button>
 	{#each Object.values(holes) as hole (hole.id)}
 		<Hole {hole} />
 	{/each}
