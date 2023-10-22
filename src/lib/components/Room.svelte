@@ -32,7 +32,7 @@
 	<LinksDrawer />
 	<LinksCollectablesDrawer />
 	<div
-		class="h-36 w-36 grid place-items-center self-center justify-self-center"
+		class="h-52 w-52 grid place-items-center self-center justify-self-center"
 		style="grid-area: 2 / 2 / 3 / 3;"
 	>
 		<Collectable />

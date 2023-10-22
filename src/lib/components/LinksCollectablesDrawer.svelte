@@ -111,26 +111,96 @@
 
 		if (!$collectablesMode || !$collectableElement) return;
 
+		// hole connections
+
+		let holeConnections: { [id: string]: number } = {};
+		let holeConnectionsDone: { [id: string]: number } = {};
+
+		Object.values(mapStore.getRoom().collectablesLinks).forEach((link: CollectableLinkData) => {
+			if (link.collectableID !== $selectedCollectable) return;
+			holeConnections[link.holeID] = (holeConnections[link.holeID] || 0) + 1;
+		});
+
+		// collectable connections
+
+		let collectableConnections: { [position: string]: number } = {
+			[WallPosition.DOWN]: 0,
+			[WallPosition.UP]: 0,
+			[WallPosition.LEFT]: 0,
+			[WallPosition.RIGHT]: 0
+		};
+
+		let collectableConnectionsDone: { [position: string]: number } = {
+			[WallPosition.DOWN]: 0,
+			[WallPosition.UP]: 0,
+			[WallPosition.LEFT]: 0,
+			[WallPosition.RIGHT]: 0
+		};
+
 		Object.values(mapStore.getRoom().collectablesLinks).forEach((link: CollectableLinkData) => {
 			if (link.collectableID !== $selectedCollectable) return;
 
-			lines[link.id] = new LeaderLine({
-				start: link.isIn ? $holeElements[link.holeID] : $collectableElement,
-				end: link.isIn ? $collectableElement : $holeElements[link.holeID],
-				startSocket: link.isIn
-					? socketMap[mapStore.getHole(link.holeID).position]
-					: socketMap[invertedWall[mapStore.getHole(link.holeID).position]],
-				endSocket: link.isIn
-					? socketMap[invertedWall[mapStore.getHole(link.holeID).position]]
-					: socketMap[mapStore.getHole(link.holeID).position],
-				color: dashColorMap[link.dashes],
-				size: 12,
-				outline: true,
-				outlineColor: difficultyColorMap[link.difficulty],
-				path: 'straight',
-				outlineSize: 0.2
-			});
+			collectableConnections[mapStore.getHole(link.holeID).position]++;
 		});
+
+		// create lines
+
+		Object.values(mapStore.getRoom().collectablesLinks)
+			.sort((a: CollectableLinkData, b: CollectableLinkData) => {
+				return mapStore.getHole(a.holeID).index - mapStore.getHole(b.holeID).index;
+			})
+			.forEach((link: CollectableLinkData) => {
+				if (link.collectableID !== $selectedCollectable) return;
+
+				holeConnectionsDone[link.holeID] = (holeConnectionsDone[link.holeID] || 0) + 1;
+				const holeStep = 1 / (holeConnections[link.holeID] + 1);
+				const holeOffset = holeConnectionsDone[link.holeID] * holeStep;
+
+				collectableConnectionsDone[mapStore.getHole(link.holeID).position]++;
+				const collectableStep =
+					1 / (collectableConnections[mapStore.getHole(link.holeID).position] + 1);
+				const collectableOffset =
+					collectableConnectionsDone[mapStore.getHole(link.holeID).position] * collectableStep;
+
+				lines[link.id] = new LeaderLine({
+					start: link.isIn
+						? LeaderLine.pointAnchor(
+								$holeElements[link.holeID],
+								getSocketCoordinates(mapStore.getHole(link.holeID).position, holeOffset)
+						  )
+						: LeaderLine.pointAnchor(
+								$collectableElement,
+								getSocketCoordinates(
+									invertedWall[mapStore.getHole(link.holeID).position],
+									collectableOffset
+								)
+						  ),
+					end: link.isIn
+						? LeaderLine.pointAnchor(
+								$collectableElement,
+								getSocketCoordinates(
+									invertedWall[mapStore.getHole(link.holeID).position],
+									collectableOffset
+								)
+						  )
+						: LeaderLine.pointAnchor(
+								$holeElements[link.holeID],
+								getSocketCoordinates(mapStore.getHole(link.holeID).position, holeOffset)
+						  ),
+					startSocket: link.isIn
+						? socketMap[mapStore.getHole(link.holeID).position]
+						: socketMap[invertedWall[mapStore.getHole(link.holeID).position]],
+					endSocket: link.isIn
+						? socketMap[invertedWall[mapStore.getHole(link.holeID).position]]
+						: socketMap[mapStore.getHole(link.holeID).position],
+					color: dashColorMap[link.dashes],
+					size: 12,
+					outline: true,
+					outlineColor: difficultyColorMap[link.difficulty],
+					path: 'straight',
+					outlineSize: 0.2
+				});
+			});
 	}
 
 	$: $selectedHoleStart,
