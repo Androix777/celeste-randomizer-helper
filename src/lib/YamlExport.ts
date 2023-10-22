@@ -1,4 +1,13 @@
-import type { CollectableData, HoleData, LinkData, MapData, RoomData } from './stores/MapStore';
+import type {
+	CollectableData,
+	CollectableLinkData,
+	Dashes,
+	Difficulty,
+	HoleData,
+	LinkData,
+	MapData,
+	RoomData
+} from './stores/MapStore';
 import { stringify } from 'yaml';
 
 function getHoles(room: RoomData) {
@@ -67,9 +76,67 @@ function getInternalEdges(links: LinkData[], hole: HoleData, holes: Record<strin
 	});
 }
 
+function getCollectableInternalEdges(
+	links: CollectableLinkData[],
+	collectable: CollectableData,
+	holes: Record<string, HoleData>
+) {
+	const linksForCollectable = links.filter((link) => link.collectableID === collectable.id);
+
+	const linksGroupedByRoom = linksForCollectable.reduce((groupedLinks, link) => {
+		const hole = holes[link.holeID];
+		const roomId = getRoomId(hole);
+		if (!groupedLinks[roomId]) {
+			groupedLinks[roomId] = [];
+		}
+		groupedLinks[roomId].push(link);
+		return groupedLinks;
+	}, {} as Record<string, CollectableLinkData[]>);
+
+	return Object.entries(linksGroupedByRoom).map(([roomId, links]) => {
+		const edge: {
+			To: string;
+			ReqIn?: {
+				Difficulty: string;
+				Or: { Dashes: Dashes; Difficulty: Difficulty }[];
+			};
+			ReqOut?: {
+				Difficulty: string;
+				Or: { Dashes: Dashes; Difficulty: Difficulty }[];
+			};
+		} = {
+			To: roomId,
+			ReqIn: { Difficulty: 'easy', Or: [] },
+			ReqOut: { Difficulty: 'easy', Or: [] }
+		};
+
+		links.forEach((link) => {
+			const request = {
+				Dashes: link.dashes,
+				Difficulty: link.difficulty
+			};
+			if (link.isIn) {
+				edge.ReqIn!.Or.push(request);
+			} else {
+				edge.ReqOut!.Or.push(request);
+			}
+		});
+
+		if (edge.ReqIn!.Or.length === 0) {
+			delete edge.ReqIn;
+		}
+		if (edge.ReqOut!.Or.length === 0) {
+			delete edge.ReqOut;
+		}
+
+		return edge;
+	});
+}
+
 export function GetRoomData(room: RoomData) {
 	let holes = getHoles(room);
 	let links = room.links;
+	let collectablesLinks = room.collectablesLinks;
 	let collectables = room.collectables;
 
 	if (!holes || Object.keys(holes).length === 0) {
@@ -91,7 +158,14 @@ export function GetRoomData(room: RoomData) {
 		};
 	});
 
-	const collectableSubroomsData: any[] = []; // TODO
+	const collectableSubroomsData = collectables.map((collectable) => {
+		const internalEdges = getCollectableInternalEdges(collectablesLinks, collectable, holes);
+		return {
+			Room: getCollectableRoomId(collectable),
+			Collectables: [{ Idx: collectable.index }],
+			InternalEdges: internalEdges
+		};
+	});
 
 	const combinedSubrooms = [...subroomsData, ...collectableSubroomsData];
 
