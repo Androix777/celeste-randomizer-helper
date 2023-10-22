@@ -327,6 +327,7 @@ function createMapStore(defaultRoomIdStore: Writable<string>) {
 					room.holes = [];
 					room.links = [];
 					room.collectables = [];
+					room.collectablesLinks = [];
 				}
 				return map;
 			});

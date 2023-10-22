@@ -21,10 +21,6 @@ function getHoles(room: RoomData) {
 	return holeDict;
 }
 
-function getLinks(room: RoomData) {
-	return room.links;
-}
-
 function getKind(links: LinkData[], holeId: string) {
 	const linksForHole = links.filter((link) => link.idStart === holeId || link.idFinish === holeId);
 	const isFinish = linksForHole.some((link) => link.idFinish === holeId);
@@ -188,6 +184,12 @@ export function convertRoomToYaml(room: RoomData) {
 }
 
 export function convertAllRoomsToYaml(mapData: MapData) {
+	const hasDuplicates =
+		new Set(mapData.rooms.map((room) => room.name)).size !== mapData.rooms.length;
+	if (hasDuplicates) {
+		return 'Error. Some rooms have the same names.';
+	}
+
 	const allRoomsYaml = mapData.rooms
 		.map((room) => GetRoomData(room))
 		.filter((room) => room !== null);
