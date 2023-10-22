@@ -15,7 +15,7 @@
 
 {#if $collectablesMode && collectable}
 	<div
-		class="w-full h-full border bg-gray-700 dark:bg-gray-400 flex justify-center items-center"
+		class="w-full h-full border bg-gray-700 dark:bg-gray-400 flex justify-center items-center z-10"
 		bind:this={$collectableElement}
 		role="none"
 	>
