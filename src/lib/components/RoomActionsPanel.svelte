@@ -15,14 +15,14 @@
 	<TabItem title="Rooms">
 		<RoomsList />
 	</TabItem>
-	<TabItem title="Room settings">
-		<RoomSettingsPanel />
-	</TabItem>
 	<TabItem title="Links">
 		<LinksList />
 	</TabItem>
 	<TabItem title="Collectables">
 		<CollectablesList />
+	</TabItem>
+	<TabItem title="Room settings">
+		<RoomSettingsPanel />
 	</TabItem>
 	<TabItem title="Export">
 		<ExportPanel />

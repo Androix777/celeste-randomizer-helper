@@ -112,9 +112,9 @@ function getCollectableInternalEdges(
 				Difficulty: link.difficulty
 			};
 			if (link.isIn) {
-				edge.ReqIn!.Or.push(request);
-			} else {
 				edge.ReqOut!.Or.push(request);
+			} else {
+				edge.ReqIn!.Or.push(request);
 			}
 		});
 
