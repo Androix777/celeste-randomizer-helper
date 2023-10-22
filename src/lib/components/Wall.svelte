@@ -13,7 +13,8 @@
 	function addHole() {
 		mapStore.addHole({
 			position: wallPosition,
-			name: 'new'
+			name: 'new',
+			isOneHoleSubroom: false
 		});
 	}
 </script>

@@ -44,7 +44,8 @@ export function importYaml(rawData: string) {
 									id: uuidv4(),
 									index: 0,
 									position: hole.Side as WallPosition,
-									name: subroom.Room
+									name: subroom.Room,
+									isOneHoleSubroom: hole.Kind == 'inout' && !subroom.InternalEdges
 								};
 								newRoom.holes.push(holeData);
 							}
