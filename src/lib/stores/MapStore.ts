@@ -34,7 +34,6 @@ export type HoleData = {
 	position: WallPosition;
 	index: number;
 	name: string;
-	isOneHoleSubroom: boolean;
 };
 
 export type CollectableData = {
@@ -513,8 +512,7 @@ export function setWallHolesFromLoennData(roomData: RoomData) {
 				id: uuidv4(),
 				index: 0,
 				position: holePosition as WallPosition,
-				name: `hole${holeIndex + 1}`,
-				isOneHoleSubroom: false
+				name: `hole${holeIndex + 1}`
 			});
 		}
 	});

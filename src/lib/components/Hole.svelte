@@ -1,10 +1,9 @@
 <script lang="ts">
-	import { SpeedDial, ListgroupItem, Listgroup, Checkbox } from 'flowbite-svelte';
+	import { SpeedDial, ListgroupItem, Listgroup } from 'flowbite-svelte';
 	import {
 		ArrowDownToBracketOutline,
 		ArrowUpFromBracketOutline,
-		TrashBinOutline,
-		RedoOutline
+		TrashBinOutline
 	} from 'flowbite-svelte-icons';
 	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import { getContext, onMount, onDestroy } from 'svelte';
@@ -83,10 +82,6 @@
 			<ListgroupItem class="flex gap-2 md:px-5" on:click={addFinish}>
 				<ArrowDownToBracketOutline class="w-3.5 h-3.5" />
 				To
-			</ListgroupItem>
-			<ListgroupItem class="flex gap-2 md:px-5">
-				<RedoOutline class="w-3.5 h-3.5" />
-				<Checkbox bind:checked={hole.isOneHoleSubroom}>One hole subroom</Checkbox>
 			</ListgroupItem>
 			<ListgroupItem class="flex gap-2 md:px-5" on:click={removeHole}>
 				<TrashBinOutline class="w-3.5 h-3.5" />

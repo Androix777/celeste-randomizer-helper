@@ -21,17 +21,14 @@ function getHoles(room: RoomData) {
 	return holeDict;
 }
 
-function getKind(links: LinkData[], hole: HoleData) {
-	const linksForHole = links.filter(
-		(link) => link.idStart === hole.id || link.idFinish === hole.id
-	);
-	const isFinish = linksForHole.some((link) => link.idFinish === hole.id);
-	const isStart = linksForHole.some((link) => link.idStart === hole.id);
+function getKind(links: LinkData[], holeId: string) {
+	const linksForHole = links.filter((link) => link.idStart === holeId || link.idFinish === holeId);
+	const isFinish = linksForHole.some((link) => link.idFinish === holeId);
+	const isStart = linksForHole.some((link) => link.idStart === holeId);
 
 	if (isFinish && isStart) return 'inout';
 	if (isFinish) return 'out';
 	if (isStart) return 'in';
-	if (hole.isOneHoleSubroom) return 'inout';
 	return 'none';
 }
 
@@ -150,7 +147,7 @@ export function GetRoomData(room: RoomData) {
 				{
 					Side: hole.position,
 					Idx: hole.index,
-					Kind: getKind(links, hole)
+					Kind: getKind(links, hole.id)
 				}
 			],
 			InternalEdges: internalEdges ? internalEdges : undefined
