@@ -28,11 +28,11 @@ export function importYaml(rawData: string) {
 				let roomData: RoomData | undefined = map.rooms.find((r) => r.name === room.Room);
 
 				let newRoom: RoomData = getDefaultRoom();
-				newRoom.name = room.Room;
 
 				if (roomData) {
 					newRoom.id = roomData.id;
-					newRoom.name = room.Room;
+					newRoom.name = roomData.name;
+					newRoom.loennData = roomData.loennData;
 				}
 
 				if (room.Subrooms) {
