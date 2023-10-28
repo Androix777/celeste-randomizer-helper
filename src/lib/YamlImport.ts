@@ -23,16 +23,17 @@ export function importYaml(rawData: string) {
 	for (const key in data) {
 		if (data.hasOwnProperty(key)) {
 			const rooms = data[key];
-
 			for (const room of rooms) {
 				let roomData: RoomData | undefined = map.rooms.find((r) => r.name === room.Room);
-
 				let newRoom: RoomData = getDefaultRoom();
 
 				if (roomData) {
 					newRoom.id = roomData.id;
 					newRoom.name = roomData.name;
 					newRoom.loennData = roomData.loennData;
+				}
+				else{
+					newRoom.name = room.Room;
 				}
 
 				if (room.Subrooms) {
