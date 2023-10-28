@@ -8,7 +8,7 @@ import type {
 	MapData,
 	RoomData
 } from './stores/MapStore';
-import { stringify } from 'yaml';
+import { parse, stringify } from 'yaml';
 
 function getHoles(room: RoomData) {
 	const holes = room.holes;
@@ -135,6 +135,14 @@ export function GetRoomData(room: RoomData) {
 	let collectablesLinks = room.collectablesLinks;
 	let collectables = room.collectables;
 
+	if (room.customYaml != '') {
+		try {
+			return parse(room.customYaml);
+		} catch (error) {
+			throw new Error(`Error parsing YAML in room ${room.name}`);
+		}
+	}
+
 	if (!holes || Object.keys(holes).length === 0) {
 		return null;
 	}
@@ -174,14 +182,20 @@ export function GetRoomData(room: RoomData) {
 }
 
 export function convertRoomToYaml(room: RoomData) {
-	const allRoomsData = {
-		ASide: [GetRoomData(room)]
-	};
+	try {
+		const allRoomsData = {
+			ASide: [GetRoomData(room)]
+		};
 
-	let yamlData = stringify(allRoomsData);
-	yamlData = yamlData.replace(/'/g, '');
+		let yamlData = stringify(allRoomsData);
+		yamlData = yamlData.replace(/'/g, '');
 
-	return yamlData;
+		return yamlData;
+	} catch (error) {
+		if (error instanceof Error) {
+			return error.message;
+		}
+	}
 }
 
 export function convertAllRoomsToYaml(mapData: MapData) {
@@ -191,15 +205,21 @@ export function convertAllRoomsToYaml(mapData: MapData) {
 		return 'Error. Some rooms have the same names.';
 	}
 
-	const allRoomsYaml = mapData.rooms
-		.map((room) => GetRoomData(room))
-		.filter((room) => room !== null);
-	const allRoomsData = {
-		ASide: allRoomsYaml
-	};
+	try {
+		const allRoomsYaml = mapData.rooms
+			.map((room) => GetRoomData(room))
+			.filter((room) => room !== null);
+		const allRoomsData = {
+			ASide: allRoomsYaml
+		};
 
-	let yamlData = stringify(allRoomsData);
-	yamlData = yamlData.replace(/'/g, '');
+		let yamlData = stringify(allRoomsData);
+		yamlData = yamlData.replace(/'/g, '');
 
-	return yamlData;
+		return yamlData;
+	} catch (error) {
+		if (error instanceof Error) {
+			return error.message;
+		}
+	}
 }

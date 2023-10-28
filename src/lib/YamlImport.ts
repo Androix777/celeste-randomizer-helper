@@ -1,4 +1,4 @@
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { get } from 'svelte/store';
 import { mapStore, getDefaultRoom, type CollectableLinkData } from './stores/MapStore';
@@ -31,10 +31,13 @@ export function importYaml(rawData: string) {
 					newRoom.id = roomData.id;
 					newRoom.name = roomData.name;
 					newRoom.loennData = roomData.loennData;
-				}
-				else{
+				} else {
 					newRoom.name = room.Room;
 				}
+
+				if (!room.CelesteRandomizerHelper) {
+					newRoom.customYaml = stringify(room);
+				} else
 
 				if (room.Subrooms) {
 					// holes
@@ -76,54 +79,54 @@ export function importYaml(rawData: string) {
 							}
 						}
 					}
-				}
 
-				//collectables
-				for (const subroom of room.Subrooms) {
-					if (subroom.Collectables) {
-						for (const collectable of subroom.Collectables) {
-							const collectableData: CollectableData = {
-								id: uuidv4(),
-								collectableType: CollectableType.STRAWBERRY,
-								index: collectable.Idx
-							};
+					//collectables
+					for (const subroom of room.Subrooms) {
+						if (subroom.Collectables) {
+							for (const collectable of subroom.Collectables) {
+								const collectableData: CollectableData = {
+									id: uuidv4(),
+									collectableType: CollectableType.STRAWBERRY,
+									index: collectable.Idx
+								};
 
-							newRoom.collectables.push(collectableData);
-						}
+								newRoom.collectables.push(collectableData);
+							}
 
-						if (subroom.InternalEdges) {
-							for (const edge of subroom.InternalEdges) {
-								const hole = newRoom.holes.find((hole) => hole.name === edge.To);
-								const collectable = newRoom.collectables.slice(-1)[0];
+							if (subroom.InternalEdges) {
+								for (const edge of subroom.InternalEdges) {
+									const hole = newRoom.holes.find((hole) => hole.name === edge.To);
+									const collectable = newRoom.collectables.slice(-1)[0];
 
-								// TODO redo
+									// TODO redo
 
-								if (hole && collectable) {
-									if (edge.ReqOut && edge.ReqOut.Or) {
-										for (const req of edge.ReqOut.Or) {
-											const linkData: CollectableLinkData = {
-												id: uuidv4(),
-												collectableID: collectable.id,
-												holeID: hole.id,
-												dashes: req.Dashes as Dashes,
-												difficulty: req.Difficulty as Difficulty,
-												isIn: true
-											};
-											newRoom.collectablesLinks.push(linkData);
+									if (hole && collectable) {
+										if (edge.ReqOut && edge.ReqOut.Or) {
+											for (const req of edge.ReqOut.Or) {
+												const linkData: CollectableLinkData = {
+													id: uuidv4(),
+													collectableID: collectable.id,
+													holeID: hole.id,
+													dashes: req.Dashes as Dashes,
+													difficulty: req.Difficulty as Difficulty,
+													isIn: true
+												};
+												newRoom.collectablesLinks.push(linkData);
+											}
 										}
-									}
 
-									if (edge.ReqIn && edge.ReqIn.Or) {
-										for (const req of edge.ReqIn.Or) {
-											const linkData: CollectableLinkData = {
-												id: uuidv4(),
-												collectableID: collectable.id,
-												holeID: hole.id,
-												dashes: req.Dashes as Dashes,
-												difficulty: req.Difficulty as Difficulty,
-												isIn: false
-											};
-											newRoom.collectablesLinks.push(linkData);
+										if (edge.ReqIn && edge.ReqIn.Or) {
+											for (const req of edge.ReqIn.Or) {
+												const linkData: CollectableLinkData = {
+													id: uuidv4(),
+													collectableID: collectable.id,
+													holeID: hole.id,
+													dashes: req.Dashes as Dashes,
+													difficulty: req.Difficulty as Difficulty,
+													isIn: false
+												};
+												newRoom.collectablesLinks.push(linkData);
+											}
 										}
 									}
 								}

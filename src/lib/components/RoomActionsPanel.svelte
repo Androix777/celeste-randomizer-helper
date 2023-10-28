@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { Tabs, TabItem } from 'flowbite-svelte';
 	import ExportPanel from './ExportPanel.svelte';
 	import RoomSettingsPanel from './RoomSettingsPanel.svelte';
@@ -6,6 +6,7 @@
 	import RoomsList from './RoomsList.svelte';
 	import LinksList from './LinksList.svelte';
 	import CollectablesList from './CollectablesList.svelte';
+	import CustomYamlPanel from './CustomYamlPanel.svelte';
 </script>
 
 <Tabs>
@@ -23,6 +24,9 @@
 	</TabItem>
 	<TabItem title="Room settings">
 		<RoomSettingsPanel />
+	</TabItem>
+	<TabItem title="Custom YAML">
+		<CustomYamlPanel />
 	</TabItem>
 	<TabItem title="Export">
 		<ExportPanel />

@@ -22,6 +22,11 @@
 		<P>Links: {room.links.length}</P>
 		<P>Collectables: {room.collectables.length}</P>
 	</div>
+	{#if room.customYaml != ''}
+		<div class="mb-4 flex space-x-4">
+			<P color="text-red-600">CUSTOM YAML</P>
+		</div>
+	{/if}
 	<div class="mb-4 flex space-x-4">
 		<Button on:click={openRoom}>Open</Button>
 		<Button color="red" on:click={deleteRoom}>Delete</Button>

@@ -68,6 +68,7 @@ export type RoomData = {
 	collectables: CollectableData[];
 	collectablesLinks: CollectableLinkData[];
 	loennData?: RoomLoennData;
+	customYaml: string;
 };
 
 export type MapData = {
@@ -83,7 +84,8 @@ export function getDefaultRoom(): RoomData {
 		holes: [],
 		links: [],
 		collectables: [],
-		collectablesLinks: []
+		collectablesLinks: [],
+		customYaml: ''
 	};
 }
 
@@ -486,7 +488,8 @@ export function ImportLoennData(loennData: MapLoennData) {
 			links: [],
 			collectables: [],
 			collectablesLinks: [],
-			loennData: roomLoennData
+			loennData: roomLoennData,
+			customYaml: ''
 		};
 
 		setWallHolesFromLoennData(roomData);
