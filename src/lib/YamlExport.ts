@@ -167,6 +167,7 @@ export function GetRoomData(room: RoomData) {
 
 	const roomData = {
 		Room: `"${room.name}"`,
+		CelesteRandomizerHelper: true,
 		Subrooms: combinedSubrooms
 	};
 	return roomData;
