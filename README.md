@@ -3,6 +3,7 @@
 Application for fast creation of yaml configurations for [Celeste Randomizer](https://github.com/rhelmot/CelesteRandomizer) in the graphical interface.
 
 ![interface](docs/screen1.png)
+![interface](docs/screen2.png)
 
 # Creating and editing configurations
 
