@@ -18,7 +18,7 @@
 	}
 </script>
 
-<div class={`wall ${wallPosition}`}>
+<div class={`wall ${wallPosition.toLowerCase()}`}>
 	<Button on:click={addHole}><PlusSolid class="w-3.5 h-3.5" /></Button>
 	{#each Object.values(holes) as hole (hole.id)}
 		<Hole {hole} />

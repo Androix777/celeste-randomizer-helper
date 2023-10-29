@@ -3,10 +3,10 @@ import { writable, get, type Writable, type Updater } from 'svelte/store';
 import type { MapLoennData, RoomLoennData } from '$lib/LoennImport';
 
 export enum WallPosition {
-	UP = 'up',
-	DOWN = 'down',
-	LEFT = 'left',
-	RIGHT = 'right'
+	UP = 'Up',
+	DOWN = 'Down',
+	LEFT = 'Left',
+	RIGHT = 'Right'
 }
 
 export enum CollectableType {

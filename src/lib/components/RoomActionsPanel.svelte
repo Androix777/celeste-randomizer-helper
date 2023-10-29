@@ -7,6 +7,10 @@
 	import LinksList from './LinksList.svelte';
 	import CollectablesList from './CollectablesList.svelte';
 	import CustomYamlPanel from './CustomYamlPanel.svelte';
+	import { setContext } from 'svelte';
+	import { writable } from 'svelte/store';
+
+	setContext('isInited', writable<boolean>(false));
 </script>
 
 <Tabs>

@@ -37,9 +37,7 @@ export function importYaml(rawData: string) {
 
 				if (!room.CelesteRandomizerHelper) {
 					newRoom.customYaml = stringify(room);
-				} else
-
-				if (room.Subrooms) {
+				} else if (room.Subrooms) {
 					// holes
 					for (const subroom of room.Subrooms) {
 						if (subroom.Holes) {

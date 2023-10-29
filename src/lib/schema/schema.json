@@ -1,0 +1,161 @@
+{
+	"type": "object",
+	"definitions": {
+		"subroom": {
+			"type": "object",
+			"properties": {
+				"Room": { "type": "string" },
+				"Holes": { "type": "array", "items": { "$ref": "#/definitions/hole" } },
+				"InternalEdges": { "type": "array", "items": { "type": "object" } },
+				"Collectables": { "type": "array", "items": { "type": "object" } },
+				"ExtraSpace": { "type": "array", "items": { "type": "object" } },
+				"Flags": { "type": "array", "items": { "type": "object" } }
+			},
+			"additionalProperties": false,
+			"required": ["Room"]
+		},
+
+		"hole": {
+			"type": "object",
+			"properties": {
+				"Side": { "type": "string", "enum": ["Up", "Down", "Left", "Right"] },
+				"Idx": { "type": "number" },
+				"Kind": { "type": "string", "enum": ["inout", "in", "out", "none", "unknown"] },
+				"Launch": { "type": "number" },
+				"ReqOut": { "$ref": "#/definitions/requirement" },
+				"ReqIn": { "$ref": "#/definitions/requirement" },
+				"ReqBoth": { "$ref": "#/definitions/requirement" }
+			},
+			"additionalProperties": false,
+			"required": ["Side", "Idx", "Kind"]
+		},
+
+		"requirement": {
+			"type": "object",
+			"properties": {
+				"Dashes": { "type": "string", "enum": ["zero", "one", "two"] },
+				"Difficulty": {
+					"type": "string",
+					"enum": ["easy", "normal", "hard", "expert", "master", "perfect"]
+				},
+				"Key": { "type": "boolean" },
+				"Flag": { "type": "string", "pattern": "^[a-zA-Z0-9]+:(set|unset)$" },
+				"Or": { "type": "array", "items": { "$ref": "#/definitions/requirement" } },
+				"And": { "type": "array", "items": { "$ref": "#/definitions/requirement" } }
+			},
+			"additionalProperties": false
+		},
+
+		"Tweak": {
+			"type": "object",
+			"properties": {
+				"ID": { "type": "number" },
+				"X": { "type": "number" },
+				"Y": { "type": "number" },
+				"Name": { "type": "string" },
+				"Update": {
+					"type": "object",
+					"properties": {
+						"Add": { "type": "boolean" },
+						"Remove": { "type": "boolean" },
+						"Default": { "type": "boolean" }
+					}
+				}
+			},
+			"additionalProperties": false
+		},
+
+		"InternalEdge": {
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"To": { "type": "string" },
+						"ReqOut": { "$ref": "#/definitions/requirement" },
+						"ReqIn": { "$ref": "#/definitions/requirement" },
+						"ReqBoth": { "$ref": "#/definitions/requirement" }
+					},
+					"additionalProperties": false,
+					"required": ["To"]
+				},
+				{
+					"type": "object",
+					"properties": {
+						"Collectable": { "type": "number" },
+						"ReqOut": { "$ref": "#/definitions/requirement" },
+						"ReqIn": { "$ref": "#/definitions/requirement" },
+						"ReqBoth": { "$ref": "#/definitions/requirement" }
+					},
+					"additionalProperties": false,
+					"required": ["Collectable"]
+				},
+				{
+					"type": "object",
+					"properties": {
+						"Split": {
+							"type": "string",
+							"enum": ["BottomToTop", "TopToBottom", "LeftToRight", "RightToLeft"]
+						},
+						"ReqOut": { "$ref": "#/definitions/requirement" },
+						"ReqIn": { "$ref": "#/definitions/requirement" },
+						"ReqBoth": { "$ref": "#/definitions/requirement" }
+					},
+					"additionalProperties": false,
+					"required": ["Split"]
+				}
+			]
+		},
+		"Collectable": {
+			"type": "object",
+			"properties": {
+				"Idx": { "type": "number" }
+			},
+			"additionalProperties": false,
+			"required": ["Idx"]
+		},
+
+		"ExtraSpace": {
+			"type": "object",
+			"properties": {
+				"X": { "type": "number" },
+				"Y": { "type": "number" },
+				"Width": { "type": "number" },
+				"Height": { "type": "number" }
+			},
+			"additionalProperties": false,
+			"required": ["X", "Y", "Width", "Height"]
+		},
+		"CoreMode": { "type": "string", "enum": ["hot", "cold", "none"] }
+	},
+
+	"properties": {
+		"Room": { "type": "string" },
+		"Holes": { "type": "array", "items": { "$ref": "#/definitions/hole" } },
+		"Subrooms": { "type": "array", "items": { "$ref": "#/definitions/subroom" } },
+		"InternalEdges": { "type": "array", "items": { "$ref": "#/definitions/InternalEdge" } },
+		"Tweaks": { "type": "array", "items": { "$ref": "#/definitions/Tweak" } },
+		"Collectables": { "type": "array", "items": { "$ref": "#/definitions/Collectable" } },
+		"ExtraSpace": { "type": "array", "items": { "$ref": "#/definitions/ExtraSpace" } },
+		"Flags": {
+			"type": "array",
+			"items": { "type": "string", "pattern": "^[a-zA-Z0-9]+:(set|unset)$" }
+		},
+		"ReqEnd": { "$ref": "#/definitions/requirement" },
+		"Hub": { "type": "boolean" },
+		"Core": {
+			"type": "object",
+			"properties": {
+				"All": { "$ref": "#/definitions/CoreMode" },
+				"Left": { "$ref": "#/definitions/CoreMode" },
+				"Right": { "$ref": "#/definitions/CoreMode" },
+				"Up": { "$ref": "#/definitions/CoreMode" },
+				"Down": { "$ref": "#/definitions/CoreMode" }
+			},
+			"additionalProperties": false
+		},
+		"Worth": { "type": "number" },
+		"SpinnersShatter": { "type": "boolean" }
+	},
+	"additionalProperties": false,
+	"required": ["Room"]
+}
