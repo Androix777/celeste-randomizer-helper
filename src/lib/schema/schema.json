@@ -4,111 +4,183 @@
 		"subroom": {
 			"type": "object",
 			"properties": {
-				"Room": { "type": "string" },
-				"Holes": { "type": "array", "items": { "$ref": "#/definitions/hole" } },
-				"InternalEdges": { "type": "array", "items": { "type": "object" } },
-				"Collectables": { "type": "array", "items": { "type": "object" } },
-				"ExtraSpace": { "type": "array", "items": { "type": "object" } },
-				"Flags": { "type": "array", "items": { "type": "object" } }
+				"Room": {
+					"type": "string",
+					"markdownDescription": "Specifies the name of the subroom."
+				},
+				"Holes": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/hole" },
+					"markdownDescription": "An array of `hole` objects that describe all the holes in the subroom."
+				},
+				"InternalEdges": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/InternalEdge" },
+					"markdownDescription": "An array of objects describing the relationships between subrooms."
+				},
+				"Collectables": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/Collectable" },
+					"markdownDescription": "An array of objects indicating the collectables (keys and berries) present in the subroom ."
+				},
+				"Flags": {
+					"type": "array",
+					"items": { "type": "string", "pattern": "^[a-zA-Z0-9]+:(set|unset)$" },
+					"markdownDescription": "An array of flags that can be set or unset in the subroom."
+				}
 			},
 			"additionalProperties": false,
-			"required": ["Room"]
+			"required": ["Room"],
+			"markdownDescription": "Describes a subroom, which is a portion of a room that can be treated as a separate room."
 		},
 
 		"hole": {
 			"type": "object",
 			"properties": {
-				"Side": { "type": "string", "enum": ["Up", "Down", "Left", "Right"] },
-				"Idx": { "type": "number" },
-				"Kind": { "type": "string", "enum": ["inout", "in", "out", "none", "unknown"] },
-				"Launch": { "type": "number" },
-				"ReqOut": { "$ref": "#/definitions/requirement" },
-				"ReqIn": { "$ref": "#/definitions/requirement" },
-				"ReqBoth": { "$ref": "#/definitions/requirement" }
+				"Side": {
+					"type": "string",
+					"enum": ["Up", "Down", "Left", "Right"],
+					"markdownDescription": "Specifies the side of the room where the hole is located. Can be `Up`, `Down`, `Left`, or `Right`."
+				},
+				"Idx": {
+					"type": "number",
+					"markdownDescription": "The index of the hole, counting from zero, which is the first hole to the top or left of the edge."
+				},
+				"Kind": {
+					"type": "string",
+					"enum": ["inout", "in", "out", "none", "unknown"],
+					"markdownDescription": "Specifies the type of the hole. Can be `inout` (can be used as an entrance and an exit), `in` (can only be used as an entrance), `out` (can only be used as an exit), `none` (should not be used), or `unknown` (automatically applied to any hole which does not have a configuration specified for it)."
+				},
+				"Launch": {
+					"type": "number",
+					"markdownDescription": "For holes which are used with a badeline launch, this parameter should be set to the coordinate/8 of Madeline's x-position during the launch."
+				},
+				"ReqOut": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "Specifies the requirements for exiting the room through the hole."
+				},
+				"ReqIn": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "Specifies the requirements for entering the room through the hole."
+				},
+				"ReqBoth": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "Specifies the conditions for both entering and exiting the room through the hole."
+				}
 			},
 			"additionalProperties": false,
-			"required": ["Side", "Idx", "Kind"]
+			"required": ["Side", "Idx", "Kind"],
+			"markdownDescription": "Describes a hole in the room, including its location, type, and requirements to enter or exit through it."
 		},
 
 		"requirement": {
 			"type": "object",
 			"properties": {
-				"Dashes": { "type": "string", "enum": ["zero", "one", "two"] },
+				"Dashes": {
+					"type": "string",
+					"enum": ["zero", "one", "two"],
+					"markdownDescription": "Specifies the number of dashes needed to traverse a room or hole. Can be `zero`, `one`, or `two`. By default, it's `zero`."
+				},
 				"Difficulty": {
 					"type": "string",
-					"enum": ["easy", "normal", "hard", "expert", "master", "perfect"]
+					"enum": ["easy", "normal", "hard", "expert", "master", "perfect"],
+					"markdownDescription": "Indicates the difficulty level required to traverse a room or hole. The levels range from `easy` to `perfect`. The default level is `easy`."
 				},
-				"Key": { "type": "boolean" },
-				"Flag": { "type": "string", "pattern": "^[a-zA-Z0-9]+:(set|unset)$" },
-				"Or": { "type": "array", "items": { "$ref": "#/definitions/requirement" } },
-				"And": { "type": "array", "items": { "$ref": "#/definitions/requirement" } }
+				"Key": {
+					"type": "boolean",
+					"markdownDescription": "If set to `true`, it indicates that a path is blocked by a locked door. Otherwise, it's `false`."
+				},
+				"Flag": {
+					"type": "string",
+					"pattern": "^[a-zA-Z0-9]+:(set|unset)$",
+					"markdownDescription": "Specifies if a certain session flag must be set or unset (`flag:set` or `flag:unset`) to traverse a certain path."
+				},
+				"Or": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/requirement" },
+					"markdownDescription": "Defines a list of sub-requirements, any of which can be met to satisfy the overall requirement."
+				},
+				"And": {
+					"type": "array",
+					"items": { "$ref": "#/definitions/requirement" },
+					"markdownDescription": "Defines a list of sub-requirements, all of which must be met to satisfy the overall requirement."
+				}
 			},
-			"additionalProperties": false
+			"additionalProperties": false,
+			"markdownDescription": "Defines the requirements for traversing a room or a hole. It includes properties such as the number of dashes required (`Dashes`), difficulty level (`Difficulty`), whether a key is necessary (`Key`), and a certain flag state (`Flag`). It also allows defining a logical OR (`Or`) or AND (`And`) of sub-requirements."
 		},
 
 		"Tweak": {
 			"type": "object",
 			"properties": {
-				"ID": { "type": "number" },
-				"X": { "type": "number" },
-				"Y": { "type": "number" },
-				"Name": { "type": "string" },
+				"ID": {
+					"type": "number",
+					"markdownDescription": "The unique identifier copied from Ahorn for the entity to be tweaked."
+				},
+				"X": {
+					"type": "number",
+					"markdownDescription": "The 'X' coordinate for the entity when adding or updating its position."
+				},
+				"Y": {
+					"type": "number",
+					"markdownDescription": "The 'Y' coordinate for the entity when adding or updating its position."
+				},
+				"Name": {
+					"type": "string",
+					"markdownDescription": "The name of the entity to be tweaked. It can be used to disambiguate between normal entities and triggers, which can have overlapping ID numbers."
+				},
 				"Update": {
 					"type": "object",
 					"properties": {
-						"Add": { "type": "boolean" },
-						"Remove": { "type": "boolean" },
-						"Default": { "type": "boolean" }
+						"Add": {
+							"type": "boolean",
+							"markdownDescription": "If set to `true`, a new entity is added. Otherwise, an existing entity is updated."
+						},
+						"Remove": {
+							"type": "boolean",
+							"markdownDescription": "If set to `true`, the specified entity is deleted. Otherwise, it's updated."
+						},
+						"Default": {
+							"type": "boolean",
+							"markdownDescription": "Can be used for spawn points so that they are set as default in case the room is selected as the starting room."
+						}
 					}
 				}
 			},
-			"additionalProperties": false
+			"additionalProperties": false,
+			"markdownDescription": "Defines the properties for making edits to the room's entities. It includes properties to add (`Add`), remove (`Remove`), or update (`Default`) entities. It also specifies the position (`X`, `Y`) and the identifier (`ID`) of the entity."
 		},
 
 		"InternalEdge": {
-			"oneOf": [
-				{
-					"type": "object",
-					"properties": {
-						"To": { "type": "string" },
-						"ReqOut": { "$ref": "#/definitions/requirement" },
-						"ReqIn": { "$ref": "#/definitions/requirement" },
-						"ReqBoth": { "$ref": "#/definitions/requirement" }
-					},
-					"additionalProperties": false,
-					"required": ["To"]
+			"type": "object",
+			"properties": {
+				"To": {
+					"type": "string",
+					"markdownDescription": "The name of the subroom this edge leads to."
 				},
-				{
-					"type": "object",
-					"properties": {
-						"Collectable": { "type": "number" },
-						"ReqOut": { "$ref": "#/definitions/requirement" },
-						"ReqIn": { "$ref": "#/definitions/requirement" },
-						"ReqBoth": { "$ref": "#/definitions/requirement" }
-					},
-					"additionalProperties": false,
-					"required": ["Collectable"]
+				"ReqOut": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "The requirements to go from the target subroom to the current subroom."
 				},
-				{
-					"type": "object",
-					"properties": {
-						"Split": {
-							"type": "string",
-							"enum": ["BottomToTop", "TopToBottom", "LeftToRight", "RightToLeft"]
-						},
-						"ReqOut": { "$ref": "#/definitions/requirement" },
-						"ReqIn": { "$ref": "#/definitions/requirement" },
-						"ReqBoth": { "$ref": "#/definitions/requirement" }
-					},
-					"additionalProperties": false,
-					"required": ["Split"]
+				"ReqIn": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "The requirements to go from the current subroom to the target subroom."
+				},
+				"ReqBoth": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "The requirements to traverse between subrooms in either direction."
 				}
-			]
+			},
+			"additionalProperties": false,
+			"required": ["To"]
 		},
 		"Collectable": {
 			"type": "object",
 			"properties": {
-				"Idx": { "type": "number" }
+				"Idx": {
+					"type": "number",
+					"markdownDescription": "The index of the collectable, with the first (zeroth) collectable being at the top left, and the numbering proceeding left to right and then top to bottom, like scanlines on a television."
+				}
 			},
 			"additionalProperties": false,
 			"required": ["Idx"]
@@ -117,44 +189,109 @@
 		"ExtraSpace": {
 			"type": "object",
 			"properties": {
-				"X": { "type": "number" },
-				"Y": { "type": "number" },
-				"Width": { "type": "number" },
-				"Height": { "type": "number" }
+				"X": {
+					"type": "number",
+					"markdownDescription": "The X coordinate of the block that needs to be kept clear."
+				},
+				"Y": {
+					"type": "number",
+					"markdownDescription": "The Y coordinate of the block that needs to be kept clear."
+				},
+				"Width": {
+					"type": "number",
+					"markdownDescription": "The width of the block that needs to be kept clear."
+				},
+				"Height": {
+					"type": "number",
+					"markdownDescription": "The height of the block that needs to be kept clear."
+				}
 			},
 			"additionalProperties": false,
 			"required": ["X", "Y", "Width", "Height"]
 		},
-		"CoreMode": { "type": "string", "enum": ["hot", "cold", "none"] }
+		"CoreMode": {
+			"type": "string",
+			"enum": ["hot", "cold", "none"],
+			"markdownDescription": "The mode of the room when entered from any given direction. `hot` signifies the room is in a heated state, `cold` signifies the room is in a cooled state, and `none` signifies the room has no specific mode."
+		}
 	},
 
 	"properties": {
-		"Room": { "type": "string" },
-		"Holes": { "type": "array", "items": { "$ref": "#/definitions/hole" } },
-		"Subrooms": { "type": "array", "items": { "$ref": "#/definitions/subroom" } },
-		"InternalEdges": { "type": "array", "items": { "$ref": "#/definitions/InternalEdge" } },
-		"Tweaks": { "type": "array", "items": { "$ref": "#/definitions/Tweak" } },
-		"Collectables": { "type": "array", "items": { "$ref": "#/definitions/Collectable" } },
-		"ExtraSpace": { "type": "array", "items": { "$ref": "#/definitions/ExtraSpace" } },
+		"Room": { "type": "string", "markdownDescription": "Specifies the name of the room." },
+		"Holes": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/hole" },
+			"markdownDescription": "An array of `hole` objects that describe all the holes in the room."
+		},
+		"Subrooms": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/subroom" },
+			"markdownDescription": "An array of `subroom` objects. Subrooms allow you to partition a room and treat parts of it as separate from the rest of the room. This is useful for specifying different requirements for different sections of a room, or indicating that certain collectables are in a specific part of the room."
+		},
+		"InternalEdges": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/InternalEdge" },
+			"markdownDescription": "An array of objects describing the relationships between subrooms."
+		},
+		"Tweaks": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/Tweak" },
+			"markdownDescription": "An array of `Tweak` objects. Tweaks allow you to make modifications to the level data of a room, such as deleting or adding entities, or updating attributes for existing entities."
+		},
+		"Collectables": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/Collectable" },
+			"markdownDescription": "An array of objects indicating the collectables (keys and berries) present in the subroom ."
+		},
+		"ExtraSpace": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/ExtraSpace" },
+			"markdownDescription": "An array of rectangles that represent additional space in the room that needs to be kept clear."
+		},
 		"Flags": {
 			"type": "array",
-			"items": { "type": "string", "pattern": "^[a-zA-Z0-9]+:(set|unset)$" }
+			"items": { "type": "string", "pattern": "^[a-zA-Z0-9]+:(set|unset)$" },
+			"markdownDescription": "An array of flags that can be set or unset in the room."
 		},
-		"ReqEnd": { "$ref": "#/definitions/requirement" },
-		"Hub": { "type": "boolean" },
+		"ReqEnd": {
+			"type": "boolean",
+			"markdownDescription": "Indicates whether this room can be used to end the level. Rooms with crystal hearts should be classified as level-ending."
+		},
 		"Core": {
 			"type": "object",
 			"properties": {
-				"All": { "$ref": "#/definitions/CoreMode" },
-				"Left": { "$ref": "#/definitions/CoreMode" },
-				"Right": { "$ref": "#/definitions/CoreMode" },
-				"Up": { "$ref": "#/definitions/CoreMode" },
-				"Down": { "$ref": "#/definitions/CoreMode" }
+				"All": {
+					"$ref": "#/definitions/CoreMode",
+					"markdownDescription": "Specifies the core mode of the room when entered from any direction. If any of the specific direction fields (`Left`, `Right`, `Up`, `Down`) are omitted, the `All` field will be used instead. The `All` field is also what is used if you just spawn in the room as a starting room."
+				},
+				"Left": {
+					"$ref": "#/definitions/CoreMode",
+					"markdownDescription": "Specifies the core mode of the room when entered from the left."
+				},
+				"Right": {
+					"$ref": "#/definitions/CoreMode",
+					"markdownDescription": "Specifies the core mode of the room when entered from the right."
+				},
+				"Up": {
+					"$ref": "#/definitions/CoreMode",
+					"markdownDescription": "Specifies the core mode of the room when entered from the top."
+				},
+				"Down": {
+					"$ref": "#/definitions/CoreMode",
+					"markdownDescription": "Specifies the core mode of the room when entered from the bottom."
+				}
 			},
-			"additionalProperties": false
+			"additionalProperties": false,
+			"markdownDescription": "Allows you to specify the core mode of the room when entered from any given direction. Core mode can be `hot`, `cold`, or `none`."
 		},
-		"Worth": { "type": "number" },
-		"SpinnersShatter": { "type": "boolean" }
+		"Worth": {
+			"type": "number",
+			"markdownDescription": "Indicates the room's worth when building a pathway map. Each room adds its worth to the length of the map, and the map ends when it exceeds a certain stochastic threshold. A room's worth is by default its diagonal size, normalized such that the smallest possible screen has a worth of 1. If you want to override this, you can specify the `Worth` parameter in the room description."
+		},
+		"SpinnersShatter": {
+			"type": "boolean",
+			"markdownDescription": "Set to `true` if the room contains spinners that Madeline is launched into and subsequently shatter. This prevents the randomizer from replacing the spinners with dust bunnies."
+		}
 	},
 	"additionalProperties": false,
 	"required": ["Room"]
