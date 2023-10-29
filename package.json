@@ -43,6 +43,8 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"ajv": "^8.12.0",
+		"ajv-formats": "^2.1.1",
 		"chroma-js": "^2.4.2",
 		"leader-line-new": "^1.1.9",
 		"lua-json": "^1.0.1",

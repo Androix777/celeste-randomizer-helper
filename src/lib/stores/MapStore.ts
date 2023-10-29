@@ -69,6 +69,7 @@ export type RoomData = {
 	collectablesLinks: CollectableLinkData[];
 	loennData?: RoomLoennData;
 	customYaml: string;
+	customYamlErrors: number;
 };
 
 export type MapData = {
@@ -85,7 +86,8 @@ export function getDefaultRoom(): RoomData {
 		links: [],
 		collectables: [],
 		collectablesLinks: [],
-		customYaml: ''
+		customYaml: '',
+		customYamlErrors: 0
 	};
 }
 
@@ -420,8 +422,7 @@ export function recalculateHolesIndexesForRoom(roomData: RoomData): void {
 		hole.index = ++wallIndexCounters[hole.position];
 	});
 
-	roomData.holes.forEach((hole) => {
-	});
+	roomData.holes.forEach((hole) => {});
 }
 
 export function recalculateHolesIndexesForMap(mapData: MapData): void {
@@ -492,7 +493,8 @@ export function ImportLoennData(loennData: MapLoennData) {
 			collectables: [],
 			collectablesLinks: [],
 			loennData: roomLoennData,
-			customYaml: ''
+			customYaml: '',
+			customYamlErrors: 0
 		};
 
 		setWallHolesFromLoennData(roomData);

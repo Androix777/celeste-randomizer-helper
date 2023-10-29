@@ -1,4 +1,5 @@
-import { parse, stringify } from 'yaml';
+import { parse, parseDocument, Document } from 'yaml';
+import type { Node } from 'yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { get } from 'svelte/store';
 import { mapStore, getDefaultRoom, type CollectableLinkData } from './stores/MapStore';
@@ -13,17 +14,22 @@ import {
 	type CollectableData,
 	CollectableType
 } from './stores/MapStore';
+import { calcErrors } from './SchemaTools';
 
 // This needs to be redone properly
 
 export function importYaml(rawData: string) {
 	let data: any = parse(rawData);
+	let dataDocument: any = parseDocument(rawData);
 	let map: MapData = get(mapStore);
 	let newRooms: RoomData[] = [];
 	for (const key in data) {
 		if (data.hasOwnProperty(key)) {
 			const rooms = data[key];
+			let roomIndex = -1;
 			for (const room of rooms) {
+				roomIndex++;
+
 				let roomData: RoomData | undefined = map.rooms.find((r) => r.name === room.Room);
 				let newRoom: RoomData = getDefaultRoom();
 
@@ -36,7 +42,12 @@ export function importYaml(rawData: string) {
 				}
 
 				if (!room.CelesteRandomizerHelper) {
-					newRoom.customYaml = stringify(room);
+					let roomDocument = dataDocument.contents.items[0].value.items[roomIndex];
+					const newDoc = new Document();
+					newDoc.contents = roomDocument as Node;
+					console.log(newDoc.toString());
+					newRoom.customYaml = newDoc.toString();
+					calcErrors(newRoom);
 				} else if (room.Subrooms) {
 					// holes
 					for (const subroom of room.Subrooms) {

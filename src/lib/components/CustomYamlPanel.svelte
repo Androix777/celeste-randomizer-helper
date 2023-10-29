@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { getContext, onDestroy, onMount, setContext } from 'svelte';
+	import { getContext, onDestroy, onMount } from 'svelte';
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 	import { configureMonacoYaml } from 'monaco-yaml';
 	import schema from '../schema/schema.json';
 	import { mapStore } from '$lib/stores/MapStore';
 	import type { Writable } from 'svelte/store';
+	import { calcErrors } from '$lib/SchemaTools';
 
 	let editor: Monaco.editor.IStandaloneCodeEditor;
 	let monaco: typeof Monaco;
@@ -43,6 +44,7 @@
 	onDestroy(() => {
 		monaco?.editor.getModels().forEach((model) => model.dispose());
 		editor?.dispose();
+		calcErrors(room);
 	});
 </script>
 

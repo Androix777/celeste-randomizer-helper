@@ -24,7 +24,12 @@
 	</div>
 	{#if room.customYaml != ''}
 		<div class="mb-4 flex space-x-4">
-			<P color="text-red-600">CUSTOM YAML</P>
+			<P color="text-green-600">
+				CUSTOM YAML
+				{#if room.customYamlErrors > 0}
+					<P color="text-red-600">({room.customYamlErrors} errors)</P>
+				{/if}
+			</P>
 		</div>
 	{/if}
 	<div class="mb-4 flex space-x-4">

@@ -8,7 +8,7 @@ import type {
 	MapData,
 	RoomData
 } from './stores/MapStore';
-import { parse, stringify } from 'yaml';
+import { parse, parseDocument, stringify } from 'yaml';
 
 function getHoles(room: RoomData) {
 	const holes = room.holes;
@@ -135,14 +135,6 @@ export function GetRoomData(room: RoomData) {
 	let collectablesLinks = room.collectablesLinks;
 	let collectables = room.collectables;
 
-	if (room.customYaml != '') {
-		try {
-			return parse(room.customYaml);
-		} catch (error) {
-			throw new Error(`Error parsing YAML in room ${room.name}`);
-		}
-	}
-
 	if (!holes || Object.keys(holes).length === 0) {
 		return null;
 	}
@@ -181,16 +173,27 @@ export function GetRoomData(room: RoomData) {
 	return roomData;
 }
 
+function customYamlToYaml(customYaml: string) {
+	try {
+		const document = parseDocument(customYaml);
+		return document.toString();
+	} catch (error) {
+		throw new Error(`Error parsing YAML: ${error}`);
+	}
+}
+
 export function convertRoomToYaml(room: RoomData) {
 	try {
-		const allRoomsData = {
-			ASide: [GetRoomData(room)]
-		};
-
-		let yamlData = stringify(allRoomsData);
-		yamlData = yamlData.replace(/'/g, '');
-
-		return yamlData;
+		let yamlData;
+		if (room.customYaml) {
+			yamlData = customYamlToYaml(room.customYaml);
+		} else {
+			const allRoomsData = {
+				ASide: [GetRoomData(room)]
+			};
+			yamlData = stringify(allRoomsData);
+		}
+		return yamlData.replace(/'/g, '');
 	} catch (error) {
 		if (error instanceof Error) {
 			return error.message;
@@ -206,14 +209,11 @@ export function convertAllRoomsToYaml(mapData: MapData) {
 	}
 
 	try {
-		const allRoomsYaml = mapData.rooms
-			.map((room) => GetRoomData(room))
-			.filter((room) => room !== null);
-		const allRoomsData = {
-			ASide: allRoomsYaml
-		};
+		const allRoomsData = mapData.rooms
+			.map((room) => (room.customYaml ? parseDocument(room.customYaml) : GetRoomData(room)))
+			.filter((room) => room !== null); // Filter out null values
 
-		let yamlData = stringify(allRoomsData);
+		let yamlData = stringify({ ASide: allRoomsData });
 		yamlData = yamlData.replace(/'/g, '');
 
 		return yamlData;

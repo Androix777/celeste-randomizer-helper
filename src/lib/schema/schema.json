@@ -152,27 +152,78 @@
 		},
 
 		"InternalEdge": {
-			"type": "object",
-			"properties": {
-				"To": {
-					"type": "string",
-					"markdownDescription": "The name of the subroom this edge leads to."
+			"oneOf": [
+				{
+					"type": "object",
+					"properties": {
+						"To": {
+							"type": "string",
+							"markdownDescription": "The name of the subroom this edge leads to."
+						},
+						"ReqOut": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to go from the target subroom to the current subroom."
+						},
+						"ReqIn": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to go from the current subroom to the target subroom."
+						},
+						"ReqBoth": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to traverse between subrooms in either direction."
+						}
+					},
+					"additionalProperties": false,
+					"required": ["To"]
 				},
-				"ReqOut": {
-					"$ref": "#/definitions/requirement",
-					"markdownDescription": "The requirements to go from the target subroom to the current subroom."
+				{
+					"type": "object",
+					"properties": {
+						"Collectable": {
+							"type": "number",
+							"markdownDescription": "The index of the collectable, with the first (zeroth) collectable being at the top left, and the numbering proceeding left to right and then top to bottom, like scanlines on a television."
+						},
+						"ReqOut": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to go from the target subroom to the current subroom."
+						},
+						"ReqIn": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to go from the current subroom to the target subroom."
+						},
+						"ReqBoth": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to traverse between subrooms in either direction."
+						}
+					},
+					"additionalProperties": false,
+					"required": ["Collectable"]
 				},
-				"ReqIn": {
-					"$ref": "#/definitions/requirement",
-					"markdownDescription": "The requirements to go from the current subroom to the target subroom."
-				},
-				"ReqBoth": {
-					"$ref": "#/definitions/requirement",
-					"markdownDescription": "The requirements to traverse between subrooms in either direction."
+				{
+					"type": "object",
+					"properties": {
+						"Split": {
+							"type": "string",
+							"enum": ["BottomToTop", "TopToBottom", "LeftToRight", "RightToLeft"],
+							"markdownDescription": "The Split directive on the internal edge will cause one of the holes to be broken off into a new subroom, and for there to be a new edge drawn between the subroom the internaledge is part of and the newly created subroom. The split can be any of `BottomToTop`, `TopToBottom`, `LeftToRight`, or `RightToLeft`. The distinction between BottomToTop and TopToBottom is that in the former, the top-most hole will be put in the new subroom, and in the latter, the bottom-most hole will be put in the new subroom. The only time this matters is that when the room is used as the starting room for a map, the randomizer logic will assume you start in the main subroom."
+						},
+						"ReqOut": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to go from the target subroom to the current subroom."
+						},
+						"ReqIn": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to go from the current subroom to the target subroom."
+						},
+						"ReqBoth": {
+							"$ref": "#/definitions/requirement",
+							"markdownDescription": "The requirements to traverse between subrooms in either direction."
+						}
+					},
+					"additionalProperties": false,
+					"required": ["Split"]
 				}
-			},
-			"additionalProperties": false,
-			"required": ["To"]
+			]
 		},
 		"Collectable": {
 			"type": "object",
@@ -254,8 +305,12 @@
 			"markdownDescription": "An array of flags that can be set or unset in the room."
 		},
 		"ReqEnd": {
-			"type": "boolean",
+			"$ref": "#/definitions/requirement",
 			"markdownDescription": "Indicates whether this room can be used to end the level. Rooms with crystal hearts should be classified as level-ending."
+		},
+		"Hub": {
+			"type": "boolean",
+			"markdownDescription": "If a room is marked `Hub: true`, its usable exits will be lit up when the Illuminate Path option is set to Hub Rooms Only."
 		},
 		"Core": {
 			"type": "object",
