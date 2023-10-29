@@ -153,7 +153,7 @@ export function GetRoomData(room: RoomData) {
 			Room: getRoomId(hole),
 			Holes: [
 				{
-					Side: hole.position,
+					Side: hole.position.charAt(0).toUpperCase() + hole.position.slice(1),
 					Idx: hole.index,
 					Kind: getKind(links, hole.id)
 				}

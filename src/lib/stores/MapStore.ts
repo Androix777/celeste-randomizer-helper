@@ -3,10 +3,10 @@ import { writable, get, type Writable, type Updater } from 'svelte/store';
 import type { MapLoennData, RoomLoennData } from '$lib/LoennImport';
 
 export enum WallPosition {
-	UP = 'Up',
-	DOWN = 'Down',
-	LEFT = 'Left',
-	RIGHT = 'Right'
+	UP = 'up',
+	DOWN = 'down',
+	LEFT = 'left',
+	RIGHT = 'right'
 }
 
 export enum CollectableType {
@@ -417,7 +417,13 @@ export function recalculateHolesIndexesForRoom(roomData: RoomData): void {
 	};
 
 	roomData.holes.forEach((hole) => {
+		console.log(hole.position);
+		console.log(wallIndexCounters);
 		hole.index = ++wallIndexCounters[hole.position];
+	});
+
+	roomData.holes.forEach((hole) => {
+		console.log(hole.index);
 	});
 }
 
