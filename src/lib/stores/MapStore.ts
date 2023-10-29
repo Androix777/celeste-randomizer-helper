@@ -417,13 +417,10 @@ export function recalculateHolesIndexesForRoom(roomData: RoomData): void {
 	};
 
 	roomData.holes.forEach((hole) => {
-		console.log(hole.position);
-		console.log(wallIndexCounters);
 		hole.index = ++wallIndexCounters[hole.position];
 	});
 
 	roomData.holes.forEach((hole) => {
-		console.log(hole.index);
 	});
 }
 
