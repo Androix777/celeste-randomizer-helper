@@ -21,14 +21,13 @@ export function calcErrors(room: RoomData) {
 		const validate = ajv.compile(schema);
 
 		if (data) {
-			validate(data);
-			room.customYamlErrors = validate.errors?.length ?? 0;
+			const valid = validate(data);
+			room.customYamlErrors = !valid;
 		}
 	} catch (e) {
 		console.error('Conversion YAML to JSON error', e);
-		room.customYamlErrors = 0;
+		room.customYamlErrors = true;
 	}
 
 	mapStore.updateRoom(room);
-	console.log(room.customYamlErrors);
 }

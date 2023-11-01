@@ -46,6 +46,22 @@
 					"type": "number",
 					"markdownDescription": "The index of the hole, counting from zero, which is the first hole to the top or left of the edge."
 				},
+				"New": {
+					"type": "boolean",
+					"markdownDescription": "TODO"
+				},
+				"HighOpen": {
+					"type": "boolean",
+					"markdownDescription": "TODO"
+				},
+				"LowBound": {
+					"type": "number",
+					"markdownDescription": "TODO"
+				},
+				"HighBound": {
+					"type": "number",
+					"markdownDescription": "TODO"
+				},
 				"Kind": {
 					"type": "string",
 					"enum": ["inout", "in", "out", "none", "unknown"],
@@ -69,7 +85,14 @@
 				}
 			},
 			"additionalProperties": false,
-			"required": ["Side", "Idx", "Kind"],
+			"oneOf": [
+				{
+					"required": ["Side", "Idx", "Kind"]
+				},
+				{
+					"required": ["Side", "New", "Kind"]
+				}
+			],
 			"markdownDescription": "Describes a hole in the room, including its location, type, and requirements to enter or exit through it."
 		},
 
@@ -89,6 +112,10 @@
 				"Key": {
 					"type": "boolean",
 					"markdownDescription": "If set to `true`, it indicates that a path is blocked by a locked door. Otherwise, it's `false`."
+				},
+				"KeyholeID": {
+					"type": "number",
+					"markdownDescription": "TODO"
 				},
 				"Flag": {
 					"type": "string",
@@ -116,6 +143,10 @@
 				"ID": {
 					"type": "number",
 					"markdownDescription": "The unique identifier copied from Ahorn for the entity to be tweaked."
+				},
+				"Decal": {
+					"type": "string",
+					"markdownDescription": "TODO"
 				},
 				"X": {
 					"type": "number",
@@ -152,76 +183,51 @@
 		},
 
 		"InternalEdge": {
+			"type": "object",
+			"properties": {
+				"To": {
+					"type": "string",
+					"markdownDescription": "The name of the subroom this edge leads to."
+				},
+				"Collectable": {
+					"type": "number",
+					"markdownDescription": "The index of the collectable, with the first (zeroth) collectable being at the top left, and the numbering proceeding left to right and then top to bottom, like scanlines on a television."
+				},
+				"Split": {
+					"type": "string",
+					"enum": ["BottomToTop", "TopToBottom", "LeftToRight", "RightToLeft"],
+					"markdownDescription": "The Split directive on the internal edge will cause one of the holes to be broken off into a new subroom, and for there to be a new edge drawn between the subroom the internaledge is part of and the newly created subroom. The split can be any of `BottomToTop`, `TopToBottom`, `LeftToRight`, or `RightToLeft`. The distinction between BottomToTop and TopToBottom is that in the former, the top-most hole will be put in the new subroom, and in the latter, the bottom-most hole will be put in the new subroom. The only time this matters is that when the room is used as the starting room for a map, the randomizer logic will assume you start in the main subroom."
+				},
+				"CustomWarp": {
+					"type": "boolean",
+					"markdownDescription": "TODO"
+				},
+				"ReqOut": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "The requirements to go from the target subroom to the current subroom."
+				},
+				"ReqIn": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "The requirements to go from the current subroom to the target subroom."
+				},
+				"ReqBoth": {
+					"$ref": "#/definitions/requirement",
+					"markdownDescription": "The requirements to traverse between subrooms in either direction."
+				}
+			},
+			"additionalProperties": false,
 			"oneOf": [
 				{
-					"type": "object",
-					"properties": {
-						"To": {
-							"type": "string",
-							"markdownDescription": "The name of the subroom this edge leads to."
-						},
-						"ReqOut": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to go from the target subroom to the current subroom."
-						},
-						"ReqIn": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to go from the current subroom to the target subroom."
-						},
-						"ReqBoth": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to traverse between subrooms in either direction."
-						}
-					},
-					"additionalProperties": false,
 					"required": ["To"]
 				},
 				{
-					"type": "object",
-					"properties": {
-						"Collectable": {
-							"type": "number",
-							"markdownDescription": "The index of the collectable, with the first (zeroth) collectable being at the top left, and the numbering proceeding left to right and then top to bottom, like scanlines on a television."
-						},
-						"ReqOut": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to go from the target subroom to the current subroom."
-						},
-						"ReqIn": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to go from the current subroom to the target subroom."
-						},
-						"ReqBoth": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to traverse between subrooms in either direction."
-						}
-					},
-					"additionalProperties": false,
 					"required": ["Collectable"]
 				},
 				{
-					"type": "object",
-					"properties": {
-						"Split": {
-							"type": "string",
-							"enum": ["BottomToTop", "TopToBottom", "LeftToRight", "RightToLeft"],
-							"markdownDescription": "The Split directive on the internal edge will cause one of the holes to be broken off into a new subroom, and for there to be a new edge drawn between the subroom the internaledge is part of and the newly created subroom. The split can be any of `BottomToTop`, `TopToBottom`, `LeftToRight`, or `RightToLeft`. The distinction between BottomToTop and TopToBottom is that in the former, the top-most hole will be put in the new subroom, and in the latter, the bottom-most hole will be put in the new subroom. The only time this matters is that when the room is used as the starting room for a map, the randomizer logic will assume you start in the main subroom."
-						},
-						"ReqOut": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to go from the target subroom to the current subroom."
-						},
-						"ReqIn": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to go from the current subroom to the target subroom."
-						},
-						"ReqBoth": {
-							"$ref": "#/definitions/requirement",
-							"markdownDescription": "The requirements to traverse between subrooms in either direction."
-						}
-					},
-					"additionalProperties": false,
 					"required": ["Split"]
+				},
+				{
+					"required": ["CustomWarp"]
 				}
 			]
 		},
@@ -231,6 +237,10 @@
 				"Idx": {
 					"type": "number",
 					"markdownDescription": "The index of the collectable, with the first (zeroth) collectable being at the top left, and the numbering proceeding left to right and then top to bottom, like scanlines on a television."
+				},
+				"MustFly": {
+					"type": "boolean",
+					"markdownDescription": "TODO"
 				}
 			},
 			"additionalProperties": false,

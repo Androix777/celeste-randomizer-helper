@@ -45,7 +45,6 @@ export function importYaml(rawData: string) {
 					let roomDocument = dataDocument.contents.items[0].value.items[roomIndex];
 					const newDoc = new Document();
 					newDoc.contents = roomDocument as Node;
-					console.log(newDoc.toString());
 					newRoom.customYaml = newDoc.toString();
 					calcErrors(newRoom);
 				} else if (room.Subrooms) {

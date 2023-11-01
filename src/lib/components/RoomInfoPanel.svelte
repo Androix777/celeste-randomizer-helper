@@ -26,8 +26,8 @@
 		<div class="mb-4 flex space-x-4">
 			<P color="text-green-600">
 				CUSTOM YAML
-				{#if room.customYamlErrors > 0}
-					<P color="text-red-600">({room.customYamlErrors} errors)</P>
+				{#if room.customYamlErrors}
+					<P color="text-red-600">errors</P>
 				{/if}
 			</P>
 		</div>
