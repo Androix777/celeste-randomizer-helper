@@ -22,10 +22,11 @@ function getHoles(room: RoomData) {
 	return holeDict;
 }
 
-function getKind(links: LinkData[], holeId: string) {
+function getKind(links: LinkData[], collectableLinks: CollectableLinkData[], holeId: string) {
 	const linksForHole = links.filter((link) => link.idStart === holeId || link.idFinish === holeId);
-	const isFinish = linksForHole.some((link) => link.idFinish === holeId);
-	const isStart = linksForHole.some((link) => link.idStart === holeId);
+	const collectableLinksForHole = collectableLinks.filter((link) => link.holeID === holeId);
+	const isFinish = linksForHole.some((link) => link.idFinish === holeId) || collectableLinksForHole.some((link) => !link.isIn);
+	const isStart = linksForHole.some((link) => link.idStart === holeId) || collectableLinksForHole.some((link) => link.isIn);
 
 	if (isFinish && isStart) return 'inout';
 	if (isFinish) return 'out';
@@ -90,7 +91,7 @@ function getCollectableInternalEdges(
 		return groupedLinks;
 	}, {} as Record<string, CollectableLinkData[]>);
 
-	return Object.entries(linksGroupedByRoom).map(([roomId, links]) => {
+	const internalEdges = Object.entries(linksGroupedByRoom).map(([roomId, links]) => {
 		const edge: {
 			To: string;
 			ReqIn?: {
@@ -128,6 +129,8 @@ function getCollectableInternalEdges(
 
 		return edge;
 	});
+
+	return internalEdges.length > 0 ? internalEdges : undefined;
 }
 
 export function GetRoomData(room: RoomData) {
@@ -148,7 +151,7 @@ export function GetRoomData(room: RoomData) {
 				{
 					Side: hole.position.charAt(0).toUpperCase() + hole.position.slice(1),
 					Idx: hole.index,
-					Kind: getKind(links, hole.id)
+					Kind: getKind(links, collectablesLinks, hole.id)
 				}
 			],
 			InternalEdges: internalEdges ? internalEdges : undefined
@@ -164,7 +167,7 @@ export function GetRoomData(room: RoomData) {
 			return {
 				Room: getCollectableRoomId(collectable),
 				Collectables: [{ Idx: collectable.index }],
-				InternalEdges: internalEdges
+				InternalEdges: internalEdges ? internalEdges : undefined
 			};
 		});
 
@@ -181,7 +184,7 @@ export function GetRoomData(room: RoomData) {
 	);
 	if (spawn != undefined) {
 		const internalEdges = getCollectableInternalEdges(collectablesLinks, spawn, holes);
-		roomData.InternalEdges = internalEdges;
+		roomData.InternalEdges = internalEdges ? internalEdges : undefined;
 	}
 
 	return roomData;
