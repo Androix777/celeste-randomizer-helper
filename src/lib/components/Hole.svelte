@@ -3,8 +3,7 @@
 	import {
 		ArrowDownToBracketOutline,
 		ArrowUpFromBracketOutline,
-		TrashBinOutline,
-		StarSolid
+		TrashBinOutline
 	} from 'flowbite-svelte-icons';
 	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import { getContext, onMount, onDestroy } from 'svelte';
@@ -23,7 +22,7 @@
 
 	let holeElements: Writable<{ [key: string]: HTMLElement }> = getContext(HOLE_ELEMENTS);
 	let focusedHole: Writable<string> = getContext(FOCUSED_HOLE);
-	let isSpawn: boolean = false;
+	let holeNumber: number;
 
 	function removeHole() {
 		mapStore.removeHole(hole.id);
@@ -39,15 +38,11 @@
 		isLastSelectedholeStart.set(false);
 	}
 
-	function setSpawn() {
-		let room = mapStore.getRoom();
-		room.spawnHoleID = room.spawnHoleID == hole.id ? '' : hole.id;
-		mapStore.updateRoom(room);
-	}
-
 	$: {
-		const room = mapStore.getRoom(undefined, $mapStore);
-		isSpawn = room.spawnHoleID == hole.id;
+		const holesOnThisWall = mapStore
+			.getRoom(undefined, $mapStore)
+			.holes.filter((h) => h.position === hole.position);
+		holeNumber = holesOnThisWall!.indexOf(hole); //!
 	}
 
 	onMount(() => {
@@ -71,16 +66,14 @@
 </script>
 
 <div
-	class="flex flex-1 border {isSpawn
-		? 'bg-emerald-300'
-		: 'bg-gray-400'}  items-center justify-center"
+	class="flex flex-1 border bg-gray-700 dark:bg-gray-400 items-center justify-center"
 	bind:this={holeElement}
 	on:mouseenter={onMouseEnter}
 	on:mouseleave={onMouseLeave}
 	role="none"
 >
 	<SpeedDial defaultClass="flex rounded-full">
-		<div slot="icon" class="w-5 h-5">{hole.index}</div>
+		<div slot="icon" class="w-5 h-5">{holeNumber}</div>
 		<Listgroup class="divide-none" active>
 			<ListgroupItem class="flex gap-2 md:px-5" on:click={addStart}>
 				<ArrowUpFromBracketOutline class="w-3.5 h-3.5" />
@@ -89,10 +82,6 @@
 			<ListgroupItem class="flex gap-2 md:px-5" on:click={addFinish}>
 				<ArrowDownToBracketOutline class="w-3.5 h-3.5" />
 				To
-			</ListgroupItem>
-			<ListgroupItem class="flex gap-2 md:px-5" on:click={setSpawn}>
-				<StarSolid class="w-3.5 h-3.5" />
-				Spawn point
 			</ListgroupItem>
 			<ListgroupItem class="flex gap-2 md:px-5" on:click={removeHole}>
 				<TrashBinOutline class="w-3.5 h-3.5" />

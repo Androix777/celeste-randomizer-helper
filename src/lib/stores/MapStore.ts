@@ -38,7 +38,6 @@ export type HoleData = {
 
 export type CollectableData = {
 	id: string;
-	name?: string;
 	index: number;
 	collectableType: CollectableType;
 };
@@ -68,8 +67,6 @@ export type RoomData = {
 	links: LinkData[];
 	collectables: CollectableData[];
 	collectablesLinks: CollectableLinkData[];
-	spawnHoleID: string;
-
 	loennData?: RoomLoennData;
 	customYaml: string;
 	customYamlErrors: boolean;
@@ -89,7 +86,6 @@ export function getDefaultRoom(): RoomData {
 		links: [],
 		collectables: [],
 		collectablesLinks: [],
-		spawnHoleID: '',
 		customYaml: '',
 		customYamlErrors: false
 	};
@@ -496,7 +492,6 @@ export function ImportLoennData(loennData: MapLoennData) {
 			links: [],
 			collectables: [],
 			collectablesLinks: [],
-			spawnHoleID: '',
 			loennData: roomLoennData,
 			customYaml: '',
 			customYamlErrors: false

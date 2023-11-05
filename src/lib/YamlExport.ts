@@ -21,20 +21,6 @@ function getHoles(room: RoomData) {
 	return holeDict;
 }
 
-function getCollectables(room: RoomData) {
-	const collectables = room.collectables;
-
-	const collectablesDict: Record<string, CollectableData> = collectables.reduce(
-		(acc: Record<string, CollectableData>, collectable) => {
-			acc[collectable.id] = collectable;
-			return acc;
-		},
-		{}
-	);
-
-	return collectablesDict;
-}
-
 function getKind(links: LinkData[], holeId: string) {
 	const linksForHole = links.filter((link) => link.idStart === holeId || link.idFinish === holeId);
 	const isFinish = linksForHole.some((link) => link.idFinish === holeId);
@@ -51,94 +37,33 @@ function getRoomId(hole: HoleData) {
 }
 
 function getCollectableRoomId(collectable: CollectableData) {
-	return `"collectable_${collectable.index}"`;
+	return `"${collectable.collectableType}_${collectable.index}"`;
 }
 
-function getInternalEdges(
-	links: LinkData[],
-	hole: HoleData,
-	holes: Record<string, HoleData>,
-	collectables: Record<string, CollectableData>,
-	collectablesLinks: CollectableLinkData[],
-	reqOut: boolean,
-	reqIn: boolean,
-	col: boolean,
-	ignoreID: string = ''
-) {
-	const linksForHole = links.filter(
-		(link) =>
-			(link.idStart === hole.id && link.idFinish != ignoreID) ||
-			(link.idFinish === hole.id && link.idStart != ignoreID)
-	);
+function getInternalEdges(links: LinkData[], hole: HoleData, holes: Record<string, HoleData>) {
+	const linksForHole = links.filter((link) => link.idStart === hole.id);
+
+	if (linksForHole.length === 0) return null;
 
 	const groupedLinks = linksForHole.reduce((acc: any, link) => {
-		if (link.idStart === hole.id && reqOut) {
-			const otherHole = holes[link.idFinish];
-			const otherRoomId = getRoomId(otherHole);
+		const otherHole = holes[link.idFinish];
+		const otherRoomId = getRoomId(otherHole);
 
-			if (!acc[otherRoomId]) {
-				acc[otherRoomId] = {
-					To: otherRoomId,
-					ReqOut: { Difficulty: 'easy', Or: [] },
-					ReqIn: { Difficulty: 'easy', Or: [] }
-				};
-			}
-
-			acc[otherRoomId].ReqOut.Or.push({
-				Dashes: link.dashes,
-				Difficulty: link.difficulty
-			});
-		} else if (link.idFinish === hole.id && reqIn) {
-			const otherHole = holes[link.idStart];
-			const otherRoomId = getRoomId(otherHole);
-
-			if (!acc[otherRoomId]) {
-				acc[otherRoomId] = {
-					To: otherRoomId,
-					ReqOut: { Difficulty: 'easy', Or: [] },
-					ReqIn: { Difficulty: 'easy', Or: [] }
-				};
-			}
-
-			acc[otherRoomId].ReqIn.Or.push({
-				Dashes: link.dashes,
-				Difficulty: link.difficulty
-			});
+		if (!acc[otherRoomId]) {
+			acc[otherRoomId] = {
+				To: otherRoomId,
+				ReqOut: { Difficulty: 'easy', Or: [] },
+				ReqIn: { Difficulty: 'easy', Or: [] }
+			};
 		}
+
+		acc[otherRoomId].ReqOut.Or.push({
+			Dashes: link.dashes,
+			Difficulty: link.difficulty
+		});
 
 		return acc;
 	}, {});
-
-	if (col) {
-		const correctCollectablesLinks = collectablesLinks.filter(
-			(link) => link.holeID === hole.id && link.holeID != ignoreID
-		);
-		for (const link of correctCollectablesLinks) {
-			const collectable = collectables[link.collectableID];
-			const collectableId = getCollectableRoomId(collectable);
-
-			if (!groupedLinks[collectableId]) {
-				groupedLinks[collectableId] = {
-					To: collectableId,
-					ReqOut: { Difficulty: 'easy', Or: [] },
-					ReqIn: { Difficulty: 'easy', Or: [] }
-				};
-			}
-			if (link.isIn) {
-				groupedLinks[collectableId].ReqOut.Or.push({
-					Dashes: link.dashes,
-					Difficulty: link.difficulty
-				});
-			} else {
-				groupedLinks[collectableId].ReqIn.Or.push({
-					Dashes: link.dashes,
-					Difficulty: link.difficulty
-				});
-			}
-		}
-	}
-
-	if (Object.values(groupedLinks).length == 0) return undefined;
 
 	return Object.values(groupedLinks).map((edge: any) => {
 		if (edge.ReqOut.Or.length === 0) delete edge.ReqOut;
@@ -150,12 +75,9 @@ function getInternalEdges(
 function getCollectableInternalEdges(
 	links: CollectableLinkData[],
 	collectable: CollectableData,
-	holes: Record<string, HoleData>,
-	ignoreID: string = ''
+	holes: Record<string, HoleData>
 ) {
-	const linksForCollectable = links.filter(
-		(link) => link.collectableID === collectable.id && link.holeID != ignoreID
-	);
+	const linksForCollectable = links.filter((link) => link.collectableID === collectable.id);
 
 	const linksGroupedByRoom = linksForCollectable.reduce((groupedLinks, link) => {
 		const hole = holes[link.holeID];
@@ -166,8 +88,6 @@ function getCollectableInternalEdges(
 		groupedLinks[roomId].push(link);
 		return groupedLinks;
 	}, {} as Record<string, CollectableLinkData[]>);
-
-	if (Object.entries(linksGroupedByRoom).length == 0) return undefined;
 
 	return Object.entries(linksGroupedByRoom).map(([roomId, links]) => {
 		const edge: {
@@ -213,47 +133,29 @@ export function GetRoomData(room: RoomData) {
 	let holes = getHoles(room);
 	let links = room.links;
 	let collectablesLinks = room.collectablesLinks;
-	let collectables = getCollectables(room);
-	let spawnHole = holes[room.spawnHoleID];
+	let collectables = room.collectables;
 
 	if (!holes || Object.keys(holes).length === 0) {
 		return null;
 	}
 
-	const subroomsData = Object.values(holes)
-		.filter((x) => x.id != room.spawnHoleID)
-		.map((hole) => {
-			const internalEdges = getInternalEdges(
-				links,
-				hole,
-				holes,
-				collectables,
-				collectablesLinks,
-				true,
-				false,
-				false,
-				room.spawnHoleID
-			);
-			return {
-				Room: getRoomId(hole),
-				Holes: [
-					{
-						Side: hole.position.charAt(0).toUpperCase() + hole.position.slice(1),
-						Idx: hole.index,
-						Kind: getKind(links, hole.id)
-					}
-				],
-				InternalEdges: internalEdges ? internalEdges : undefined
-			};
-		});
+	const subroomsData = Object.values(holes).map((hole) => {
+		const internalEdges = getInternalEdges(links, hole, holes);
+		return {
+			Room: getRoomId(hole),
+			Holes: [
+				{
+					Side: hole.position.charAt(0).toUpperCase() + hole.position.slice(1),
+					Idx: hole.index,
+					Kind: getKind(links, hole.id)
+				}
+			],
+			InternalEdges: internalEdges ? internalEdges : undefined
+		};
+	});
 
-	const collectableSubroomsData = Object.values(collectables).map((collectable) => {
-		const internalEdges = getCollectableInternalEdges(
-			collectablesLinks,
-			collectable,
-			holes,
-			room.spawnHoleID
-		);
+	const collectableSubroomsData = collectables.map((collectable) => {
+		const internalEdges = getCollectableInternalEdges(collectablesLinks, collectable, holes);
 		return {
 			Room: getCollectableRoomId(collectable),
 			Collectables: [{ Idx: collectable.index }],
@@ -263,31 +165,11 @@ export function GetRoomData(room: RoomData) {
 
 	const combinedSubrooms = [...subroomsData, ...collectableSubroomsData];
 
-	const roomData: any = {
+	const roomData = {
 		Room: `"${room.name}"`,
 		CelesteRandomizerHelper: true,
 		Subrooms: combinedSubrooms
 	};
-
-	if (spawnHole != undefined) {
-		(roomData.Holes = [
-			{
-				Side: spawnHole.position.charAt(0).toUpperCase() + spawnHole.position.slice(1),
-				Idx: spawnHole.index,
-				Kind: getKind(links, spawnHole.id)
-			}
-		]),
-			(roomData.InternalEdges = getInternalEdges(
-				links,
-				spawnHole,
-				holes,
-				collectables,
-				collectablesLinks,
-				true,
-				true,
-				true
-			));
-	}
 	return roomData;
 }
 
@@ -329,7 +211,7 @@ export function convertAllRoomsToYaml(mapData: MapData) {
 	try {
 		const allRoomsData = mapData.rooms
 			.map((room) => (room.customYaml ? parseDocument(room.customYaml) : GetRoomData(room)))
-			.filter((room) => room !== null);
+			.filter((room) => room !== null); // Filter out null values
 
 		let yamlData = stringify({ ASide: allRoomsData });
 		yamlData = yamlData.replace(/'/g, '');
