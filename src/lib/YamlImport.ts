@@ -117,7 +117,7 @@ export function importYaml(rawData: string) {
 														holeID: hole.id,
 														dashes: req.Dashes as Dashes,
 														difficulty: req.Difficulty as Difficulty,
-														isIn: true
+														isIn: false
 													};
 													newRoom.collectablesLinks.push(linkData);
 												}
@@ -131,7 +131,7 @@ export function importYaml(rawData: string) {
 														holeID: hole.id,
 														dashes: req.Dashes as Dashes,
 														difficulty: req.Difficulty as Difficulty,
-														isIn: false
+														isIn: true
 													};
 													newRoom.collectablesLinks.push(linkData);
 												}
