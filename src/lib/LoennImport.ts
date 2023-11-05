@@ -10,6 +10,8 @@ export type RoomLoennData = {
 	solids: string[][];
 	bg: string[][];
 	collectables: CollectableLoennData[];
+	spawns: SpawnLoennData[];
+	finishes: FinishLoennData[];
 	realHeight: number;
 	realWidth: number;
 	height: number;
@@ -21,6 +23,20 @@ export type CollectableLoennData = {
 	loennID: number;
 	index: number;
 	collectableType: CollectableType;
+	x: number;
+	y: number;
+};
+
+export type SpawnLoennData = {
+	loennID: number;
+	index: number;
+	isFirst: boolean;
+	x: number;
+	y: number;
+};
+
+export type FinishLoennData = {
+	loennID: number;
 	x: number;
 	y: number;
 };
@@ -67,6 +83,10 @@ function getMapLoennData(rawData: any): MapLoennData {
 
 			//entities
 			let collectables: CollectableLoennData[] = [];
+			let spawns: SpawnLoennData[] = [];
+			let finishes: FinishLoennData[] = [];
+
+
 			if (rawEntities != undefined) {
 				rawEntities.forEach((entity: any) => {
 					if (['key', 'strawberry'].includes(entity.__name)) {
@@ -80,26 +100,63 @@ function getMapLoennData(rawData: any): MapLoennData {
 						};
 						collectables.push(newCollectable);
 					}
+
+					if (['player'].includes(entity.__name)) {
+						const newSpawn: SpawnLoennData = {
+							loennID: entity.id,
+							index: 0,
+							isFirst: false,
+							x: entity.x,
+							y: entity.y
+						};
+						spawns.push(newSpawn);
+					}
+
+					if (['blackGem', 'CollabUtils2/MiniHeart'].includes(entity.__name)) {
+						const newFinish: FinishLoennData = {
+							loennID: entity.id,
+							x: entity.x,
+							y: entity.y
+						};
+						finishes.push(newFinish);
+					}
 				});
 			}
 
-			collectables.sort((a, b) => {
-				if (a.y === b.y) {
-					return a.x - b.x;
-				} else {
-					return a.y - b.y;
-				}
-			});
+			if (collectables.length > 0) {
+				collectables.sort((a, b) => {
+					if (a.y === b.y) {
+						return a.x - b.x;
+					} else {
+						return a.y - b.y;
+					}
+				});
+				collectables.forEach((collectable, index) => {
+					collectable.index = index;
+				});
+			}
 
-			collectables.forEach((collectable, index) => {
-				collectable.index = index;
-			});
+			if (spawns.length > 0) {
+				spawns.sort((a, b) => a.loennID - b.loennID)[0].isFirst = true;
+				spawns.sort((a, b) => {
+					if (a.y === b.y) {
+						return a.x - b.x;
+					} else {
+						return a.y - b.y;
+					}
+				});
+				spawns.forEach((spawn, index) => {
+					spawn.index = index;
+				});
+			}
 
 			const newRoomLoennData: RoomLoennData = {
 				name: level.name,
 				solids: solids,
 				bg: bg,
 				collectables: collectables,
+				spawns: spawns,
+				finishes: finishes,
 				realHeight: level.height,
 				realWidth: level.width,
 				height: height,

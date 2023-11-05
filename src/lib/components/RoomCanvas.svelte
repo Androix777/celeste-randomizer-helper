@@ -100,6 +100,30 @@
 
 			ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
 		}
+
+		// spawns
+		for (const spawn of room.loennData.spawns) {
+			const x = spawn.x / 8;
+			const y = spawn.y / 8;
+			
+			if(spawn.isFirst){
+				ctx.fillStyle = 'Chartreuse';
+			}else{
+				ctx.fillStyle = 'green';
+			}
+			
+			ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+		}
+
+		// finishes
+		for (const finish of room.loennData.finishes) {
+			const x = finish.x / 8;
+			const y = finish.y / 8;
+			
+			ctx.fillStyle = 'Pink';
+			
+			ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+		}
 	}
 
 	function clearCanvas() {
