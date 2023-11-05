@@ -38,6 +38,7 @@ export type HoleData = {
 
 export type CollectableData = {
 	id: string;
+	name?: string;
 	index: number;
 	collectableType: CollectableType;
 };

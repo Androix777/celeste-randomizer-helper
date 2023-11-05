@@ -85,7 +85,6 @@ function getMapLoennData(rawData: any): MapLoennData {
 			let spawns: SpawnLoennData[] = [];
 			let finishes: FinishLoennData[] = [];
 
-
 			if (rawEntities != undefined) {
 				rawEntities.forEach((entity: any) => {
 					if (['key', 'strawberry'].includes(entity.__name)) {

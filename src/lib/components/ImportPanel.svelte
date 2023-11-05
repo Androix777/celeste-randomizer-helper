@@ -12,7 +12,7 @@
 		if (loennData == '') {
 			importYaml(yamlData);
 			mapStore.removeRoom($mapStore.rooms[0].id);
-		}else{
+		} else {
 			importLoenn(loennData);
 			importYaml(yamlData);
 		}

@@ -23,7 +23,7 @@
 
 	let holeElements: Writable<{ [key: string]: HTMLElement }> = getContext(HOLE_ELEMENTS);
 	let focusedHole: Writable<string> = getContext(FOCUSED_HOLE);
-	let isSpawn : boolean = false;
+	let isSpawn: boolean = false;
 
 	function removeHole() {
 		mapStore.removeHole(hole.id);
@@ -71,7 +71,9 @@
 </script>
 
 <div
-	class="flex flex-1 border {isSpawn ? 'bg-emerald-300' : 'bg-gray-400'}  items-center justify-center"
+	class="flex flex-1 border {isSpawn
+		? 'bg-emerald-300'
+		: 'bg-gray-400'}  items-center justify-center"
 	bind:this={holeElement}
 	on:mouseenter={onMouseEnter}
 	on:mouseleave={onMouseLeave}
