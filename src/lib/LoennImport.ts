@@ -46,7 +46,6 @@ export function importLoenn(data: string) {
 	let parsedData: any = parse('return ' + data);
 	let newData: MapLoennData = getMapLoennData(parsedData);
 	calculateHoles(newData);
-	console.log(newData);
 	ImportLoennData(newData);
 }
 

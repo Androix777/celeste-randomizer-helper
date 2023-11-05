@@ -9,8 +9,13 @@
 
 	function processData(event: Event) {
 		mapStore.clearMap();
-		importLoenn(loennData);
-		importYaml(yamlData);
+		if (loennData == '') {
+			importYaml(yamlData);
+			mapStore.removeRoom($mapStore.rooms[0].id);
+		}else{
+			importLoenn(loennData);
+			importYaml(yamlData);
+		}
 	}
 </script>
 
