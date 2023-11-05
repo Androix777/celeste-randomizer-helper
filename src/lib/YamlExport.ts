@@ -1,14 +1,15 @@
-import type {
-	CollectableData,
-	CollectableLinkData,
-	Dashes,
-	Difficulty,
-	HoleData,
-	LinkData,
-	MapData,
-	RoomData
+import {
+	CollectableType,
+	type CollectableData,
+	type CollectableLinkData,
+	type Dashes,
+	type Difficulty,
+	type HoleData,
+	type LinkData,
+	type MapData,
+	type RoomData
 } from './stores/MapStore';
-import { parse, parseDocument, stringify } from 'yaml';
+import { parseDocument, stringify } from 'yaml';
 
 function getHoles(room: RoomData) {
 	const holes = room.holes;
@@ -154,22 +155,35 @@ export function GetRoomData(room: RoomData) {
 		};
 	});
 
-	const collectableSubroomsData = collectables.map((collectable) => {
-		const internalEdges = getCollectableInternalEdges(collectablesLinks, collectable, holes);
-		return {
-			Room: getCollectableRoomId(collectable),
-			Collectables: [{ Idx: collectable.index }],
-			InternalEdges: internalEdges
-		};
-	});
+	const collectableSubroomsData = collectables
+		.filter((collectable) =>
+			[CollectableType.STRAWBERRY, CollectableType.KEY].includes(collectable.collectableType)
+		)
+		.map((collectable) => {
+			const internalEdges = getCollectableInternalEdges(collectablesLinks, collectable, holes);
+			return {
+				Room: getCollectableRoomId(collectable),
+				Collectables: [{ Idx: collectable.index }],
+				InternalEdges: internalEdges
+			};
+		});
 
 	const combinedSubrooms = [...subroomsData, ...collectableSubroomsData];
 
-	const roomData = {
+	const roomData: any = {
 		Room: `"${room.name}"`,
 		CelesteRandomizerHelper: true,
 		Subrooms: combinedSubrooms
 	};
+
+	const spawn = collectables.find(
+		(collectable) => collectable.collectableType == CollectableType.SPAWN
+	);
+	if (spawn != undefined) {
+		const internalEdges = getCollectableInternalEdges(collectablesLinks, spawn, holes);
+		roomData.InternalEdges = internalEdges;
+	}
+
 	return roomData;
 }
 

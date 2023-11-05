@@ -16,6 +16,7 @@
 		.collectablesLinks.filter((link) => link.collectableID === collectable.id);
 
 	let collectableTypes = [
+		{ value: CollectableType.SPAWN, name: 'Spawn point' },
 		{ value: CollectableType.STRAWBERRY, name: 'Strawberry' },
 		{ value: CollectableType.KEY, name: 'Key' }
 	];

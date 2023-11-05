@@ -47,40 +47,96 @@ export function importYaml(rawData: string) {
 					newDoc.contents = roomDocument as Node;
 					newRoom.customYaml = newDoc.toString();
 					calcErrors(newRoom);
-				} else if (room.Subrooms) {
-					// holes
-					for (const subroom of room.Subrooms) {
-						if (subroom.Holes) {
-							for (const hole of subroom.Holes) {
-								const holeData: HoleData = {
-									id: uuidv4(),
-									index: 0,
-									position: hole.Side as WallPosition,
-									name: subroom.Room
-								};
-								newRoom.holes.push(holeData);
+				} else {
+					if (room.Subrooms) {
+						// holes
+						for (const subroom of room.Subrooms) {
+							if (subroom.Holes) {
+								for (const hole of subroom.Holes) {
+									const holeData: HoleData = {
+										id: uuidv4(),
+										index: 0,
+										position: hole.Side.toLowerCase() as WallPosition,
+										name: subroom.Room
+									};
+									newRoom.holes.push(holeData);
+								}
 							}
 						}
-					}
 
-					// holes Subrooms
-					for (const subroom of room.Subrooms) {
-						if (subroom.InternalEdges && !subroom.Collectables) {
-							for (const edge of subroom.InternalEdges) {
-								if (edge.ReqOut && edge.ReqOut.Or) {
-									for (const req of edge.ReqOut.Or) {
-										const startHole = newRoom.holes.find((hole) => hole.name === subroom.Room);
-										const finishHole = newRoom.holes.find((hole) => hole.name === edge.To);
+						// holes Subrooms
+						for (const subroom of room.Subrooms) {
+							if (subroom.InternalEdges && !subroom.Collectables) {
+								for (const edge of subroom.InternalEdges) {
+									if (edge.ReqOut && edge.ReqOut.Or) {
+										for (const req of edge.ReqOut.Or) {
+											const startHole = newRoom.holes.find((hole) => hole.name === subroom.Room);
+											const finishHole = newRoom.holes.find((hole) => hole.name === edge.To);
 
-										if (startHole && finishHole) {
-											const linkData: LinkData = {
-												id: uuidv4(),
-												idStart: startHole.id,
-												idFinish: finishHole.id,
-												dashes: req.Dashes as Dashes,
-												difficulty: req.Difficulty as Difficulty
-											};
-											newRoom.links.push(linkData);
+											if (startHole && finishHole) {
+												const linkData: LinkData = {
+													id: uuidv4(),
+													idStart: startHole.id,
+													idFinish: finishHole.id,
+													dashes: req.Dashes as Dashes,
+													difficulty: req.Difficulty as Difficulty
+												};
+												newRoom.links.push(linkData);
+											}
+										}
+									}
+								}
+							}
+						}
+
+						//collectables
+						for (const subroom of room.Subrooms) {
+							if (subroom.Collectables) {
+								for (const collectable of subroom.Collectables) {
+									const collectableData: CollectableData = {
+										id: uuidv4(),
+										collectableType: CollectableType.STRAWBERRY,
+										index: collectable.Idx
+									};
+
+									newRoom.collectables.push(collectableData);
+								}
+
+								if (subroom.InternalEdges) {
+									for (const edge of subroom.InternalEdges) {
+										const hole = newRoom.holes.find((hole) => hole.name === edge.To);
+										const collectable = newRoom.collectables.slice(-1)[0];
+
+										// TODO redo
+
+										if (hole && collectable) {
+											if (edge.ReqOut && edge.ReqOut.Or) {
+												for (const req of edge.ReqOut.Or) {
+													const linkData: CollectableLinkData = {
+														id: uuidv4(),
+														collectableID: collectable.id,
+														holeID: hole.id,
+														dashes: req.Dashes as Dashes,
+														difficulty: req.Difficulty as Difficulty,
+														isIn: false
+													};
+													newRoom.collectablesLinks.push(linkData);
+												}
+											}
+
+											if (edge.ReqIn && edge.ReqIn.Or) {
+												for (const req of edge.ReqIn.Or) {
+													const linkData: CollectableLinkData = {
+														id: uuidv4(),
+														collectableID: collectable.id,
+														holeID: hole.id,
+														dashes: req.Dashes as Dashes,
+														difficulty: req.Difficulty as Difficulty,
+														isIn: true
+													};
+													newRoom.collectablesLinks.push(linkData);
+												}
+											}
 										}
 									}
 								}
@@ -88,54 +144,42 @@ export function importYaml(rawData: string) {
 						}
 					}
 
-					//collectables
-					for (const subroom of room.Subrooms) {
-						if (subroom.Collectables) {
-							for (const collectable of subroom.Collectables) {
-								const collectableData: CollectableData = {
-									id: uuidv4(),
-									collectableType: CollectableType.STRAWBERRY,
-									index: collectable.Idx
-								};
+					if (room.InternalEdges) {
+						for (const edge of room.InternalEdges) {
+							const hole = newRoom.holes.find((hole) => hole.name === edge.To);
+							const collectable: CollectableData = {
+								id: uuidv4(),
+								collectableType: CollectableType.SPAWN,
+								index: 0
+							};
 
-								newRoom.collectables.push(collectableData);
-							}
+							if (hole) {
+								newRoom.collectables.push(collectable);
+								if (edge.ReqOut && edge.ReqOut.Or) {
+									for (const req of edge.ReqOut.Or) {
+										const linkData: CollectableLinkData = {
+											id: uuidv4(),
+											collectableID: collectable.id,
+											holeID: hole.id,
+											dashes: req.Dashes as Dashes,
+											difficulty: req.Difficulty as Difficulty,
+											isIn: false
+										};
+										newRoom.collectablesLinks.push(linkData);
+									}
+								}
 
-							if (subroom.InternalEdges) {
-								for (const edge of subroom.InternalEdges) {
-									const hole = newRoom.holes.find((hole) => hole.name === edge.To);
-									const collectable = newRoom.collectables.slice(-1)[0];
-
-									// TODO redo
-
-									if (hole && collectable) {
-										if (edge.ReqOut && edge.ReqOut.Or) {
-											for (const req of edge.ReqOut.Or) {
-												const linkData: CollectableLinkData = {
-													id: uuidv4(),
-													collectableID: collectable.id,
-													holeID: hole.id,
-													dashes: req.Dashes as Dashes,
-													difficulty: req.Difficulty as Difficulty,
-													isIn: false
-												};
-												newRoom.collectablesLinks.push(linkData);
-											}
-										}
-
-										if (edge.ReqIn && edge.ReqIn.Or) {
-											for (const req of edge.ReqIn.Or) {
-												const linkData: CollectableLinkData = {
-													id: uuidv4(),
-													collectableID: collectable.id,
-													holeID: hole.id,
-													dashes: req.Dashes as Dashes,
-													difficulty: req.Difficulty as Difficulty,
-													isIn: true
-												};
-												newRoom.collectablesLinks.push(linkData);
-											}
-										}
+								if (edge.ReqIn && edge.ReqIn.Or) {
+									for (const req of edge.ReqIn.Or) {
+										const linkData: CollectableLinkData = {
+											id: uuidv4(),
+											collectableID: collectable.id,
+											holeID: hole.id,
+											dashes: req.Dashes as Dashes,
+											difficulty: req.Difficulty as Difficulty,
+											isIn: true
+										};
+										newRoom.collectablesLinks.push(linkData);
 									}
 								}
 							}

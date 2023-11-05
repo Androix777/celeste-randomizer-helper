@@ -11,7 +11,8 @@ export enum WallPosition {
 
 export enum CollectableType {
 	STRAWBERRY = 'strawberry',
-	KEY = 'key'
+	KEY = 'key',
+	SPAWN = 'spawn'
 }
 
 export enum Dashes {
@@ -421,8 +422,6 @@ export function recalculateHolesIndexesForRoom(roomData: RoomData): void {
 	roomData.holes.forEach((hole) => {
 		hole.index = ++wallIndexCounters[hole.position];
 	});
-
-	roomData.holes.forEach((hole) => {});
 }
 
 export function recalculateHolesIndexesForMap(mapData: MapData): void {
