@@ -4,6 +4,7 @@ Application for fast creation of yaml configurations for [Celeste Randomizer](ht
 
 ![interface](docs/screen1.png)
 ![interface](docs/screen2.png)
+![interface](docs/screen3.png)
 
 # Creating and editing configurations
 
