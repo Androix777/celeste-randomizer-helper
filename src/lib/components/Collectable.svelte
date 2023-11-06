@@ -19,6 +19,6 @@
 		bind:this={$collectableElement}
 		role="none"
 	>
-		<P>Collectable</P>
+		<P>Subroom</P>
 	</div>
 {/if}

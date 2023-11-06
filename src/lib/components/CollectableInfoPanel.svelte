@@ -52,8 +52,8 @@
 			<Input id="index-input" bind:value={collectable.index} />
 		</div>
 		<div class="flex items-center space-x-2">
-			<Button color="red" on:click={deleteCollectable}>Delete Collectable</Button>
-			<Button on:click={editCollectableLinks}>Edit Collectable links</Button>
+			<Button color="red" on:click={deleteCollectable}>Delete subroom</Button>
+			<Button on:click={editCollectableLinks}>Edit subroom links</Button>
 		</div>
 	</div>
 	<div class="mb-4 flex-col space-y-4">

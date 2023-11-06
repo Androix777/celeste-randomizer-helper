@@ -23,7 +23,7 @@
 	<TabItem title="Links">
 		<LinksList />
 	</TabItem>
-	<TabItem title="Collectables">
+	<TabItem title="Special subrooms">
 		<CollectablesList />
 	</TabItem>
 	<TabItem title="Room settings">

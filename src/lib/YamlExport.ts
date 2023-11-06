@@ -139,7 +139,7 @@ export function GetRoomData(room: RoomData) {
 	let collectablesLinks = room.collectablesLinks;
 	let collectables = room.collectables;
 
-	if (!holes || Object.keys(holes).length === 0) {
+	if (!holes || Object.keys(holes).length === 0 || (links.length == 0 && collectablesLinks.length == 0)) {
 		return null;
 	}
 
@@ -228,7 +228,7 @@ export function convertAllRoomsToYaml(mapData: MapData) {
 	try {
 		const allRoomsData = mapData.rooms
 			.map((room) => (room.customYaml ? parseDocument(room.customYaml) : GetRoomData(room)))
-			.filter((room) => room !== null); // Filter out null values
+			.filter((room) => room !== null);
 
 		let yamlData = stringify({ ASide: allRoomsData });
 		yamlData = yamlData.replace(/'/g, '');
