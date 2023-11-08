@@ -9,7 +9,7 @@ import {
 	type MapData,
 	type RoomData
 } from './stores/MapStore';
-import { parseDocument, stringify } from 'yaml';
+import { parse, parseDocument, stringify } from 'yaml';
 
 function getHoles(room: RoomData) {
 	const holes = room.holes;
@@ -181,10 +181,23 @@ export function GetRoomData(room: RoomData) {
 
 	const combinedSubrooms = [...subroomsData, ...collectableSubroomsData];
 
+	// Tweaks
+	let tweaks: any;
+	try {
+		tweaks = parse(room.customTweaks);
+	} catch (error) {
+		tweaks = undefined;
+	}
+	let tweaksArray = undefined;
+	if (tweaks != undefined && tweaks.Tweaks) {
+		tweaksArray = tweaks.Tweaks;
+	}
+
 	const roomData: any = {
 		Room: `"${room.name}"`,
 		CelesteRandomizerHelper: true,
-		Subrooms: combinedSubrooms
+		Subrooms: combinedSubrooms,
+		Tweaks: tweaksArray
 	};
 
 	const spawn = collectables.find(

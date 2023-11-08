@@ -1,4 +1,4 @@
-import { parse, parseDocument, Document } from 'yaml';
+import { parse, parseDocument, Document, stringify } from 'yaml';
 import type { Node } from 'yaml';
 import { v4 as uuidv4 } from 'uuid';
 import { get } from 'svelte/store';
@@ -184,6 +184,10 @@ export function importYaml(rawData: string) {
 								}
 							}
 						}
+					}
+
+					if (room.Tweaks) {
+						newRoom.customTweaks = stringify({ Tweaks: room.Tweaks });
 					}
 				}
 

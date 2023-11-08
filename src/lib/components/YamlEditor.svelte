@@ -19,7 +19,6 @@
 
 	onMount(async () => {
 		monaco = (await import('../monaco')).default;
-		console.log(monaco);
 
 		if (!$isInited!) {
 			configureMonacoYaml(monaco, {

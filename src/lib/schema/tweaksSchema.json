@@ -48,5 +48,7 @@
 			}
 		}
 	},
-	"additionalProperties": false
+	"additionalProperties": false,
+	"markdownDescription": "An array of `Tweak` objects. Tweaks allow you to make modifications to the level data of a room, such as deleting or adding entities, or updating attributes for existing entities.",
+	"required": ["Tweaks"]
 }
