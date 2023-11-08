@@ -1,0 +1,52 @@
+{
+	"type": "object",
+	"properties": {
+		"Tweaks": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"ID": {
+						"type": "number",
+						"markdownDescription": "The unique identifier copied from Ahorn for the entity to be tweaked."
+					},
+					"Decal": {
+						"type": "string",
+						"markdownDescription": "TODO"
+					},
+					"X": {
+						"type": "number",
+						"markdownDescription": "The 'X' coordinate for the entity when adding or updating its position."
+					},
+					"Y": {
+						"type": "number",
+						"markdownDescription": "The 'Y' coordinate for the entity when adding or updating its position."
+					},
+					"Name": {
+						"type": "string",
+						"markdownDescription": "The name of the entity to be tweaked. It can be used to disambiguate between normal entities and triggers, which can have overlapping ID numbers."
+					},
+					"Update": {
+						"type": "object",
+						"properties": {
+							"Add": {
+								"type": "boolean",
+								"markdownDescription": "If set to `true`, a new entity is added. Otherwise, an existing entity is updated."
+							},
+							"Remove": {
+								"type": "boolean",
+								"markdownDescription": "If set to `true`, the specified entity is deleted. Otherwise, it's updated."
+							},
+							"Default": {
+								"type": "boolean",
+								"markdownDescription": "Can be used for spawn points so that they are set as default in case the room is selected as the starting room."
+							}
+						}
+					}
+				},
+				"markdownDescription": "Defines the properties for making edits to the room's entities. It includes properties to add (`Add`), remove (`Remove`), or update (`Default`) entities. It also specifies the position (`X`, `Y`) and the identifier (`ID`) of the entity."
+			}
+		}
+	},
+	"additionalProperties": false
+}

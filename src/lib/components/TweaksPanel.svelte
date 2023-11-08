@@ -7,7 +7,7 @@
 	let room = mapStore.getRoom();
 
 	function onTextChanged(newText: CustomEvent<string>) {
-		room.customYaml = newText.detail;
+		room.customTweaks = newText.detail;
 	}
 
 	onDestroy(() => {
@@ -15,4 +15,4 @@
 	});
 </script>
 
-<YamlEditor text={room.customYaml} uri="roomSchema.yaml" on:textChanged={onTextChanged} />
+<YamlEditor text={room.customTweaks} uri="tweaksSchema.yaml" on:textChanged={onTextChanged} />

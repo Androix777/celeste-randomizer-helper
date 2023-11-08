@@ -70,6 +70,7 @@ export type RoomData = {
 	collectablesLinks: CollectableLinkData[];
 	loennData?: RoomLoennData;
 	customYaml: string;
+	customTweaks: string;
 	customYamlErrors: boolean;
 };
 
@@ -88,6 +89,7 @@ export function getDefaultRoom(): RoomData {
 		collectables: [],
 		collectablesLinks: [],
 		customYaml: '',
+		customTweaks: '',
 		customYamlErrors: false
 	};
 }
@@ -493,6 +495,7 @@ export function ImportLoennData(loennData: MapLoennData) {
 			collectablesLinks: [],
 			loennData: roomLoennData,
 			customYaml: '',
+			customTweaks: '',
 			customYamlErrors: false
 		};
 

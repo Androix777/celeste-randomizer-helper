@@ -25,8 +25,12 @@ function getHoles(room: RoomData) {
 function getKind(links: LinkData[], collectableLinks: CollectableLinkData[], holeId: string) {
 	const linksForHole = links.filter((link) => link.idStart === holeId || link.idFinish === holeId);
 	const collectableLinksForHole = collectableLinks.filter((link) => link.holeID === holeId);
-	const isFinish = linksForHole.some((link) => link.idFinish === holeId) || collectableLinksForHole.some((link) => !link.isIn);
-	const isStart = linksForHole.some((link) => link.idStart === holeId) || collectableLinksForHole.some((link) => link.isIn);
+	const isFinish =
+		linksForHole.some((link) => link.idFinish === holeId) ||
+		collectableLinksForHole.some((link) => !link.isIn);
+	const isStart =
+		linksForHole.some((link) => link.idStart === holeId) ||
+		collectableLinksForHole.some((link) => link.isIn);
 
 	if (isFinish && isStart) return 'inout';
 	if (isFinish) return 'out';
@@ -139,7 +143,11 @@ export function GetRoomData(room: RoomData) {
 	let collectablesLinks = room.collectablesLinks;
 	let collectables = room.collectables;
 
-	if (!holes || Object.keys(holes).length === 0 || (links.length == 0 && collectablesLinks.length == 0)) {
+	if (
+		!holes ||
+		Object.keys(holes).length === 0 ||
+		(links.length == 0 && collectablesLinks.length == 0)
+	) {
 		return null;
 	}
 
@@ -199,7 +207,7 @@ function customYamlToYaml(customYaml: string) {
 	}
 }
 
-export function convertRoomToYaml(room: RoomData) : string {
+export function convertRoomToYaml(room: RoomData): string {
 	try {
 		let yamlData;
 		if (room.customYaml) {
@@ -216,7 +224,7 @@ export function convertRoomToYaml(room: RoomData) : string {
 			return error.message;
 		}
 	}
-	return "";
+	return '';
 }
 
 export function convertAllRoomsToYaml(mapData: MapData): string {
@@ -240,5 +248,5 @@ export function convertAllRoomsToYaml(mapData: MapData): string {
 			return error.message;
 		}
 	}
-	return "";
+	return '';
 }
