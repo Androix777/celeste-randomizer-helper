@@ -1,4 +1,4 @@
-import schema from './schema/schema.json';
+import schema from './schema/roomSchema.json';
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
 import { parse } from 'yaml';

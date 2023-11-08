@@ -2,7 +2,7 @@
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 	import { configureMonacoYaml } from 'monaco-yaml';
-	import schema from '../schema/schema.json';
+	import schema from '../schema/roomSchema.json';
 	import { mapStore } from '$lib/stores/MapStore';
 	import type { Writable } from 'svelte/store';
 	import { calcErrors } from '$lib/SchemaTools';

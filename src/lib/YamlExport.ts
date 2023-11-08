@@ -199,7 +199,7 @@ function customYamlToYaml(customYaml: string) {
 	}
 }
 
-export function convertRoomToYaml(room: RoomData) {
+export function convertRoomToYaml(room: RoomData) : string {
 	try {
 		let yamlData;
 		if (room.customYaml) {
@@ -216,9 +216,10 @@ export function convertRoomToYaml(room: RoomData) {
 			return error.message;
 		}
 	}
+	return "";
 }
 
-export function convertAllRoomsToYaml(mapData: MapData) {
+export function convertAllRoomsToYaml(mapData: MapData): string {
 	const hasDuplicates =
 		new Set(mapData.rooms.map((room) => room.name)).size !== mapData.rooms.length;
 	if (hasDuplicates) {
@@ -239,4 +240,5 @@ export function convertAllRoomsToYaml(mapData: MapData) {
 			return error.message;
 		}
 	}
+	return "";
 }
