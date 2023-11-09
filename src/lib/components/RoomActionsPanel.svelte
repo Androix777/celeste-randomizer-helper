@@ -10,6 +10,7 @@
 	import { writable } from 'svelte/store';
 	import CustomYamlPanel from './CustomYamlPanel.svelte';
 	import TweaksPanel from './TweaksPanel.svelte';
+	import HolesList from './HolesList.svelte';
 
 	setContext('isInited', writable<boolean>(false));
 </script>
@@ -20,6 +21,9 @@
 	</TabItem>
 	<TabItem title="Rooms">
 		<RoomsList />
+	</TabItem>
+	<TabItem title="Holes">
+		<HolesList />
 	</TabItem>
 	<TabItem title="Links">
 		<LinksList />

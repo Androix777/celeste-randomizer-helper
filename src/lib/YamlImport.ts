@@ -57,7 +57,11 @@ export function importYaml(rawData: string) {
 										id: uuidv4(),
 										index: 0,
 										position: hole.Side.toLowerCase() as WallPosition,
-										name: subroom.Room
+										name: subroom.Room,
+										lowBound: hole.LowBound,
+										launch: hole.Launch,
+										highBound: hole.HighBound,
+										highOpen: hole.HighOpen ?? false
 									};
 									newRoom.holes.push(holeData);
 								}
@@ -184,6 +188,10 @@ export function importYaml(rawData: string) {
 								}
 							}
 						}
+					}
+
+					if (room.SpinnersShatter) {
+						newRoom.spinnersShatter = room.SpinnersShatter;
 					}
 
 					if (room.Tweaks) {

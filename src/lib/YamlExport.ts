@@ -159,7 +159,11 @@ export function GetRoomData(room: RoomData) {
 				{
 					Side: hole.position.charAt(0).toUpperCase() + hole.position.slice(1),
 					Idx: hole.index,
-					Kind: getKind(links, collectablesLinks, hole.id)
+					Kind: getKind(links, collectablesLinks, hole.id),
+					LowBound: hole.lowBound,
+					HighBound: hole.highBound,
+					Launch: hole.launch,
+					HighOpen: hole.highOpen ? true : undefined
 				}
 			],
 			InternalEdges: internalEdges ? internalEdges : undefined
@@ -197,7 +201,8 @@ export function GetRoomData(room: RoomData) {
 		Room: `"${room.name}"`,
 		CelesteRandomizerHelper: true,
 		Subrooms: combinedSubrooms,
-		Tweaks: tweaksArray
+		Tweaks: tweaksArray,
+		SpinnersShatter: room.spinnersShatter ? true : undefined
 	};
 
 	const spawn = collectables.find(

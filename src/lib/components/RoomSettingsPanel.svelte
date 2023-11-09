@@ -4,12 +4,18 @@
 		setWallHolesFromLoennData,
 		setCollectablesFromLoennData
 	} from '../stores/MapStore';
-	import { Label, Input, Button } from 'flowbite-svelte';
+	import { Label, Input, Button, Checkbox } from 'flowbite-svelte';
 
 	let roomName = mapStore.getRoom().name;
+	let spinnersShatter = mapStore.getRoom().spinnersShatter;
 
 	function updateRoomName() {
 		let newRoom = { ...mapStore.getRoom(), name: roomName };
+		mapStore.updateRoom(newRoom);
+	}
+
+	function updateSpinnersShatter() {
+		let newRoom = { ...mapStore.getRoom(), spinnersShatter: spinnersShatter };
 		mapStore.updateRoom(newRoom);
 	}
 
@@ -35,6 +41,9 @@
 		bind:value={roomName}
 		on:input={updateRoomName}
 	/>
+	<Checkbox class="mb-2" bind:checked={spinnersShatter} on:change={updateSpinnersShatter}
+		>Spinners Shatter</Checkbox
+	>
 	<Button on:click={autoSetHoles}>Auto set loenn data</Button>
 	<Button color="red" on:click={clearAll}>Reset all</Button>
 </div>

@@ -35,6 +35,10 @@ export type HoleData = {
 	position: WallPosition;
 	index: number;
 	name: string;
+	launch?: number;
+	lowBound?: number;
+	highBound?: number;
+	highOpen: boolean;
 };
 
 export type CollectableData = {
@@ -68,6 +72,7 @@ export type RoomData = {
 	links: LinkData[];
 	collectables: CollectableData[];
 	collectablesLinks: CollectableLinkData[];
+	spinnersShatter: boolean;
 	loennData?: RoomLoennData;
 	customYaml: string;
 	customTweaks: string;
@@ -88,6 +93,7 @@ export function getDefaultRoom(): RoomData {
 		links: [],
 		collectables: [],
 		collectablesLinks: [],
+		spinnersShatter: false,
 		customYaml: '',
 		customTweaks: '',
 		customYamlErrors: false
@@ -493,6 +499,7 @@ export function ImportLoennData(loennData: MapLoennData) {
 			links: [],
 			collectables: [],
 			collectablesLinks: [],
+			spinnersShatter: false,
 			loennData: roomLoennData,
 			customYaml: '',
 			customTweaks: '',
@@ -522,7 +529,8 @@ export function setWallHolesFromLoennData(roomData: RoomData) {
 				id: uuidv4(),
 				index: 0,
 				position: holePosition as WallPosition,
-				name: `hole${holeIndex + 1}`
+				name: `hole${holeIndex + 1}`,
+				highOpen: false
 			});
 		}
 	});
