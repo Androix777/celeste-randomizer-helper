@@ -4,8 +4,6 @@
 		selectedCollectable,
 		mapStore,
 		type CollectableLinkData,
-		Difficulty,
-		Dashes,
 		WallPosition,
 		isLastSelectedholeStart,
 		selectedHoleStart,
@@ -13,9 +11,9 @@
 	} from '$lib/stores/MapStore';
 	import type { Writable } from 'svelte/store';
 	import LeaderLine from 'leader-line-new';
-	import type { SocketType } from 'leader-line-new';
 	import { HOLE_ELEMENTS, COLLECTABLE_ELEMENT } from '../ContextConstants';
 	import { collectablesMode } from '$lib/stores/MapStore';
+	import { socketMap, invertedWall, difficultyColorMap, dashColorMap } from '$lib/AdditionalData';
 
 	interface Lines {
 		[key: string]: LeaderLine;
@@ -29,35 +27,6 @@
 	let collectableElement: Writable<HTMLElement> = getContext(COLLECTABLE_ELEMENT);
 	let previewLine: LeaderLine | null = null;
 	let lines: Lines = {};
-
-	const socketMap = {
-		[WallPosition.DOWN]: 'top' as SocketType,
-		[WallPosition.UP]: 'bottom' as SocketType,
-		[WallPosition.LEFT]: 'right' as SocketType,
-		[WallPosition.RIGHT]: 'left' as SocketType
-	};
-
-	const invertedWall = {
-		[WallPosition.DOWN]: WallPosition.UP,
-		[WallPosition.UP]: WallPosition.DOWN,
-		[WallPosition.LEFT]: WallPosition.RIGHT,
-		[WallPosition.RIGHT]: WallPosition.LEFT
-	};
-
-	const difficultyColorMap = {
-		[Difficulty.EASY]: 'green',
-		[Difficulty.NORMAL]: 'yellow',
-		[Difficulty.HARD]: 'orange',
-		[Difficulty.EXPERT]: 'red',
-		[Difficulty.MASTER]: 'purple',
-		[Difficulty.PERFECT]: 'black'
-	};
-
-	const dashColorMap = {
-		[Dashes.ZERO]: 'blue',
-		[Dashes.ONE]: 'red',
-		[Dashes.TWO]: 'pink'
-	};
 
 	function getSocketCoordinates(position: WallPosition, offset: number): { x: string; y: string } {
 		switch (position) {

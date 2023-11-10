@@ -11,6 +11,8 @@
 		isLastSelectedholeStart
 	} from '$lib/stores/MapStore';
 
+	import { dashes, difficulties } from '$lib/AdditionalData';
+
 	$: holeStart =
 		$selectedHoleStart != ''
 			? mapStore.getHole($selectedHoleStart, undefined, $mapStore)
@@ -23,22 +25,7 @@
 	let selectedDashes = Dashes.ZERO;
 	let selectedDifficulty = Difficulty.EASY;
 
-	let dashes = [
-		{ value: Dashes.ZERO, name: 'Zero' },
-		{ value: Dashes.ONE, name: 'One' },
-		{ value: Dashes.TWO, name: 'Two' }
-	];
-
-	let difficulties = [
-		{ value: Difficulty.EASY, name: 'Easy' },
-		{ value: Difficulty.NORMAL, name: 'Normal' },
-		{ value: Difficulty.HARD, name: 'Hard' },
-		{ value: Difficulty.EXPERT, name: 'Expert' },
-		{ value: Difficulty.MASTER, name: 'Master' },
-		{ value: Difficulty.PERFECT, name: 'Perfect' }
-	];
-
-	function createLink(dashes: Dashes, difficulty: Difficulty ) {
+	function createLink(dashes: Dashes, difficulty: Difficulty) {
 		if ($collectablesMode) {
 			if (
 				($isLastSelectedholeStart && $selectedHoleStart != '') ||
@@ -64,11 +51,11 @@
 		}
 	}
 
-	function createLinkFromSelects(event: Event){
+	function createLinkFromSelects(event: Event) {
 		createLink(selectedDashes, selectedDifficulty);
 	}
 
-	function createLinkFree(event: Event){
+	function createLinkFree(event: Event) {
 		createLink(Dashes.ZERO, Difficulty.EASY);
 	}
 </script>

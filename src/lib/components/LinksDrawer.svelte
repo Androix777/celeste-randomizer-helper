@@ -5,16 +5,14 @@
 		selectedHoleFinish,
 		mapStore,
 		type LinkData,
-		Difficulty,
-		Dashes,
 		WallPosition
 	} from '$lib/stores/MapStore';
 	import type { Writable } from 'svelte/store';
 	import LeaderLine from 'leader-line-new';
-	import type { SocketType } from 'leader-line-new';
 	import { HOLE_ELEMENTS, FOCUSED_HOLE } from '../ContextConstants';
 	import { collectablesMode } from '$lib/stores/MapStore';
 	import chroma from 'chroma-js';
+	import { socketMap, difficultyColorMap, dashColorMap } from '$lib/AdditionalData';
 
 	interface Lines {
 		[key: string]: LeaderLine;
@@ -28,28 +26,6 @@
 	let focusedHole: Writable<string> = getContext(FOCUSED_HOLE);
 	let previewLine: LeaderLine | null = null;
 	let lines: Lines = {};
-
-	const socketMap = {
-		[WallPosition.DOWN]: 'top' as SocketType,
-		[WallPosition.UP]: 'bottom' as SocketType,
-		[WallPosition.LEFT]: 'right' as SocketType,
-		[WallPosition.RIGHT]: 'left' as SocketType
-	};
-
-	const difficultyColorMap = {
-		[Difficulty.EASY]: 'green',
-		[Difficulty.NORMAL]: 'yellow',
-		[Difficulty.HARD]: 'orange',
-		[Difficulty.EXPERT]: 'red',
-		[Difficulty.MASTER]: 'purple',
-		[Difficulty.PERFECT]: 'black'
-	};
-
-	const dashColorMap = {
-		[Dashes.ZERO]: 'blue',
-		[Dashes.ONE]: 'red',
-		[Dashes.TWO]: 'pink'
-	};
 
 	function getSocketCoordinates(position: WallPosition, offset: number): { x: string; y: string } {
 		switch (position) {
