@@ -38,7 +38,7 @@
 		{ value: Difficulty.PERFECT, name: 'Perfect' }
 	];
 
-	function createLink(event: Event) {
+	function createLink(dashes: Dashes, difficulty: Difficulty ) {
 		if ($collectablesMode) {
 			if (
 				($isLastSelectedholeStart && $selectedHoleStart != '') ||
@@ -47,8 +47,8 @@
 				mapStore.addCollectableLink({
 					collectableID: $selectedCollectable,
 					holeID: $isLastSelectedholeStart ? $selectedHoleStart : $selectedHoleFinish,
-					dashes: selectedDashes,
-					difficulty: selectedDifficulty,
+					dashes: dashes,
+					difficulty: difficulty,
 					isIn: $isLastSelectedholeStart
 				});
 			}
@@ -57,11 +57,19 @@
 				mapStore.addLink({
 					idStart: $selectedHoleStart,
 					idFinish: $selectedHoleFinish,
-					dashes: selectedDashes,
-					difficulty: selectedDifficulty
+					dashes: dashes,
+					difficulty: difficulty
 				});
 			}
 		}
+	}
+
+	function createLinkFromSelects(event: Event){
+		createLink(selectedDashes, selectedDifficulty);
+	}
+
+	function createLinkFree(event: Event){
+		createLink(Dashes.ZERO, Difficulty.EASY);
 	}
 </script>
 
@@ -82,5 +90,6 @@
 		bind:value={selectedDifficulty}
 		class="mr-2"
 	/>
-	<Button class="shrink-0" on:click={createLink}>Add link</Button>
+	<Button class="shrink-0 mr-2" on:click={createLinkFromSelects}>Add link</Button>
+	<Button class="shrink-0" on:click={createLinkFree}>Add free link</Button>
 </div>
