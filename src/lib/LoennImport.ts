@@ -86,6 +86,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 			let finishes: FinishLoennData[] = [];
 
 			if (rawEntities != undefined) {
+				let isFirst = true;
 				rawEntities.forEach((entity: any) => {
 					if (['key', 'strawberry'].includes(entity.__name)) {
 						const newCollectable: CollectableLoennData = {
@@ -103,10 +104,11 @@ function getMapLoennData(rawData: any): MapLoennData {
 						const newSpawn: SpawnLoennData = {
 							loennID: entity.id,
 							index: 0,
-							isFirst: false,
+							isFirst: isFirst,
 							x: entity.x,
 							y: entity.y
 						};
+						isFirst = false
 						spawns.push(newSpawn);
 					}
 
@@ -135,7 +137,6 @@ function getMapLoennData(rawData: any): MapLoennData {
 			}
 
 			if (spawns.length > 0) {
-				spawns.sort((a, b) => a.loennID - b.loennID)[0].isFirst = true;
 				spawns.sort((a, b) => {
 					if (a.y === b.y) {
 						return a.x - b.x;
