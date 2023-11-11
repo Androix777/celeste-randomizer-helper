@@ -45,9 +45,9 @@
 <style lang="postcss">
 	.room {
 		@apply grid relative;
-		grid-template-columns: 100px auto 100px;
-		grid-template-rows: 100px auto 100px;
-		width: 900px;
-		height: 900px;
+		grid-template-columns: 75px auto 75px;
+		grid-template-rows: 75px auto 75px;
+		width: 850px;
+		height: 850px;
 	}
 </style>

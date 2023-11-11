@@ -108,7 +108,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 							x: entity.x,
 							y: entity.y
 						};
-						isFirst = false
+						isFirst = false;
 						spawns.push(newSpawn);
 					}
 

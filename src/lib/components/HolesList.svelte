@@ -5,7 +5,7 @@
 	$: holes = mapStore.getRoom(undefined, $mapStore).holes;
 </script>
 
-<div class="overflow-scroll" style="max-height: 600px; min-height: 100px;">
+<div class="overflow-scroll" style="max-height: 800px; min-height: 100px;">
 	{#each Object.values(holes) as hole (hole.id)}
 		<div class="mb-4">
 			<HoleInfoPanel {hole} />

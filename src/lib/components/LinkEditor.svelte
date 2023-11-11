@@ -54,10 +54,6 @@
 	function createLinkFromSelects(event: Event) {
 		createLink(selectedDashes, selectedDifficulty);
 	}
-
-	function createLinkFree(event: Event) {
-		createLink(Dashes.ZERO, Difficulty.EASY);
-	}
 </script>
 
 <div class="link-editor flex items-center mt-3">
@@ -78,5 +74,4 @@
 		class="mr-2"
 	/>
 	<Button class="shrink-0 mr-2" on:click={createLinkFromSelects}>Add link</Button>
-	<Button class="shrink-0" on:click={createLinkFree} color={"alternative"}>Add free link</Button>
 </div>
