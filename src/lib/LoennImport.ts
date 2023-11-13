@@ -121,7 +121,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 						spawns.push(newSpawn);
 					}
 
-					if (['blackGem', 'CollabUtils2/MiniHeart'].includes(entity.__name)) {
+					if (['blackGem'].includes(entity.__name)) {
 						const newFinish: FinishLoennData = {
 							loennID: entity.id,
 							x: entity.x,
@@ -130,7 +130,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 						finishes.push(newFinish);
 					}
 
-					if (['MaxHelpingHand/FlagTouchSwitch'].includes(entity.__name)) {
+					if (['MaxHelpingHand/FlagTouchSwitch', 'FrostHelper/CustomFireBarrier'].includes(entity.__name)) {
 						const newErrorObject: ErrorObjectLoennData = {
 							loennID: entity.id,
 							name: entity.name,
