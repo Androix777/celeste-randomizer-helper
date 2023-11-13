@@ -120,7 +120,17 @@
 			const x = finish.x / 8;
 			const y = finish.y / 8;
 
-			ctx.fillStyle = 'Pink';
+			ctx.fillStyle = 'Blue';
+
+			ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
+		}
+
+		// errorObjects
+		for (const errorObject of room.loennData.errorObjects) {
+			const x = errorObject.x / 8;
+			const y = errorObject.y / 8;
+
+			ctx.fillStyle = '#FF00FF';
 
 			ctx.fillRect(offsetX + x * cellSize, offsetY + y * cellSize, cellSize, cellSize);
 		}

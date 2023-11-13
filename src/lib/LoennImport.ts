@@ -12,6 +12,7 @@ export type RoomLoennData = {
 	collectables: CollectableLoennData[];
 	spawns: SpawnLoennData[];
 	finishes: FinishLoennData[];
+	errorObjects: ErrorObjectLoennData[];
 	realHeight: number;
 	realWidth: number;
 	height: number;
@@ -37,6 +38,13 @@ export type SpawnLoennData = {
 
 export type FinishLoennData = {
 	loennID: number;
+	x: number;
+	y: number;
+};
+
+export type ErrorObjectLoennData = {
+	loennID: number;
+	name: string;
 	x: number;
 	y: number;
 };
@@ -84,6 +92,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 			let collectables: CollectableLoennData[] = [];
 			let spawns: SpawnLoennData[] = [];
 			let finishes: FinishLoennData[] = [];
+			let errorObjects: ErrorObjectLoennData[] = [];
 
 			if (rawEntities != undefined) {
 				let isFirst = true;
@@ -119,6 +128,16 @@ function getMapLoennData(rawData: any): MapLoennData {
 							y: entity.y
 						};
 						finishes.push(newFinish);
+					}
+
+					if (['MaxHelpingHand/FlagTouchSwitch'].includes(entity.__name)) {
+						const newErrorObject: ErrorObjectLoennData = {
+							loennID: entity.id,
+							name: entity.name,
+							x: entity.x,
+							y: entity.y
+						};
+						errorObjects.push(newErrorObject);
 					}
 				});
 			}
@@ -156,6 +175,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 				collectables: collectables,
 				spawns: spawns,
 				finishes: finishes,
+				errorObjects: errorObjects,
 				realHeight: level.height,
 				realWidth: level.width,
 				height: height,
