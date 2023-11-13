@@ -20,7 +20,6 @@
 		<P>{room.name}</P>
 		<P>Holes: {room.holes.length}</P>
 		<P>Links: {room.links.length}</P>
-		<P>Collectables: {room.collectables.length}</P>
 	</div>
 	{#if room.customYaml != ''}
 		<div class="mb-4 flex space-x-4">
