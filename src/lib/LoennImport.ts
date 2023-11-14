@@ -130,7 +130,7 @@ function getMapLoennData(rawData: any): MapLoennData {
 						finishes.push(newFinish);
 					}
 
-					if (['MaxHelpingHand/FlagTouchSwitch', 'FrostHelper/CustomFireBarrier'].includes(entity.__name)) {
+					if (['MaxHelpingHand/FlagTouchSwitch'].includes(entity.__name)) {
 						const newErrorObject: ErrorObjectLoennData = {
 							loennID: entity.id,
 							name: entity.name,
